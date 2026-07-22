@@ -1928,7 +1928,7 @@ function SkitsPage({ onBack, backLabel = "Main" }) {
       <style>{`
         @media (max-width: 600px) {
           .glow-skit-row { flex-direction: column !important; }
-          .glow-skit-photo { width: 100% !important; height: 220px !important; order: -1; }
+          .glow-skit-photo { width: 100% !important; height: auto !important; aspect-ratio: 4 / 3 !important; order: -1; }
         }
       `}</style>
       <button
@@ -2241,7 +2241,7 @@ function HistoryPage({ onBack, backLabel = "Main" }) {
       <style>{`
         @media (max-width: 600px) {
           .glow-skit-row { flex-direction: column !important; }
-          .glow-skit-photo { width: 100% !important; height: 220px !important; order: -1; }
+          .glow-skit-photo { width: 100% !important; height: auto !important; aspect-ratio: 4 / 3 !important; order: -1; }
         }
       `}</style>
       <button
