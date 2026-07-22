@@ -2341,6 +2341,7 @@ const GLOW_SEASONS = [
 ];
 
 const SITE_CHANGELOG = [
+  { date: "July 2026", note: "classicglowwrestlers.com is officially live!" },
   { date: "July 2026", note: "Added the Splash Page as the new site landing page." },
   { date: "July 2026", note: "Built out the Tale of the Tape wrestler matchup simulator, including a heel/face picker for choosing your own dream matchups." },
   { date: "July 2026", note: "Expanded the Who Said It? quiz with more quotes." },
