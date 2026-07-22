@@ -523,7 +523,7 @@ const WRESTLERS = [
     color: "#1a1a1a",
     photo: "evangelina.jpg",
     videos: ["vLUoMpgKyIA", "wX355EZKVW0"],
-    bio: "A 'holier than thou' preacher heel from GLOW's third season, Evangelina preached fire and brimstone, scolding fans for their sins before bringing the same self-righteous fury into the ring — even attacking Zelda before the bell over a dispute on evolution.",
+    bio: "A 'holier than thou' preacher from GLOW's third season, Evangelina preached fire and brimstone — scolding her opponents for their sins and sermonizing during the match — even attacking Zelda before the bell over a dispute on evolution.",
     quote: "Every time I beat my opponent, I'm kicking Satan's butt.",
     finishers: [],
   },
@@ -2550,6 +2550,45 @@ function MiscPage({ onBack, backLabel = "Main" }) {
             margin: 0,
           }}>
             Photos and video clips are included for archival and educational purposes and remain the property of their original copyright holders. If you are a rights holder and would like content removed, please contact us at{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "#ff8fc3" }}>{CONTACT_EMAIL}</a>.
+          </p>
+        </div>
+      </MiscCard>
+
+      {/* Privacy Policy */}
+      <MiscSectionHeading>Privacy Policy</MiscSectionHeading>
+      <MiscCard>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontSize: 13,
+            color: "#c8d0f0",
+            lineHeight: 1.75,
+            margin: 0,
+          }}>
+            This site may use cookies and similar technologies to help it function and to support advertising. If display ads are served on this site (for example, through Google AdSense), Google and its advertising partners may use cookies to serve ads based on a visitor's prior visits to this site or other websites across the internet.
+          </p>
+          <p style={{
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontSize: 13,
+            color: "#c8d0f0",
+            lineHeight: 1.75,
+            margin: 0,
+          }}>
+            You can opt out of personalized advertising by visiting Google's Ads Settings at{" "}
+            <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" style={{ color: "#ff8fc3" }}>adssettings.google.com</a>
+            , or opt out of third-party vendor cookies used for personalized ads at{" "}
+            <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener noreferrer" style={{ color: "#ff8fc3" }}>aboutads.info/choices</a>
+            . Most browsers also let you block or delete cookies through their own settings.
+          </p>
+          <p style={{
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontSize: 13,
+            color: "#c8d0f0",
+            lineHeight: 1.75,
+            margin: 0,
+          }}>
+            This site does not require account creation, does not process payments, and does not knowingly collect personal information beyond what may be gathered automatically through the cookies described above. Questions about this policy can be sent to{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "#ff8fc3" }}>{CONTACT_EMAIL}</a>.
           </p>
         </div>
@@ -5995,6 +6034,7 @@ function SplashButton({ onClick, gradient, shadowRGB, icon, label, spanFull }) {
         fontSize: 14,
         letterSpacing: 0.5,
         padding: "16px 18px",
+        minHeight: 56,
         borderRadius: 10,
         border: "1px solid rgba(255,255,255,0.2)",
         boxShadow: `0 6px 16px rgba(${shadowRGB},0.45)`,
@@ -6108,7 +6148,7 @@ function SplashScreen({ onWrestlers, onRandomWrestler, onSkits, onHistory, onQui
           onClick={onHistory}
           gradient="linear-gradient(135deg, #ad1457, #4a0026)"
           shadowRGB="173,20,87"
-          label="GLOW History & Extras"
+          label="History & Extras"
           icon={
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z" />
@@ -6586,6 +6626,48 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
 
       <div style={{ textAlign: "center", marginTop: 24, marginBottom: 8 }}>
         <a
+          href="https://glowwrestlingoriginals.tumblr.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            textDecoration: "none",
+            color: "#fff",
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontWeight: 700,
+            fontSize: 14.5,
+            letterSpacing: 0.5,
+            padding: "12px 26px",
+            borderRadius: 999,
+            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
+            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            transition: "transform 160ms ease, box-shadow 160ms ease",
+            width: 340,
+            textAlign: "center",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow =
+              "0 9px 20px rgba(255,45,146,0.6)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow =
+              "0 6px 16px rgba(255,45,146,0.45)";
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+            <path d="M14.563 24c-5.093 0-8.9-2.734-8.9-9.354V9.42H2.478V5.44c3.216-.815 4.57-3.632 4.735-5.44h3.652v6.14h4.66V9.42h-4.66v5.14c0 1.94.97 2.611 2.512 2.611h2.32v6.828h-.334z" />
+          </svg>
+          Visit the Official GLOW Tumblr
+        </a>
+      </div>
+      <div style={{ textAlign: "center", marginTop: 14, marginBottom: 8 }}>
+        <a
           href="https://tubitv.com/series/4270/the-original-ladies-of-wrestling"
           target="_blank"
           rel="noopener noreferrer"
@@ -6667,6 +6749,91 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             <path d="M8 5v14l11-7z" />
           </svg>
           Watch GLOW: The Story of the Gorgeous Ladies of Wrestling on Tubi
+        </a>
+      </div>
+      <div style={{ textAlign: "center", marginTop: 14, marginBottom: 8 }}>
+        <a
+          href="https://pluto.tv/us/shows/the-original-ladies-of-wrestling/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            textDecoration: "none",
+            color: "#fff",
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontWeight: 700,
+            fontSize: 14.5,
+            letterSpacing: 0.5,
+            padding: "12px 26px",
+            borderRadius: 999,
+            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
+            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            transition: "transform 160ms ease, box-shadow 160ms ease",
+            width: 340,
+            textAlign: "center",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow =
+              "0 9px 20px rgba(255,45,146,0.6)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow =
+              "0 6px 16px rgba(255,45,146,0.45)";
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Watch GLOW Season 3 on Pluto TV
+        </a>
+      </div>
+      <div style={{ textAlign: "center", marginTop: 14, marginBottom: 8 }}>
+        <a
+          href="https://pluto.tv/us/movies/66ce185a73aa5100130b8377/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            textDecoration: "none",
+            color: "#fff",
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontWeight: 700,
+            fontSize: 11.5,
+            letterSpacing: 0.3,
+            padding: "12px 26px",
+            borderRadius: 999,
+            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
+            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            transition: "transform 160ms ease, box-shadow 160ms ease",
+            width: 340,
+            textAlign: "center",
+            lineHeight: 1.5,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow =
+              "0 9px 20px rgba(255,45,146,0.6)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow =
+              "0 6px 16px rgba(255,45,146,0.45)";
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0 }}>
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Watch GLOW: The Story of the Gorgeous Ladies of Wrestling on Pluto TV
         </a>
       </div>
       <div
