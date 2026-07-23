@@ -860,7 +860,7 @@ const WRESTLERS = [
     role: "Heel — Skunk",
     initials: "SK",
     color: "#558b2f",
-    colorRing: "radial-gradient(circle, transparent 65%, rgba(46,125,50,0.15) 65.6%, rgba(46,125,50,0.4) 66.4%, rgba(46,125,50,0.65) 67.2%, rgba(27,94,32,0.7) 68%, rgba(46,125,50,0.5) 68.8%, rgba(46,125,50,0.28) 69.5%, rgba(46,125,50,0.1) 70.1%, transparent 70.7%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
+    colorRing: "radial-gradient(circle, transparent 67%, rgba(93,64,28,0.15) 67.8%, rgba(93,64,28,0.4) 68.6%, rgba(93,64,28,0.65) 69.4%, rgba(62,43,19,0.75) 70%, rgba(93,64,28,0.5) 70.3%, rgba(93,64,28,0.25) 70.5%, transparent 70.7%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
     photo: "stinky.jpg",
     videos: ["uvjsLUc0gq8", "9YJD_D6JfSo"],
     bio: "The smelliest of GLOW characters, the heel Stinky wore a skunky hairstyle while emitting a foul odor on her opponents.",
@@ -897,7 +897,7 @@ const WRESTLERS = [
   {
     id: "susie-spirit",
     name: "Susie Spirit",
-    real: "Laurie (Lauri) Thompson",
+    real: "Lauri Thompson",
     years: "1986–1987",
     role: "Face — Cheerleader",
     initials: "SS",
