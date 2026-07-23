@@ -4149,6 +4149,8 @@ const TAPE_ECCENTRIC_LINES = {
   "Mana": [
     "{X} sinks her teeth right into {Y} — the referee warns her, but it's already done.",
     "{X} lets out a guttural yell and goes right back after {Y} — pure primal instinct out there.",
+    "{X} suddenly leaps up onto the ropes and growls right at the crowd — not a word out of her, just pure animal sound.",
+    "{X} bounds around the ring and lets out a growling yell at the fans in the front row — {Y} uses the distraction to get a breather.",
   ],
   "Hollywood": [
     "{X} locks in a Hooligan Hammerlock mid-match, just to remind {Y} it's there — she doesn't go for the pin, just lets it sink in.",
@@ -4596,9 +4598,9 @@ const TAPE_ENTRANCE_LINES = {
     "Here comes {X}, high-fiving the front row the whole way down — the crowd adores her.",
   ],
   "Chainsaw": [
-    "{X} fires up her chainsaw on the way to the ring, looking absolutely menacing.",
-    "{X} revs that chainsaw at ringside fans just to hear them scream — real nice, that.",
-    "Here comes {X}, chainsaw roaring — I would very much like her to turn that thing off.",
+    "{X} fires up her chainsaw the moment she steps through the entrance — it's already roaring before she's even in full view.",
+    "{X} revs that chainsaw the second she comes through the curtain — the sound alone has fans in the front rows covering their ears.",
+    "Here comes {X}, chainsaw already roaring from the second she walked out — I would very much like her to turn that thing off.",
   ],
   "Zelda": [
     "{X} trips right over the middle rope getting into the ring — smooth entrance, that was not.",
@@ -5013,6 +5015,12 @@ function generateTapeBlurb(a, b, result) {
   let chainsawAlreadyOut = false;
 
   let entranceLines;
+  // MTV's entrance needs to come after her opponent's — and after
+  // everything else that happens pre-bell (reactions, mic-grabs,
+  // mocking) — so her own line is held aside here and appended dead
+  // last, once the whole pre-bell sequence is otherwise finished.
+  const mtvInMatch = [a, b].find(w => w.name === "Melody Trouble Vixen (MTV)");
+  let mtvOwnEntranceLine = null;
   if (hollywoodInMatch) {
     // Hollywood jumps her opponent before the opponent's own entrance can
     // even happen — so only Hollywood's ambush line shows, not both.
@@ -5044,10 +5052,16 @@ function generateTapeBlurb(a, b, result) {
         if (candidates.length === 0) candidates = pool;
         const chosen = candidates[Math.floor(Math.random() * candidates.length)];
         usedOpeners.add(tapeLineOpener(chosen));
-        return chosen
+        const line = chosen
           .replaceAll("{X}", w.name)
           .replaceAll("{Y}", opponent.name);
-      });
+        if (mtvInMatch && w === mtvInMatch) {
+          mtvOwnEntranceLine = line;
+          return null;
+        }
+        return line;
+      })
+      .filter(line => line !== null);
 
     // If only one wrestler has a signature entrance, the other one
     // doesn't just stand there quietly — she gets a reaction of her own.
@@ -5111,6 +5125,14 @@ function generateTapeBlurb(a, b, result) {
     }
   }
 
+  // MTV's own entrance line (if she has one this match) always comes
+  // dead last in the pre-bell sequence — after her opponent, after any
+  // reactions, mic-grabs, or mocking — since it wouldn't make sense for
+  // her to show up and then have all of that still happen afterward.
+  if (mtvOwnEntranceLine) {
+    entranceLines = [...entranceLines, mtvOwnEntranceLine];
+  }
+
   // Since Hollywood already jumped her opponent, there's no formal bell
   // to ring — the fight is already happening. Little Fiji is timid and
   // never rushes her opponent (or gets rushed), so her matches skip
@@ -5166,7 +5188,13 @@ function generateTapeBlurb(a, b, result) {
       kickoff += TAPE_MOVE_AFTERTHOUGHTS[Math.floor(Math.random() * TAPE_MOVE_AFTERTHOUGHTS.length)];
     }
   } else {
-    kickoff = fillABShort(TAPE_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_KICKOFF_BEATS.length)]);
+    // "No handshake, no formalities" implies there was ever an
+    // expectation of one — doesn't fit Dementia or Mana, who never
+    // engage in that kind of thing to begin with.
+    const kickoffPool = [a, b].some(w => w.name === "Dementia" || w.name === "Mana")
+      ? TAPE_KICKOFF_BEATS.filter(tpl => tpl !== "No handshake, no formalities — {A} and {B} go straight at each other the second that bell rings!")
+      : TAPE_KICKOFF_BEATS;
+    kickoff = fillABShort(kickoffPool[Math.floor(Math.random() * kickoffPool.length)]);
   }
 
   // A big enough talent gap (e.g. an 8 vs. a 3) doesn't need a full
