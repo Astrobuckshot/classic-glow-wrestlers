@@ -905,7 +905,7 @@ const WRESTLERS = [
     colorRing: "repeating-conic-gradient(#c62828 0deg 25deg, #ff6f00 25deg 30deg)",
     photo: "susie-spirit.jpg",
     videos: ["kxWui3zxTfU", "tx5sU6moFIc"],
-    bio: "A cheerleader-themed character, and one part of the Cheerleaders tag team alongside Debbie Debutante, Susie Spirit was played by Lauri Thompson — the lead dancer at the Tropicana's Folies Bergère who helped recruit many of the show's other performers. Her career was painfully interrupted when the Headhunters inflicted a serious elbow injury to her in a tag team match with cheerleading partner Debutante — but Susie's return was remarkable. She returned to the ring while still wearing an arm brace vs. Attache — and even had a rematch against the third Headhunter. Afterwards, she briefly teamed up with Americana to make 'The All-Americans'.",
+    bio: "A cheerleader-themed character, and one part of the Cheerleaders tag team alongside Debbie Debutante, Susie Spirit's career was painfully interrupted when the Headhunters inflicted a serious elbow injury to her in a tag team match with partner Debutante — but Susie's comeback was remarkable. She returned to the ring still wearing an arm brace in a match vs. Attache — and even took on the third Headhunter, Mana. Afterwards, she briefly teamed up with Americana to make 'The All-Americans'. Susie was played by Lauri Thompson — the lead dancer at the Tropicana's Folies Bergère who helped recruit many of the show's other performers.",
     quote: "I love creating excitement and good sportsmanship.",
     finishers: ["Split Crush"],
   },
@@ -3155,13 +3155,17 @@ const TAPE_BOSTON_CRAB_BEATS = new Set([
   "{A} locks {B} into a Boston crab right in the center of the ring — {B} is scrambling for the ropes!",
   "{B} counters into a Boston crab of her own, and now {A} is the one in trouble!",
 ]);
+// Daisy is tall but isn't quite in the same "unmovable giant" weight
+// class as Mt. Fiji, Matilda the Hun, and Big Bad Mama — the no-dropkick
+// rule is specifically for those three, not for her.
+const TAPE_TRUE_GIANTS = new Set(["Mt. Fiji", "Matilda the Hun", "Big Bad Mama"]);
 function tapeBeatAllowed(tpl, a, b) {
   const aGiant = TAPE_GIANT_WRESTLERS.has(a.name);
   const bGiant = TAPE_GIANT_WRESTLERS.has(b.name);
   if (tpl === "{A} flips {B} clean over with a well-timed hip toss." && bGiant) return false;
   if (tpl === "{B} reverses out of a hold and flips {A} onto her back." && aGiant) return false;
   if (TAPE_BOSTON_CRAB_BEATS.has(tpl) && (aGiant || bGiant)) return false;
-  if (tpl === "{A} opens with a stiff clothesline, but {B} answers right back with a dropkick that sends the crowd into a frenzy." && bGiant) return false;
+  if (tpl === "{A} opens with a stiff clothesline, but {B} answers right back with a dropkick that sends the crowd into a frenzy." && TAPE_TRUE_GIANTS.has(b.name)) return false;
   return true;
 }
 
@@ -3225,6 +3229,10 @@ function tapeLowerGimmick(raw) {
 
 // Pull the descriptive part of a role like "Heel — Voodoo Priestess" -> "Voodoo Priestess"
 function tapeGimmick(w) {
+  const override = TAPE_LABEL_OVERRIDES[w.name];
+  if (override) {
+    return Array.isArray(override) ? override[Math.floor(Math.random() * override.length)] : override;
+  }
   if (!w.role) return "raw talent";
   const parts = w.role.split("—").map(s => s.trim());
   const descriptor = parts.length > 1 && parts[1]
@@ -3261,6 +3269,7 @@ const TAPE_LABEL_OVERRIDES = {
   "Sally the Farmer's Daughter": "farm girl",
   "Amy the Farmer's Daughter": "farm girl",
   "Americana": "patriot",
+  "Star": ["cosmic traveller", "zodiac girl"],
 };
 // A few gimmick nicknames already function as a complete, self-contained
 // title — often because of a possessive like "America's" — so putting
@@ -3268,7 +3277,7 @@ const TAPE_LABEL_OVERRIDES = {
 // Sweetheart"). These are used bare instead, with no article at all.
 const TAPE_LABEL_NO_ARTICLE = new Set(["America's sweetheart"]);
 function tapeLabel(w) {
-  const raw = TAPE_LABEL_OVERRIDES[w.name] || tapeGimmick(w);
+  const raw = tapeGimmick(w);
   if (TAPE_LABEL_NO_ARTICLE.has(raw)) return raw;
   // tapeGimmick() (and every override) is always a bare descriptor with
   // no article of its own, so a single "the" in front of it can never
@@ -3660,7 +3669,7 @@ const TAPE_ROAST_BEATS = [
   "That's gotta hurt {R}'s pride more than her back!",
   "{R} came out aggressive tonight — or at least came out yelling a lot, which is basically the same thing!",
   "I've seen scarier things at a church bake sale than whatever {R} is trying to pull off right now!",
-  "{R}'s {rGimmick} act is wearing thin, and so is my patience!",
+  "{R} really thinks she's some kind of {insultR} out here — sweetheart, nobody's buying it!",
   "{R} is giving it everything she's got — which, let's be honest, isn't always saying much!",
   "Somebody get {R} a towel, she's sweating through that whole gimmick tonight!",
   "Oh, THAT was original — {R}'s trash talk needs some new material, folks!",
@@ -4802,6 +4811,11 @@ const TAPE_MIC_GRAB_LINES = {
     "{X} grabs the mic before the bell, looking {Y} up and down — \"Sweetheart, that outfit is a tragedy, and your face isn't doing you any favors either!\"",
     "{X} snatches the mic and sneers at {Y} — \"Did you get dressed in the dark, honey? Because that is NOT a good look!\"",
   ],
+  "Star": [
+    "{X} grabs the mic before the bell, staring intently at {Y} — \"The stars have already decided your fate tonight... and it is not a good one.\"",
+    "{X} snatches the mic and reads {Y}'s future right there in the ring — \"I see... darkness. A very bad night for you.\"",
+    "{X} grabs the mic before the bell and looks {Y} dead in the eye — \"Mercury is in retrograde, and so is your luck tonight.\"",
+  ],
 };
 
 // Tiffany Mellon doesn't grab the mic nearly as often as the others —
@@ -5202,9 +5216,12 @@ function generateTapeBlurb(a, b, result) {
   }
 
   // A dropkick landing on a giant almost never does much — worth
-  // mentioning on its own whenever one of them is in the match.
-  if (anyGiant && Math.random() < 0.2) {
-    const giant = TAPE_GIANT_WRESTLERS.has(a.name) ? a : b;
+  // mentioning on its own whenever Mt. Fiji, Matilda the Hun, or Big Bad
+  // Mama specifically is in the match (Daisy isn't in their weight class
+  // for this one).
+  const trueGiantInMatch = TAPE_TRUE_GIANTS.has(a.name) ? a : (TAPE_TRUE_GIANTS.has(b.name) ? b : null);
+  if (trueGiantInMatch && Math.random() < 0.2) {
+    const giant = trueGiantInMatch;
     const dropkickOpponent = giant === a ? b : a;
     const tpl = TAPE_DROPKICK_VS_GIANT_LINES[Math.floor(Math.random() * TAPE_DROPKICK_VS_GIANT_LINES.length)];
     const line = tpl
@@ -6706,7 +6723,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
             <path d="M8 5v14l11-7z" />
           </svg>
-          Watch Classic GLOW on Tubi
+          Watch Classic GLOW Season 3 on Tubi
         </a>
       </div>
       <div style={{ textAlign: "center", marginTop: 14, marginBottom: 8 }}>
@@ -6791,7 +6808,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
             <path d="M8 5v14l11-7z" />
           </svg>
-          Watch GLOW Season 3 on Pluto TV
+          Watch Classic GLOW Season 3 on Pluto TV
         </a>
       </div>
       <div style={{ textAlign: "center", marginTop: 14, marginBottom: 8 }}>
