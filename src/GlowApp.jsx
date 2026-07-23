@@ -2780,6 +2780,7 @@ const QUIZ_QUESTIONS = [
   { quote: "So you wanted to see Gorgeous Ladies — well feast your eyes! Here's the cream of the crop!", answer: "Big Bad Mama" },
   { quote: "This is their (Housewives) chance, man — national television, in this wrestling match, and look how they dress?", answer: "Tina Ferrari" },
   { quote: "Hollywood's wrestling techniques are definitely street material — just like her. Well I plan on cleaning up the streets and using her hair as a mop.", answer: "Roxy Astor" },
+  { quote: "You know, lots of friends of mine have lost a lot of money to people like Evangelina. So during this match, I'm gonna awake her pay.", answer: "Babe the Farmer's Daughter" },
 ];
 
 // Each playthrough pulls a random subset of this size from the full
@@ -3270,6 +3271,7 @@ const TAPE_LABEL_OVERRIDES = {
   "Amy the Farmer's Daughter": "farm girl",
   "Americana": "patriot",
   "Star": ["cosmic traveller", "zodiac girl"],
+  "Daisy": "big flower",
 };
 // A few gimmick nicknames already function as a complete, self-contained
 // title — often because of a possessive like "America's" — so putting
@@ -3944,8 +3946,8 @@ const TAPE_ZELDA_HELP_LINES = [
 // When the referee gets knocked out cold, sometimes the heel makes the
 // absolute most of it before a replacement ref even gets out here.
 const TAPE_REF_KNOCKOUT_DECISIVE_LINES = [
-  "The referee gets caught in the crossfire and goes down HARD — completely out cold! With nobody watching, {winner} goes to work on {loser} with everything she's got, and by the time a new referee gets out here, it's already over — {winner} wins!",
-  "Somebody clips the referee by accident, and he's out cold on the mat! {winner} wastes zero time taking full advantage while nobody's watching, and {loser} never recovers from it!",
+  "The referee gets caught in the crossfire and goes down HARD — completely out cold! With nobody watching, {winner} goes to work on {loser} with everything she's got — but the ref comes to just in the nick of time to see the cover, and counts it groggy but official! ONE! TWO! THREE!!",
+  "Somebody clips the referee by accident, and he's out cold on the mat! {winner} wastes zero time taking full advantage while nobody's watching — and just as she goes for the cover, the referee shakes it off and slaps the mat! ONE, TWO, THREE! He's dazed, but he saw enough to count it!",
 ];
 
 // Other times, the referee getting knocked out is just chaos — the
@@ -4096,7 +4098,7 @@ const TAPE_GIMMICK_TEMPLATES = [
   "{winner} taps into that {winnerGimmick} energy for one final surge, hooks the leg — ONE! TWO! THREE!! AND THAT'S THE MATCH!",
   "Would you believe it — {winner}'s pure {winnerGimmick} grit just flattened {loser}! Cover — ONE, TWO, THREE! The crowd is losing their minds, and frankly so am I!",
   "{loser} throws everything she's got, but {winner}'s {winnerGimmick} instincts win out! Down for the pin — ONE! TWO! THREE!! It's in the books!",
-  "{winner} channels every ounce of that {winnerGimmick} attitude, drops down for the cover — ONE... TWO... THREE! What a battle, what a mess, what a night!",
+  "{winner} channels every ounce of that {winnerGimmick} attitude, drops down for the cover — ONE... TWO... THREE! Both of them are bruised, gear's torn, hair's a wreck — but {winner}'s the one still standing!",
   "Chalk one up for the {winnerGimmick} crowd! {winner} covers {loser} — ONE! TWO! THREE!! And that's it, folks — she puts her away for good, or at least until the rematch!",
   "That's the difference right there — {winner}'s {winnerGimmick} edge just wins out! Cover — ONE, TWO, THREE!! Match over!",
   "{winner} refuses to quit, and it pays off — down goes {loser} for the count — ONE! TWO! THREE!! We have a winner!",
@@ -4133,8 +4135,12 @@ const TAPE_ECCENTRIC_LINES = {
     "{X} doesn't even need to touch {Y} to clear her out of the corner — that smell does the work for her.",
   ],
   "Dementia": [
-    "{X} shuffles around the ring like a corpse, dragging that axe and porcelain doll along — genuinely unsettling to watch.",
-    "{X} stares blankly at {Y} without a word, axe in hand — I don't think I'll ever get used to this one.",
+    "{X} shuffles around the ring like a corpse — genuinely unsettling to watch.",
+    "{X} stares blankly at {Y} without a word — I don't think I'll ever get used to this one.",
+    "{X} suddenly starts playing with that porcelain doll of hers mid-match, completely ignoring {Y} for a second — and then, just as suddenly, rips its head clean off.",
+    "{X} gets in close on {Y} and shows off some surprising strength for someone who moves like that — {Y} was not expecting that at all.",
+    "{X} wobbles toward {Y} like she's barely aware of where she even is — and then she's suddenly not moving like that at all.",
+    "{X} pulls that axe out from seemingly nowhere and just stares at it for a moment — {Y} backs off immediately.",
   ],
   "Jungle Woman": [
     "{X} lets out a feral screech that has {Y} visibly rattled for a moment.",
@@ -4560,24 +4566,24 @@ const TAPE_ENTRANCE_LINES = {
     "Here comes {X}, already barking at ringside fans — an absolute menace.",
   ],
   "Susie Spirit": [
-    "{X} does a series of flips and cartwheels on her way to the ring.",
+    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
     "{X} tumbles down the aisle with an impressive run of cartwheels — the crowd's already on its feet.",
-    "Here comes {X}, flipping her way to the ring like she never left that dance floor.",
+    "Here comes {X}, flipping her way to the ring like she never left that dance floor — the crowd cheering her on the whole way.",
   ],
   "Debbie Debutante": [
-    "{X} does a series of flips and cartwheels on her way to the ring.",
-    "{X} cartwheels down the aisle, all smiles — a natural showwoman.",
+    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "{X} cartwheels down the aisle, all smiles — a natural showwoman, and the crowd shows her plenty of love for it.",
     "Here comes {X}, tumbling her way in — the crowd loves every second of it.",
   ],
   "Vicky Victory": [
-    "{X} does a series of flips and cartwheels on her way to the ring.",
-    "{X} shows off some serious acrobatic skill just getting to the ring.",
-    "Here comes {X}, flipping and tumbling her way down the aisle.",
+    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "{X} shows off some serious acrobatic skill just getting to the ring — the crowd cheering her on with every flip.",
+    "Here comes {X}, flipping and tumbling her way down the aisle to a big round of applause.",
   ],
   "Cheyenne Cher": [
-    "{X} does a series of flips and cartwheels on her way to the ring.",
-    "{X} tumbles to the ring with real acrobatic flair — always a treat to watch.",
-    "Here comes {X}, cartwheeling in like she's got something to prove tonight.",
+    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "{X} tumbles to the ring with real acrobatic flair — always a treat to watch, and the crowd lets her know it.",
+    "Here comes {X}, cartwheeling in like she's got something to prove tonight — the crowd cheering her on the whole way.",
   ],
   "Colonel Ninotchka": [
     "The crowd erupts in boos the moment {X} steps into view.",
@@ -4631,8 +4637,8 @@ const TAPE_ENTRANCE_LINES = {
   ],
   "Dementia": [
     "{X} is wheeled to the ring in a restraint cage, silent behind that hockey mask and clutching an axe — dead quiet, and deeply unsettling.",
-    "Here comes {X}, still in that cage, axe in hand — I don't care how many times I've seen this, it never gets any less disturbing.",
-    "{X} is rolled out in the restraint cage as usual — not a word out of her, just that mask and that axe staring back at the crowd.",
+    "Here comes {X}, still in that cage — this time clutching that porcelain doll of hers instead, staring blankly at nothing.",
+    "{X} is rolled out in the restraint cage as usual — not a word out of her, just that mask staring back at the crowd.",
   ],
   "Arlene": [
     "{X} nags and complains the entire way to the ring — the outfits, the lighting, the crowd, nothing is good enough for her tonight.",
@@ -4878,13 +4884,13 @@ function tapeSoloCandidates(w, other, chainsawAlreadyOut) {
     }
     if (options.length > 0) {
       const pick = options[Math.floor(Math.random() * options.length)];
-      lines.push(pick.replaceAll("{X}", w.name).replaceAll("{Y}", other.name));
+      lines.push(pick.replaceAll("{X}", tapeShortName(w)).replaceAll("{Y}", tapeShortName(other)));
     }
   }
   for (const cat of TAPE_CATEGORIES) {
     if (cat.members.includes(w.name)) {
       const tpl = cat.soloLines[Math.floor(Math.random() * cat.soloLines.length)];
-      lines.push(tpl.replaceAll("{X}", w.name).replaceAll("{Y}", other.name));
+      lines.push(tpl.replaceAll("{X}", tapeShortName(w)).replaceAll("{Y}", tapeShortName(other)));
     }
   }
   return lines;
@@ -4925,8 +4931,9 @@ function generateTapeBlurb(a, b, result) {
   // whenever one of them is in the match.
   const anyGiant = TAPE_GIANT_WRESTLERS.has(a.name) || TAPE_GIANT_WRESTLERS.has(b.name);
 
-  // Intro-phase filler (entrance/kickoff/generic intro) always uses full
-  // names — that's the one formal "introduction" moment.
+  // Intro-phase filler (entrance only) always uses full names — that's
+  // the one formal "introduction" moment. Everything from kickoff
+  // onward uses fillABShort below instead, once the introduction's done.
   const fillAB = (tpl) => capitalizeFirst(stripRedundantArticles(tpl
     .replaceAll("{A}", a.name)
     .replaceAll("{B}", b.name)
@@ -4940,6 +4947,17 @@ function generateTapeBlurb(a, b, result) {
   // shortened name most of the time, occasionally swapping in her
   // gimmick label instead ("The Russian") for natural variety.
   const matchDisplay = (w) => Math.random() < 0.3 ? tapeLabel(w) : tapeShortName(w);
+  // Kickoff and double-DQ content come after the entrance's already
+  // introduced everyone by full name, so these use the same shortened
+  // display as the rest of the match instead of the full compound name.
+  const fillABShort = (tpl) => capitalizeFirst(stripRedundantArticles(tpl
+    .replaceAll("{A}", matchDisplay(a))
+    .replaceAll("{B}", matchDisplay(b))
+    .replaceAll("{aGimmick}", tapeGimmick(a))
+    .replaceAll("{bGimmick}", tapeGimmick(b))
+    .replaceAll("{R}", matchDisplay(roastTarget))
+    .replaceAll("{R2}", matchDisplay(roastOther))
+    .replaceAll("{rGimmick}", tapeGimmick(roastTarget))));
   const fillMatch = (tpl) => {
     // Same duplication risk as fillWL: if a template also references a
     // gimmick token directly, force the plain short name for that side
@@ -5114,17 +5132,17 @@ function generateTapeBlurb(a, b, result) {
   } else if (littleFijiKickoff) {
     if (kickoffRoll < 0.3) {
       kickoff = TAPE_STAREDOWN_LINES[Math.floor(Math.random() * TAPE_STAREDOWN_LINES.length)]
-        .replaceAll("{X}", intimidator.name)
-        .replaceAll("{Y}", intimidated.name);
+        .replaceAll("{X}", tapeShortName(intimidator))
+        .replaceAll("{Y}", tapeShortName(intimidated));
     } else {
       if (Math.random() < 0.6) {
         const littleFiji = [a, b].find(w => w.name === "Little Fiji");
         const opponent = littleFiji === a ? b : a;
         kickoff = TAPE_LITTLE_FIJI_KICKOFF_LINES[Math.floor(Math.random() * TAPE_LITTLE_FIJI_KICKOFF_LINES.length)]
-          .replaceAll("{X}", littleFiji.name)
-          .replaceAll("{Y}", opponent.name);
+          .replaceAll("{X}", tapeShortName(littleFiji))
+          .replaceAll("{Y}", tapeShortName(opponent));
       } else {
-        kickoff = fillAB(TAPE_SLOW_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_SLOW_KICKOFF_BEATS.length)]);
+        kickoff = fillABShort(TAPE_SLOW_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_SLOW_KICKOFF_BEATS.length)]);
       }
       // A slower start leaves room for a quick color-commentator aside
       // before things actually get going.
@@ -5134,21 +5152,21 @@ function generateTapeBlurb(a, b, result) {
     }
   } else if (Math.random() < 0.5) {
     kickoff = niceFaceInMatch
-      ? fillAB(TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES[Math.floor(Math.random() * TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES.length)])
-      : fillAB(TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES[Math.floor(Math.random() * TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES.length)]);
+      ? fillABShort(TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES[Math.floor(Math.random() * TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES.length)])
+      : fillABShort(TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES[Math.floor(Math.random() * TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES.length)]);
   } else if (kickoffRoll < 0.15) {
     kickoff = TAPE_STAREDOWN_LINES[Math.floor(Math.random() * TAPE_STAREDOWN_LINES.length)]
-      .replaceAll("{X}", intimidator.name)
-      .replaceAll("{Y}", intimidated.name);
+      .replaceAll("{X}", tapeShortName(intimidator))
+      .replaceAll("{Y}", tapeShortName(intimidated));
   } else if (kickoffRoll < 0.35) {
-    kickoff = fillAB(TAPE_SLOW_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_SLOW_KICKOFF_BEATS.length)]);
+    kickoff = fillABShort(TAPE_SLOW_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_SLOW_KICKOFF_BEATS.length)]);
     // A slower start leaves room for a quick color-commentator aside
     // before things actually get going.
     if (Math.random() < 0.3) {
       kickoff += TAPE_MOVE_AFTERTHOUGHTS[Math.floor(Math.random() * TAPE_MOVE_AFTERTHOUGHTS.length)];
     }
   } else {
-    kickoff = fillAB(TAPE_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_KICKOFF_BEATS.length)]);
+    kickoff = fillABShort(TAPE_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_KICKOFF_BEATS.length)]);
   }
 
   // A big enough talent gap (e.g. an 8 vs. a 3) doesn't need a full
@@ -5166,9 +5184,9 @@ function generateTapeBlurb(a, b, result) {
   // from three beats: the specific illegal chaos, the ref's escalating
   // count as neither wrestler lets up, then the final call.
   if (method === "double_dq") {
-    const illegalLine = fillAB(TAPE_DOUBLE_DQ_ILLEGAL_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_ILLEGAL_LINES.length)]);
-    const countLine = fillAB(TAPE_DOUBLE_DQ_COUNT_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_COUNT_LINES.length)]);
-    const chaosLine = fillAB(TAPE_DOUBLE_DQ_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_LINES.length)]);
+    const illegalLine = fillABShort(TAPE_DOUBLE_DQ_ILLEGAL_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_ILLEGAL_LINES.length)]);
+    const countLine = fillABShort(TAPE_DOUBLE_DQ_COUNT_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_COUNT_LINES.length)]);
+    const chaosLine = fillABShort(TAPE_DOUBLE_DQ_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_LINES.length)]);
     return [...entranceLines, kickoff, illegalLine, countLine, chaosLine, ...rivalryPostMatchLine()];
   }
 
