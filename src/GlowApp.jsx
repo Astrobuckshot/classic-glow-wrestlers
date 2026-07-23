@@ -494,7 +494,7 @@ const WRESTLERS = [
     color: "#b8860b",
     photo: "debbie-debutante.jpg",
     videos: ["aHH2wXZjeek", "j93ggRQ1-1k"],
-    bio: "One half of the original GLOW Cheerleaders alongside tag partner Susie Spirit, Debbie Debutante was a gymnast and fan favorite known for cartwheels and backflips on her way to the ring. She and Susie teamed with fellow good girls like Americana and Tina Ferrari throughout Seasons 1 and 2.",
+    bio: "One half of the original GLOW Cheerleaders, Debbie Debutante was a fan favorite alongside her tag partner Susie Spirit — showing off their acrobatic skills in and out of the ring. LaBree was a gymnast and another recruit from Folies Bergère with Lauri Thompson (Susie Spirit). The Cheerleaders would team up with fellow faces Tina Ferrari and Americana throughout the first couple years of GLOW as well.",
     quote: "I love cheerleading and never want to give it up, even when I'm out of school and married with kids.",
     finishers: [],
   },
@@ -1903,7 +1903,7 @@ const SKITS = [
     id: "skit-glow-house",
     title: "Life in the GLOW House",
     photo: "skit-glow-house.jpg",
-    summary: "Season 4's Life in the GLOW House was an ambitious attempt at a longer running comedy skit within the show, involving many of the wrestlers — though its length cut short the amount of matches shown in episodes.",
+    summary: "Season 4's Life in the GLOW House was an ambitious attempt at a longer running comedy skit within the show, involving many of the wrestlers — though its length cut short the amount of wrestling within each episode.",
   },
   {
     id: "skit-glow-movie",
