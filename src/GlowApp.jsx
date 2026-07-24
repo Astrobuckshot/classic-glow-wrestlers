@@ -233,7 +233,7 @@ const WRESTLERS = [
     colorRing: "radial-gradient(circle 3px at 4% 18%, #ffd740 80%, transparent 81%), radial-gradient(circle 2px at 8% 42%, #f9a825 80%, transparent 81%), radial-gradient(circle 3px at 5% 68%, #ffe57f 80%, transparent 81%), radial-gradient(circle 2px at 10% 88%, #ffc107 80%, transparent 81%), radial-gradient(circle 3px at 22% 4%, #ffd740 80%, transparent 81%), radial-gradient(circle 2px at 38% 7%, #ffe57f 80%, transparent 81%), radial-gradient(circle 3px at 55% 3%, #f9a825 80%, transparent 81%), radial-gradient(circle 2px at 72% 6%, #ffd740 80%, transparent 81%), radial-gradient(circle 3px at 88% 12%, #ffe57f 80%, transparent 81%), radial-gradient(circle 2px at 94% 28%, #ffc107 80%, transparent 81%), radial-gradient(circle 3px at 96% 48%, #ffd740 80%, transparent 81%), radial-gradient(circle 2px at 95% 68%, #f9a825 80%, transparent 81%), radial-gradient(circle 3px at 91% 84%, #ffe57f 80%, transparent 81%), radial-gradient(circle 2px at 78% 94%, #ffd740 80%, transparent 81%), radial-gradient(circle 3px at 62% 96%, #ffc107 80%, transparent 81%), radial-gradient(circle 2px at 45% 95%, #ffe57f 80%, transparent 81%), radial-gradient(circle 3px at 28% 93%, #f9a825 80%, transparent 81%), radial-gradient(circle 2px at 14% 88%, #ffd740 80%, transparent 81%), radial-gradient(circle 3px at 18% 35%, #ffe57f 80%, transparent 81%), radial-gradient(circle 2px at 82% 55%, #f9a825 80%, transparent 81%), radial-gradient(circle 3px at 35% 72%, #ffd740 80%, transparent 81%), radial-gradient(circle 2px at 65% 78%, #ffc107 80%, transparent 81%), conic-gradient(from 220deg, #FFD700, #FFD700ee 15%, #FFD700 35%, #FFD700dd 55%, #FFD700ee 70%, #FFD700 90%, #FFD700)",
     photo: "tiffany-mellon.jpg",
     videos: ["8o6IHVTHVJM", "nsNAxaGYnQY"],
-    bio: "A kind if clueless 'high society' face, Tiffany Mellon teamed with best friend Roxy Astor as the Park Avenue Knockouts, bringing glamour and good-natured charm to the fan-favorite side of the roster — even accompanied to the ring by her butler Jeeves, showing off her glitz.",
+    bio: "A kind if clueless 'high society' face, Tiffany Mellon teamed with best friend Roxy Astor as the Park Avenue Knockouts, bringing glamour and good-natured charm to the good faction of the roster — even accompanied to the ring by her butler Jeeves, showing off her glitz.",
     quote: "Tiffany knows how to succeed, money is all I'll ever need.",
     finishers: [],
   },
@@ -2104,7 +2104,11 @@ const HISTORY_EXTRAS = [
     id: "history-music-videos",
     title: "Music Videos",
     photo: "history-music-videos.jpg",
-    summary: "GLOW wrestlers also performed in music videos during the show's run — Kitty's Killers have a song and dance number (\"🎵 Nasty and Mean 🎵\"), as does Matilda the Hun with \"🎵 Raw Meat 🎵\" — and Susie Spirit also leads another song and dance (and wrestle) number alongside Ninotchka called Le Musicale with Susie Spirit.",
+    summary: [
+      "GLOW wrestlers performed in their own music videos during the show's run — Kitty's Killers have a song and dance number (\"🎵 Nasty and Mean 🎵\"), as do Stallone's Sweethearts with their own ",
+      <em key="good-girls">Good Girls</em>,
+      " tune. Matilda the Hun leads a rockin' jam called \"🎵 Raw Meat 🎵\" — and Susie Spirit heads another song and dance (and wrestle) number alongside Ninotchka called Le Musicale with Susie Spirit.",
+    ],
   },
   {
     id: "history-adverts",
