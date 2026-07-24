@@ -860,7 +860,7 @@ const WRESTLERS = [
     role: "Heel — Skunk",
     initials: "SK",
     color: "#558b2f",
-    colorRing: "radial-gradient(circle, transparent 67%, rgba(93,64,28,0.15) 67.8%, rgba(93,64,28,0.4) 68.6%, rgba(93,64,28,0.65) 69.4%, rgba(62,43,19,0.75) 70%, rgba(93,64,28,0.5) 70.3%, rgba(93,64,28,0.25) 70.5%, transparent 70.7%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
+    colorRing: "radial-gradient(circle closest-side, transparent 86%, rgba(93,64,28,0.15) 87%, rgba(93,64,28,0.4) 89%, rgba(93,64,28,0.65) 91%, rgba(62,43,19,0.75) 93%, rgba(93,64,28,0.5) 95%, rgba(93,64,28,0.25) 97%, transparent 99%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
     photo: "stinky.jpg",
     videos: ["uvjsLUc0gq8", "9YJD_D6JfSo"],
     bio: "The smelliest of GLOW characters, the heel Stinky wore a skunky hairstyle while emitting a foul odor on her opponents.",
