@@ -2756,6 +2756,7 @@ const QUIZ_QUESTIONS = [
   { quote: "Those tramps — the bombastic tramps! Look at 'em! Look at 'em! They're making deals right now!", answer: "Phyllis" },
   { quote: "Beastie, I don't know why you even bother to have a match with me, I mean — what would she do with a crown anyhow? Eat it?", answer: "Tiffany Mellon" },
   { quote: "Daisy's brain is so scrambled, she doesn't know if she's coming or going — or good or bad!", answer: "Babe the Farmer's Daughter" },
+  { quote: "Hollywood is so grubby from eating out of all those back alley trash cans.", answer: "Babe the Farmer's Daughter" },
   { quote: "Tiffany Mellon says she's very popular — good. That means there'll be a full house at her funeral.", answer: "The Widow" },
   { quote: "Palestina should know that a truly lady bends at the knees, not at the hips.", answer: "Tara the Southern Belle" },
   { quote: "What's this? You guys — you have to fight with weapons? We don't have weapons. We're confident of our power.", answer: "Ashley Cartier" },
@@ -3953,6 +3954,34 @@ const TAPE_HOUSEWIFE_CLEANING_LINES = [
   "{X} swats {Y} with a broom between complaints — somewhere in all this nagging there's actually a wrestling match trying to happen!",
   "{X} dumps the contents of a whole bucket on {Y} without missing a beat in her rant — this is chaos, folks, pure chaos!",
 ];
+
+// The Housewives always open with the exact same trick — aerosol spray
+// or a broom, straight to the opponent's face, before any actual
+// wrestling even has a chance to start.
+const TAPE_HOUSEWIFE_OPENING_LINES = [
+  "{X} doesn't even bother with a lock-up — she blasts {Y} right in the face with a can of aerosol spray before the match has barely started!",
+  "{X} swings a broom directly into {Y}'s face before either of them has even circled the ring once — some opening move!",
+  "{X} unloads a full spray of aerosol right in {Y}'s eyes the second the bell rings — {Y} never saw it coming!",
+  "{X} cracks {Y} across the face with a broom handle right out of the gate — this housewife doesn't believe in a fair start!",
+];
+
+// Whatever actual wrestling the Housewives do is limited to exactly
+// three moves — everything else is nagging and household weapons.
+// "Throwing little wrestlers" only applies against small opponents, and
+// dragging along the canvas never happens against Mt. Fiji specifically
+// (too big to budge).
+const TAPE_HOUSEWIFE_BODY_SLAM_LINES = [
+  "{X} actually plants a real body slam on {Y} — proof there's an actual wrestler somewhere under all that nagging!",
+  "{X} scoops {Y} up and drives her down with a body slam — for one second there, this looked like a real wrestling match!",
+];
+const TAPE_HOUSEWIFE_THROW_SMALL_LINES = [
+  "{X} scoops {Y} up and just throws her clean across the ring — {Y}'s so light, it barely takes any effort at all!",
+  "{X} picks {Y} up like she weighs nothing and just tosses her aside — housework builds more strength than you'd think!",
+];
+const TAPE_HOUSEWIFE_DRAG_CANVAS_LINES = [
+  "{X} grabs {Y} by the hair and drags her along the canvas, still complaining the entire time!",
+  "{X} drags {Y} across the mat like she's dragging out the trash — not a shred of sympathy in this one!",
+];
 function tapeHousewifeLine(housewife, opponent, opponentIsBeauty, usedTemplates) {
   let pool;
   if (opponentIsBeauty && Math.random() < 0.5) {
@@ -4472,6 +4501,9 @@ const TAPE_ECCENTRIC_LINES = {
     "{X} lets out a guttural yell and goes right back after {Y} — pure primal instinct out there.",
     "{X} suddenly leaps up onto the ropes and growls right at the crowd — not a word out of her, just pure animal sound.",
     "{X} bounds around the ring and lets out a growling yell at the fans in the front row — {Y} uses the distraction to get a breather.",
+    "{X} grabs {Y}'s arm and stretches it out, yanking hard at the elbow — that's the exact same move Mana's Headhunter teammates used to end Susie Spirit's run early on. Not a disqualification, but brutally effective.",
+    "{X} stretches {Y}'s arm taut and wrenches at the elbow — the referee allows it, legal as can be, but everybody remembers what this exact hold did to Susie Spirit against the Headhunters.",
+    "{X} grabs {Y}'s outstretched arm and yanks hard at the elbow joint — nothing illegal about it, but {Y} is in real trouble if she doesn't get out of it fast.",
   ],
   "Hollywood": [
     "{X} locks in a Hooligan Hammerlock mid-match, just to remind {Y} it's there — she doesn't go for the pin, just lets it sink in.",
@@ -4706,6 +4738,11 @@ const TAPE_CATEGORIES = [
     ],
     soloLines: [
       "{X} makes sure the crowd gets a good look at that expensive jewelry before locking up.",
+      "{X} takes a moment to adjust her earrings for the cameras — priorities, apparently, even mid-match.",
+      "{X} flashes a bracelet at ringside like she's expecting applause for it, not a wrestling hold.",
+      "{X} makes sure everybody's had a good look at that necklace before she even thinks about wrestling.",
+      "{X} pauses to admire her own rings — the jewelry kind, not the wrestling kind — before getting back to business.",
+      "{X} won't lock up until she's absolutely sure the crowd noticed the diamonds first.",
     ],
   },
   {
@@ -5801,6 +5838,14 @@ function generateTapeBlurb(a, b, result) {
   const intimidated = intimidator === a ? b : a;
   const littleFijiKickoff = [a, b].some(w => w.name === "Little Fiji");
   const niceFaceInMatch = [a, b].find(w => w.name === "Sally the Farmer's Daughter" || w.name === "Amy the Farmer's Daughter");
+  // The Housewives' signature opening move is the aerosol/broom-to-the-
+  // face trick (handled later, in the housewife beats block) — the
+  // generic cheap-shot dropkick kickoff still happens for them
+  // occasionally, but rarely, and never alongside their own opener
+  // (that'd be two contradictory "first moves" in the same match).
+  const kickoffHousewifeMember = [a, b].find(w => TAPE_HOUSEWIFE_ROSTER.has(w.name));
+  const cheapshotChance = kickoffHousewifeMember ? 0.08 : 0.5;
+  let housewifeUsedCheapshotKickoff = false;
   const kickoffRoll = Math.random();
   let kickoff;
   if (ambusherInMatch) {
@@ -5826,7 +5871,7 @@ function generateTapeBlurb(a, b, result) {
         kickoff += TAPE_MOVE_AFTERTHOUGHTS[Math.floor(Math.random() * TAPE_MOVE_AFTERTHOUGHTS.length)];
       }
     }
-  } else if (Math.random() < 0.5) {
+  } else if (Math.random() < cheapshotChance) {
     const heelIsGiant = TAPE_TRUE_GIANTS.has(a.name);
     if (niceFaceInMatch) {
       const pool = heelIsGiant ? TAPE_GIANT_HANDSHAKE_ATTACK_KICKOFF_LINES : TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES;
@@ -5834,6 +5879,7 @@ function generateTapeBlurb(a, b, result) {
     } else {
       const pool = heelIsGiant ? TAPE_GIANT_CHEAPSHOT_KICKOFF_LINES : TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES;
       kickoff = fillABShort(pool[Math.floor(Math.random() * pool.length)]);
+      if (kickoffHousewifeMember) housewifeUsedCheapshotKickoff = true;
     }
   } else if (kickoffRoll < 0.15) {
     kickoff = TAPE_STAREDOWN_LINES[Math.floor(Math.random() * TAPE_STAREDOWN_LINES.length)]
@@ -5887,14 +5933,33 @@ function generateTapeBlurb(a, b, result) {
     const opponent = housewifeMember === a ? b : a;
     const opponentIsBeauty = (TAPE_WRESTLER_DESCRIPTORS[opponent.name] || []).includes("beauty");
     beats = [];
+    // Opens with the aerosol-or-broom-to-the-face trick, before any
+    // actual wrestling has a chance to happen — unless the rare
+    // cheap-shot dropkick kickoff already opened the match instead,
+    // in which case skip this so there isn't a second, contradictory
+    // "opening move" right after it.
+    if (!housewifeUsedCheapshotKickoff) {
+      const openerTpl = TAPE_HOUSEWIFE_OPENING_LINES[Math.floor(Math.random() * TAPE_HOUSEWIFE_OPENING_LINES.length)];
+      beats.push(capitalizeFirst(openerTpl
+        .replaceAll("{X}", tapeShortName(housewifeMember))
+        .replaceAll("{Y}", tapeShortName(opponent))));
+    }
     const usedHousewifeLines = new Set();
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       beats.push(capitalizeFirst(tapeHousewifeLine(housewifeMember, opponent, opponentIsBeauty, usedHousewifeLines)));
     }
+    // Whatever real wrestling shows up is limited to exactly three
+    // moves — body slam always eligible, throwing her opponent only
+    // against a small wrestler, dragging along the canvas against
+    // anyone except Mt. Fiji.
     if (Math.random() < 0.4) {
-      const actionPool = anyGiant ? TAPE_ACTION_BEATS.filter(tpl => tapeBeatAllowed(tpl, a, b)) : TAPE_ACTION_BEATS;
-      const tpl = actionPool[Math.floor(Math.random() * actionPool.length)];
-      beats.push(fillMatch(tpl));
+      let wrestlingPool = [...TAPE_HOUSEWIFE_BODY_SLAM_LINES];
+      if (TAPE_SMALL_WRESTLERS.has(opponent.name)) wrestlingPool = [...wrestlingPool, ...TAPE_HOUSEWIFE_THROW_SMALL_LINES];
+      if (opponent.name !== "Mt. Fiji") wrestlingPool = [...wrestlingPool, ...TAPE_HOUSEWIFE_DRAG_CANVAS_LINES];
+      const tpl = wrestlingPool[Math.floor(Math.random() * wrestlingPool.length)];
+      beats.push(capitalizeFirst(tpl
+        .replaceAll("{X}", tapeShortName(housewifeMember))
+        .replaceAll("{Y}", tapeShortName(opponent))));
     }
   } else {
     // Dementia and the Headhunters don't talk trash — if both wrestlers
@@ -6218,6 +6283,27 @@ function generateTapeBlurb(a, b, result) {
     }
   }
 
+// A quick excited or shocked reaction tacked onto the end of any finish
+// line that ends abruptly right on "DQ!" or "DISQUALIFIED!" — gives the
+// announcer a beat to react instead of just stopping cold.
+const TAPE_DQ_REACTION_TAGS = [
+  " The crowd cannot believe what they just saw!",
+  " Nobody expected THAT!",
+  " What a way for this one to end!",
+  " This crowd is going wild over that finish!",
+  " I don't think anybody saw that coming!",
+  " You could hear this crowd gasp all the way at ringside!",
+  " What a finish, folks!",
+  " Well, that just happened!",
+];
+function tapeAppendDqReaction(text) {
+  if (/\b(DQ|DISQUALIFIED)!$/.test(text.trim())) {
+    const tag = TAPE_DQ_REACTION_TAGS[Math.floor(Math.random() * TAPE_DQ_REACTION_TAGS.length)];
+    return text + tag;
+  }
+  return text;
+}
+
   let finish;
   if (mtFijiRescue) {
     finish = fillWL(TAPE_MT_FIJI_MIDMATCH_RESCUE_LINES[Math.floor(Math.random() * TAPE_MT_FIJI_MIDMATCH_RESCUE_LINES.length)]);
@@ -6281,6 +6367,7 @@ function generateTapeBlurb(a, b, result) {
       : TAPE_GIMMICK_TEMPLATES;
     finish = fillWL(pool[Math.floor(Math.random() * pool.length)]);
   }
+  finish = tapeAppendDqReaction(finish);
 
   // Fragile wrestlers get called out when they lose — not just outmatched
   // competitively, but physically overwhelmed.
