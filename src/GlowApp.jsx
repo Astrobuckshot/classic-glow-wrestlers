@@ -2766,6 +2766,7 @@ const QUIZ_QUESTIONS = [
   { quote: "I'm the champ — and I'm gonna stay the champ! And that's all there is to it — Americana is dead!", answer: "The Royal Hawaiian" },
   { quote: "I'll scalp Little Feather — decapitate her — and go bowling with her skull!", answer: "Chainsaw" },
   { quote: "If she has to put him (Nature Boy) under lock and key — no problem. I know how to work a lock and a key. I'm gonna set that boy free.", answer: "Tina Ferrari" },
+  { quote: "Nature Boy -- I'm coming for ya!", answer: "Tina Ferrari" },
   { quote: "I'm gonna take Dallas off the planet earth — and I'm gonna have a great time doing it, buddy!", answer: "Corporal Kelly" },
   { quote: "Olympia is simply a... mindless mass of steroids.", answer: "Palestina" },
   { quote: "In this language that I don't understand — and I think that she's saying mean things about me, but I'm not sure. So I'm gonna have to give her a drop kick to hush her up.", answer: "Sally the Farmer's Daughter" },
@@ -2775,6 +2776,7 @@ const QUIZ_QUESTIONS = [
   { quote: "You know Chainsaw and Spike — without their weapons — they are nothing!", answer: "Olympia" },
   { quote: "David McLane I'm sure matched this up, knowing that it'd be a real war — a real battle in the ring.", answer: "Tina Ferrari" },
   { quote: "California Doll is such an airhead, we have to tie a weight onto her to keep her from floating away.", answer: "Hollywood" },
+  { quote: "They always tease me about being an airhead -- and I'm not an airhead.", answer: "The California Doll" },
   { quote: "Mr. McLane — now there can be no doubt. I have pulverized 23 women. I want Americana, McLane!", answer: "Colonel Ninotchka" },
   { quote: "We're gonna jam the flag down your throat, Americana — and all the apple pie in the world won't be able to save you.", answer: "Vine" },
   { quote: "Johnny C., I see you did it — look at these two country bumpkins — what do you call this? This is not competition. Hey, I can take six of these kind on any day of the week, with one arm tied behind my back.", answer: "Big Bad Mama" },
@@ -4461,7 +4463,7 @@ const TAPE_PIN_POSE_TEMPLATES = [
 // match, and The Widow's poisoned drink is offered before the bell even
 // rings. None of them are how these three actually win a match, so
 // they're excluded from the generic finisher pool below.
-const TAPE_NON_FINISH_SIGNATURES = new Set(["The Widow", "Attaché", "Beastie", "Cheyenne Cher"]);
+const TAPE_NON_FINISH_SIGNATURES = new Set(["The Widow", "Attaché", "Beastie", "Cheyenne Cher", "Jungle Woman"]);
 
 // A handful of especially eccentric characters get a bonus goofy aside
 // worked into the commentary when they're part of the matchup.
@@ -6850,6 +6852,7 @@ const GLOW_FACTS = [
   "Sandy Manly's (Gremlina) favorite wrestler is Roddy Piper.",
   "Mando Guerrero — brother of WWE legend Eddie Guerrero — was trainer of the GLOW wrestlers.",
   "Hollywood, Babe the Farmer's Daughter, Big Bad Mama, Sally the Farmer's Daughter and Susie Spirit all had cameos on the TV sitcom Married with Children.",
+  "GLOW wrestlers appeared on various talk shows at the height of their success, including The Phil Donahue Show and Sally Jessy Raphael.",
   "Americana was the original leader of Stallone's Sweethearts, managed by Jackie Stallone.",
   "Jungle Woman's 'Nature Boy' is the son of actress Jayne Mansfield and Matt Cimber (Producer & Director of GLOW).",
   "The GLOW pilot was filmed on December 5th, 1985, with an original roster consisting of 12 wrestlers.",
