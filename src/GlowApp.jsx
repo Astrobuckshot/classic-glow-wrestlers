@@ -864,7 +864,7 @@ const WRESTLERS = [
     // A more transparent version of the brown ring glow, used only on
     // the Wrestlers page grid (size=92) — the bio page (size=150) still
     // uses the regular colorRing above, untouched.
-    colorRingCompact: "radial-gradient(circle closest-side, transparent 86%, rgba(93,64,28,0.12) 89%, rgba(93,64,28,0.35) 93%, rgba(93,64,28,0.12) 97%, transparent 99%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
+    colorRingCompact: "repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
     photo: "stinky.jpg",
     videos: ["uvjsLUc0gq8", "9YJD_D6JfSo"],
     bio: "The smelliest of GLOW characters, the heel Stinky wore a skunky hairstyle while emitting a foul odor on her opponents.",
