@@ -3430,6 +3430,21 @@ function simulateTapeMatch(a, b) {
     }
     return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
   }
+  // Housewives try to humiliate a downed opponent by putting a plunger
+  // or mop right on her face — 20% chance this gets her disqualified.
+  const housewifeDuelist2 = [a, b].find(w => TAPE_HOUSEWIFE_ROSTER.has(w.name));
+  if (housewifeDuelist2 && Math.random() < 0.2) {
+    const opponent = housewifeDuelist2 === a ? b : a;
+    return { winner: opponent, loser: housewifeDuelist2, method: "dq", housewifeHumiliation: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+  }
+  // Sara and Mabel wrestle in masks — 20% chance their opponent turns
+  // the mask around backwards mid-match, blinding them and handing the
+  // opponent a clean opening to win.
+  const hickInMatch = [a, b].find(w => w.name === "Sara" || w.name === "Mabel");
+  if (hickInMatch && Math.random() < 0.2) {
+    const opponent = hickInMatch === a ? b : a;
+    return { winner: opponent, loser: hickInMatch, method: "normal", maskTurned: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+  }
   // The Dirty Wrestlers get themselves disqualified about half the time.
   const dirtyWrestler = [a, b].find(w => TAPE_DIRTY_WRESTLERS.has(w.name));
   if (dirtyWrestler && Math.random() < 0.5) {
@@ -4051,6 +4066,22 @@ const TAPE_DOUBLE_DQ_LINES = [
   "Both women are just going at it outside the ring now, nobody's listening to the referee anymore — he throws the whole match out! Double DQ — no winner tonight, folks!",
 ];
 
+// A Housewife gets caught putting a plunger or mop right on a downed
+// opponent's face — pure humiliation, and an automatic DQ for it.
+const TAPE_HOUSEWIFE_HUMILIATION_LINES = [
+  "{loser} has {winner} down on the mat and grabs a plunger from out of nowhere — she SHOVES it right on {winner}'s face! The referee is having none of that — DISQUALIFIED!",
+  "With {winner} down, {loser} grabs a mop and just presses it right into her face — the referee calls it immediately! That's a disqualification, and frankly, deserved!",
+  "{loser} reaches for a plunger while {winner}'s still down and plants it right on her face — the referee's seen enough, DQ! Somebody get that thing out of the ring!",
+];
+
+// Sara/Mabel's mask gets spun around backwards mid-match — she's
+// completely blind, and her opponent capitalizes immediately.
+const TAPE_MASK_TURNED_LINES = [
+  "{loser} can't see a thing — {winner} just spun that mask clean around backwards! She's stumbling around blind, and {winner} takes full advantage — cover, ONE! TWO! THREE! That's the match!",
+  "{winner} yanks {loser}'s mask around so the eyeholes are facing the wrong way entirely — {loser} is completely disoriented! {winner} capitalizes immediately — ONE, TWO, THREE! It's over!",
+  "There it is — {winner} turns {loser}'s mask clean around, and she can't see a single thing! {winner} pounces on the opening — cover, ONE! TWO! THREE!! That'll do it!",
+];
+
 // The dirtiest players in GLOW occasionally get away completely clean —
 // a hidden weapon, an unseen shove, even a nudge from Aunt Kitty — and
 // steal the win instead of getting caught for once.
@@ -4151,6 +4182,25 @@ const TAPE_REF_KNOCKOUT_FLAVOR_LINES = [
 const TAPE_SECURITY_CARRYOFF_LINES = [
   "Security has to come out and drag {X} away from ringside — this one got completely out of hand.",
   "{X} isn't going quietly — it takes several security guards to haul her out of the arena.",
+];
+
+// A small slice of the Heavy Metal Sisters' DQs are about the referee
+// specifically, not a weapon — each one a different way of taking him
+// out of the equation entirely.
+const TAPE_HMS_REF_ATTACK_DQ_LINES = [
+  "{loser} grabs the referee and starts tying him up with the ring rope right in front of everybody — that's an automatic disqualification, no question!",
+  "{loser} just picks the referee up and THROWS him clean out of the ring! DISQUALIFIED — and somebody check on him!",
+  "{loser} rears back and headbutts the referee square in the chest, dropping him to the mat — that's a disqualification, and he is NOT getting up anytime soon!",
+];
+
+// After a Heavy Metal Sister gets disqualified, there's a small chance
+// actual paramedics rush the ring trying to strap her into a
+// straitjacket — removed again once she's calmed down ringside. Scary
+// for everyone involved.
+const TAPE_HMS_PARAMEDIC_LINES = [
+  "Paramedics are rushing the ring right now trying to get a straitjacket on {X} — she is NOT making this easy for them.",
+  "Security's called in actual paramedics for this one — they're wrestling {X} into a straitjacket at ringside, and this crowd is dead silent watching it happen.",
+  "{X} is thrashing against a team of paramedics trying to strap her into a straitjacket right there at ringside — genuinely unsettling to watch.",
 ];
 
 // Colonel Ninotchka can't just accept a win quietly — the mic comes
@@ -4775,6 +4825,11 @@ const TAPE_ENTRANCE_LINES = {
     "{X} hits a full double-bicep pose on her way to the ring, and the announcer can't help but be impressed — that's real muscle.",
     "{X} flexes for the crowd stepping through the ropes — you don't see conditioning like that on most of this roster.",
   ],
+  "Liberty": [
+    "{X} marches in waving a full-sized American flag, and this crowd is on its feet before she's even reached the ring.",
+    "{X} carries Old Glory down the aisle, whipping the crowd into an absolute frenzy on her way in.",
+    "Here comes {X}, flag held high — she's got this whole building chanting before the bell's even rung.",
+  ],
   "Palestina": [
     "{X} storms to the ring wielding a machete, screaming something about traitors — security keeps a very close eye on this one.",
     "{X} comes out brandishing that machete of hers, shouting at the crowd about traitors and cowards — nobody in the front rows looks thrilled about it.",
@@ -4940,8 +4995,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} doesn't bother with the aisle at all tonight — she's already climbing in over the barricade to get at {Y}.",
     "{X} shoves a cameraman out of her way just to get to the ring quicker — patience was never her strong suit.",
     "Here comes {X}, or rather, here's {X} already mid-attack — she skipped the whole 'walking down the aisle' part entirely.",
-  ],
-  "Tiffany Mellon": [
+  ],  "Tiffany Mellon": [
     "{X} is escorted to the ring by her butler Jeeves, who looks thoroughly unimpressed by the whole affair.",
     "{X} arrives with Jeeves in tow, carrying her robe like she's walking into a ballroom, not a wrestling ring.",
     "Here comes {X}, every bit the Park Avenue socialite, Jeeves trailing dutifully behind.",
@@ -5191,6 +5245,22 @@ const TAPE_STREET_PUNK_AMBUSH_LINES = [
   "There's no formal entrance from {X} tonight — she just attacks {Y} outright. Somebody remind her this is supposed to be a sport.",
 ];
 
+// The 5% of the time Hollywood skips the ambush entirely and just has
+// a normal entrance instead.
+const TAPE_HOLLYWOOD_CALM_ENTRANCE_LINES = [
+  "{X} actually walks out like a normal competitor tonight — no ambush, no cheap shot, just a regular entrance for once.",
+  "Well, would you look at that — {X} is taking the aisle like everybody else tonight, no sneak attack in sight.",
+  "Here comes {X}, and for once she's actually waiting for the bell instead of jumping {Y} outright — mark this date down, folks.",
+];
+
+// The 5% of the time Hollywood's ambush comes from underneath the ring
+// itself, where she was hiding the whole time.
+const TAPE_HOLLYWOOD_UNDERRING_AMBUSH_LINES = [
+  "Wait — where did {X} even come from? She was hiding underneath the ring this whole time, and she just rolled out and ambushed {Y} from below!",
+  "{X} crawls out from underneath the ring itself and blindsides {Y} before anybody even realized she was down there!",
+  "Nobody saw this coming — {X} was hiding under the ring the entire time, and she just sprung out to jump {Y}!",
+];
+
 // A handful of wrestlers can't resist grabbing the mic from the ring
 // announcer right after their intro to get one last insult in before the
 // bell even rings.
@@ -5265,6 +5335,17 @@ const TAPE_ZELDA_PRE_MATCH_LINES = [
   "{authority} has to hold the mic right up to {X}'s mouth just to catch her quiet, nerdy dig at {Y}'s wrestling fundamentals.",
 ];
 
+// When a Communist-themed heel faces one of the roster's patriotic
+// all-American faces, there's a real chance the crowd breaks into a
+// "USA!" chant mid-match.
+const TAPE_USA_CHANT_HEELS = new Set(["Colonel Ninotchka", "Major Tanya", "Palestina"]);
+const TAPE_USA_CHANT_FACES = new Set(["Americana", "Tina Ferrari", "Ebony", "Justice", "Liberty"]);
+const TAPE_USA_CHANT_LINES = [
+  "Listen to this crowd — they've broken into a full \"USA! USA! USA!\" chant, and it's only getting louder!",
+  "\"USA! USA! USA!\" — this whole building has picked up the chant, and {X} is feeding right off of it!",
+  "You can barely hear yourself think over this crowd — \"USA! USA! USA!\" — they are FULLY behind {X} tonight!",
+];
+
 // Zelda uses a piece of meat as bait to lure and distract Beastie or
 // Matilda the Hun mid-match — pure wit over strength, exactly her style.
 const TAPE_ZELDA_MEAT_BAIT_TARGETS = new Set(["Beastie", "Matilda the Hun"]);
@@ -5337,7 +5418,7 @@ function tapeSoloCandidates(w, other, chainsawAlreadyOut) {
 // individual-quirk asides), followed by an in-the-moment announcer call
 // for the finish.
 function generateTapeBlurb(a, b, result) {
-  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ } = result;
+  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation } = result;
 
   // A handful of matchups are known, heated rivalries — these get extra
   // passionate mid-match commentary and a dedicated post-match line
@@ -5443,14 +5524,22 @@ function generateTapeBlurb(a, b, result) {
   };
 
   const hollywoodInMatch = [a, b].find(w => w.name === "Hollywood");
+  // Hollywood almost always ambushes, but not quite always — 5% of the
+  // time she skips it for a regular entrance, and another 5% she still
+  // ambushes but comes out from underneath the ring where she was
+  // hiding instead of jumping her opponent the usual way.
+  const hollywoodRoll = hollywoodInMatch ? Math.random() : null;
+  const hollywoodNoAmbush = hollywoodInMatch && hollywoodRoll < 0.05;
+  const hollywoodUnderRingAmbush = hollywoodInMatch && hollywoodRoll >= 0.05 && hollywoodRoll < 0.10;
   const palestinaInMatch = [a, b].find(w => w.name === "Palestina");
   // Envy and Adore each get a 25% chance of ambushing their opponent the
   // same way Hollywood always does — rolled once per match.
   const streetPunkCandidate = [a, b].find(w => w.name === "Envy" || w.name === "Adore");
   const streetPunkAmbush = streetPunkCandidate && Math.random() < 0.25;
   // Whoever's actually doing the ambushing this match, if anyone —
-  // Hollywood always does; Envy/Adore only if their roll hit.
-  const ambusherInMatch = hollywoodInMatch || (streetPunkAmbush ? streetPunkCandidate : null);
+  // Hollywood does unless her "no ambush" roll hit; Envy/Adore only if
+  // their roll hit.
+  const ambusherInMatch = (hollywoodInMatch && !hollywoodNoAmbush ? hollywoodInMatch : null) || (streetPunkAmbush ? streetPunkCandidate : null);
   // Chainsaw should only ever be shown getting her chainsaw ONCE per
   // Chainsaw's entrance (revving the chainsaw on the way out) is its own
   // independent moment and always fine on its own. What shouldn't happen
@@ -5475,7 +5564,9 @@ function generateTapeBlurb(a, b, result) {
     // straight into the action right after — no formal mic-grab/reaction
     // beats once the ambush has already happened.
     const opponent = ambusherInMatch === a ? b : a;
-    const pool = TAPE_ENTRANCE_LINES[ambusherInMatch.name] || TAPE_STREET_PUNK_AMBUSH_LINES;
+    const pool = hollywoodUnderRingAmbush
+      ? TAPE_HOLLYWOOD_UNDERRING_AMBUSH_LINES
+      : (TAPE_ENTRANCE_LINES[ambusherInMatch.name] || TAPE_STREET_PUNK_AMBUSH_LINES);
     const ambushLine = pool[Math.floor(Math.random() * pool.length)]
       .replaceAll("{X}", ambusherInMatch.name)
       .replaceAll("{Y}", opponent.name);
@@ -5502,7 +5593,7 @@ function generateTapeBlurb(a, b, result) {
       .map(w => {
         const opponent = w === a ? b : a;
         const isStraitjacket = useStraitjacket && w === straitjacketMember;
-        const pool = isStraitjacket ? TAPE_STRAITJACKET_ENTRANCE_LINES : TAPE_ENTRANCE_LINES[w.name];
+        const pool = isStraitjacket ? TAPE_STRAITJACKET_ENTRANCE_LINES : (w.name === "Hollywood" ? TAPE_HOLLYWOOD_CALM_ENTRANCE_LINES : TAPE_ENTRANCE_LINES[w.name]);
         // Avoid two entrances in the same match opening with the same
         // phrase (e.g. both starting with "Here comes X").
         let candidates = pool.filter(tpl => !usedOpeners.has(tapeLineOpener(tpl)));
@@ -5518,6 +5609,9 @@ function generateTapeBlurb(a, b, result) {
         }
         if (w.name === "Beastie" && Math.random() < 0.5) {
           return `${line} She's got a spiked mace in hand tonight, too — this crowd gives her an even wider berth than usual.`;
+        }
+        if (w.name === "Matilda the Hun" && Math.random() < 0.05) {
+          return `${line} She's gnawing on an entire leg of raw meat on her way down — nobody's quite sure where she even got it.`;
         }
         return line;
       })
@@ -5944,6 +6038,18 @@ function generateTapeBlurb(a, b, result) {
     }
   }
 
+  // Communist-themed heels vs. the roster's patriotic faces — 50%
+  // chance the crowd breaks into a "USA!" chant mid-match.
+  const usaChantHeel = [a, b].find(w => TAPE_USA_CHANT_HEELS.has(w.name));
+  if (usaChantHeel) {
+    const usaChantOpponent = usaChantHeel === a ? b : a;
+    if (TAPE_USA_CHANT_FACES.has(usaChantOpponent.name) && Math.random() < 0.5) {
+      const tpl = TAPE_USA_CHANT_LINES[Math.floor(Math.random() * TAPE_USA_CHANT_LINES.length)];
+      const line = tpl.replaceAll("{X}", tapeShortName(usaChantOpponent));
+      beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, line);
+    }
+  }
+
   // Big Bad Mama's voodoo trance only lands about half the time — and
   // faces have a real shot at snapping out of it before it matters.
   const mamaInMatch = [a, b].find(w => w.name === "Big Bad Mama");
@@ -6059,6 +6165,8 @@ function generateTapeBlurb(a, b, result) {
   } else if (littleFijiKnockoutWin) {
     const tpl = TAPE_LITTLE_FIJI_KNOCKOUT_WIN_LINES[Math.floor(Math.random() * TAPE_LITTLE_FIJI_KNOCKOUT_WIN_LINES.length)];
     finish = fillWL(tpl.replaceAll("{helper}", knockoutHelper ? knockoutHelper.name : "someone from ringside"));
+  } else if (maskTurned) {
+    finish = fillWL(TAPE_MASK_TURNED_LINES[Math.floor(Math.random() * TAPE_MASK_TURNED_LINES.length)]);
   } else if (zeldaHelp) {
     finish = fillWL(TAPE_ZELDA_HELP_LINES[Math.floor(Math.random() * TAPE_ZELDA_HELP_LINES.length)]);
   } else if (refKnockedOutDecisive) {
@@ -6067,9 +6175,15 @@ function generateTapeBlurb(a, b, result) {
     finish = fillWL(TAPE_UNDERRING_WEAPON_LINES[Math.floor(Math.random() * TAPE_UNDERRING_WEAPON_LINES.length)]);
   } else if (palestinaMacheteDQ) {
     finish = fillWL(TAPE_PALESTINA_MACHETE_DQ_LINES[Math.floor(Math.random() * TAPE_PALESTINA_MACHETE_DQ_LINES.length)]);
+  } else if (housewifeHumiliation) {
+    finish = fillWL(TAPE_HOUSEWIFE_HUMILIATION_LINES[Math.floor(Math.random() * TAPE_HOUSEWIFE_HUMILIATION_LINES.length)]);
   } else if (refMissedCheating) {
     finish = fillWL(TAPE_REF_MISSED_CHEATING_LINES[Math.floor(Math.random() * TAPE_REF_MISSED_CHEATING_LINES.length)]);
   } else if (method === "dq") {
+    const isHMSLoser = loser.name === "Spike" || loser.name === "Chainsaw";
+    if (isHMSLoser && Math.random() < 0.05) {
+      finish = fillWL(TAPE_HMS_REF_ATTACK_DQ_LINES[Math.floor(Math.random() * TAPE_HMS_REF_ATTACK_DQ_LINES.length)]);
+    } else {
     const weaponPool = loser.name === "Chainsaw"
       ? [...(chainsawAlreadyOut ? TAPE_DQ_CHAINSAW_ALREADY_ARMED_LINES : TAPE_DQ_WEAPON_LINES["Chainsaw"]), ...TAPE_CHAINSAW_ROPE_DQ_LINES]
       : TAPE_DQ_WEAPON_LINES[loser.name];
@@ -6079,6 +6193,7 @@ function generateTapeBlurb(a, b, result) {
       finish = fillWL(TAPE_DQ_RANDOM_OBJECT_LINES[Math.floor(Math.random() * TAPE_DQ_RANDOM_OBJECT_LINES.length)]);
     } else {
       finish = fillWL(TAPE_DQ_TEMPLATES[Math.floor(Math.random() * TAPE_DQ_TEMPLATES.length)]);
+    }
     }
   } else if (winner.name === "Mt. Fiji") {
     finish = fillWL(TAPE_MT_FIJI_FINISH_LINES[Math.floor(Math.random() * TAPE_MT_FIJI_FINISH_LINES.length)]);
@@ -6133,6 +6248,14 @@ function generateTapeBlurb(a, b, result) {
   const hmsMember = [a, b].find(w => w.name === "Spike" || w.name === "Chainsaw");
   if (hmsMember && Math.random() < 0.35) {
     const tpl = TAPE_SECURITY_CARRYOFF_LINES[Math.floor(Math.random() * TAPE_SECURITY_CARRYOFF_LINES.length)];
+    aftermath.push(tpl.replaceAll("{X}", tapeShortName(hmsMember)));
+  }
+
+  // A small chance that after a DQ, actual paramedics rush the ring
+  // trying to strap the offending Heavy Metal Sister into a
+  // straitjacket right there at ringside.
+  if (hmsMember && loser === hmsMember && method === "dq" && Math.random() < 0.05) {
+    const tpl = TAPE_HMS_PARAMEDIC_LINES[Math.floor(Math.random() * TAPE_HMS_PARAMEDIC_LINES.length)];
     aftermath.push(tpl.replaceAll("{X}", tapeShortName(hmsMember)));
   }
 
