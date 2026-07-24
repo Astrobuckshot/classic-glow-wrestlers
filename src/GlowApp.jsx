@@ -860,7 +860,11 @@ const WRESTLERS = [
     role: "Heel — Skunk",
     initials: "SK",
     color: "#558b2f",
-    colorRing: "radial-gradient(circle closest-side, transparent 86%, rgba(93,64,28,0.15) 87%, rgba(93,64,28,0.4) 89%, rgba(93,64,28,0.65) 91%, rgba(62,43,19,0.75) 93%, rgba(93,64,28,0.5) 95%, rgba(93,64,28,0.25) 97%, transparent 99%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
+    colorRing: "radial-gradient(circle closest-side, transparent 86%, rgba(93,64,28,0.25) 89%, rgba(93,64,28,0.7) 93%, rgba(93,64,28,0.25) 97%, transparent 99%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
+    // A more transparent version of the brown ring glow, used only on
+    // the Wrestlers page grid (size=92) — the bio page (size=150) still
+    // uses the regular colorRing above, untouched.
+    colorRingCompact: "radial-gradient(circle closest-side, transparent 86%, rgba(93,64,28,0.12) 89%, rgba(93,64,28,0.35) 93%, rgba(93,64,28,0.12) 97%, transparent 99%), repeating-conic-gradient(#000000 0deg 8deg, #ffffff 8deg 16deg, #000000 16deg 28deg, #ffffff 28deg 34deg, #000000 34deg 45deg, #ffffff 45deg 51deg, #000000 51deg 61deg, #ffffff 61deg 65deg)",
     photo: "stinky.jpg",
     videos: ["uvjsLUc0gq8", "9YJD_D6JfSo"],
     bio: "The smelliest of GLOW characters, the heel Stinky wore a skunky hairstyle while emitting a foul odor on her opponents.",
@@ -1332,7 +1336,7 @@ function WrestlerIcon({ wrestler, size = 120 }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: wrestler.colorRing || `conic-gradient(from 220deg, ${wrestler.color}, ${wrestler.color}ee 15%, ${wrestler.color} 35%, ${wrestler.color}dd 55%, ${wrestler.color}ee 70%, ${wrestler.color} 90%, ${wrestler.color})`,
+          background: (size === 92 && wrestler.colorRingCompact) ? wrestler.colorRingCompact : (wrestler.colorRing || `conic-gradient(from 220deg, ${wrestler.color}, ${wrestler.color}ee 15%, ${wrestler.color} 35%, ${wrestler.color}dd 55%, ${wrestler.color}ee 70%, ${wrestler.color} 90%, ${wrestler.color})`),
           boxShadow: `
             0 6px 14px rgba(0,0,0,0.4),
             inset 0 1px 2px rgba(255,255,255,0.3),
@@ -3173,6 +3177,16 @@ const TAPE_BOSTON_CRAB_BEATS = new Set([
 // class as Mt. Fiji, Matilda the Hun, and Big Bad Mama — the no-dropkick
 // rule is specifically for those three, not for her.
 const TAPE_TRUE_GIANTS = new Set(["Mt. Fiji", "Matilda the Hun", "Big Bad Mama"]);
+
+// Small, aerial-reliant wrestlers who simply cannot get a true giant off
+// her feet — every jump, dive, or top-rope attempt just gets caught.
+const TAPE_SMALL_WRESTLERS = new Set([
+  "Thunderbolt", "Lightning", "Cheyenne Cher", "Vicky Victory",
+  "Little Fiji", "Little Egypt", "Little Feather",
+  "Amy the Farmer's Daughter", "Sally the Farmer's Daughter",
+  "Tara the Southern Belle", "Scarlet the Southern Belle",
+  "Susie Spirit", "Debbie Debutante",
+]);
 function tapeBeatAllowed(tpl, a, b) {
   const aGiant = TAPE_GIANT_WRESTLERS.has(a.name);
   const bGiant = TAPE_GIANT_WRESTLERS.has(b.name);
@@ -3445,6 +3459,19 @@ function simulateTapeMatch(a, b) {
     const opponent = hickInMatch === a ? b : a;
     return { winner: opponent, loser: hickInMatch, method: "normal", maskTurned: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
   }
+  // A small, aerial-reliant wrestler simply cannot generate the power to
+  // knock a true giant off her feet on her own — the giant just catches
+  // every jump. The only way that changes is outside help physically
+  // knocking the giant down for her, and that's a genuine 1% long shot.
+  const smallVsGiantCandidate = [a, b].find(w => TAPE_SMALL_WRESTLERS.has(w.name));
+  const giantVsSmallCandidate = smallVsGiantCandidate && [a, b].find(w => TAPE_TRUE_GIANTS.has(w.name));
+  if (smallVsGiantCandidate && giantVsSmallCandidate && Math.random() < 0.01) {
+    const helperCandidates = TAPE_ELIGIBLE.filter(w => w.role && w.role.startsWith("Face") && w.name !== a.name && w.name !== b.name);
+    const outsideHelper = helperCandidates.length > 0
+      ? helperCandidates[Math.floor(Math.random() * helperCandidates.length)]
+      : null;
+    return { winner: smallVsGiantCandidate, loser: giantVsSmallCandidate, method: "dq", giantKnockdownHelp: true, outsideHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+  }
   // The Dirty Wrestlers get themselves disqualified about half the time.
   const dirtyWrestler = [a, b].find(w => TAPE_DIRTY_WRESTLERS.has(w.name));
   if (dirtyWrestler && Math.random() < 0.5) {
@@ -3537,6 +3564,17 @@ function simulateTapeMatch(a, b) {
   // knock off her odds of winning the match outright.
   if (injured) {
     pa = injured === a ? Math.max(0.05, pa - 0.25) : Math.min(0.95, pa + 0.25);
+  }
+  // Small, aerial-reliant wrestlers just can't get a true giant off her
+  // feet — she catches every jump, every dive, every top-rope attempt.
+  // On top of everything else working against them, that's a genuine
+  // 33% relative cut to their actual win probability, not just flavor.
+  const smallVsGiant = TAPE_SMALL_WRESTLERS.has(a.name) && TAPE_TRUE_GIANTS.has(b.name);
+  const giantVsSmall = TAPE_TRUE_GIANTS.has(a.name) && TAPE_SMALL_WRESTLERS.has(b.name);
+  if (smallVsGiant) {
+    pa = pa * 0.67;
+  } else if (giantVsSmall) {
+    pa = 1 - ((1 - pa) * 0.67);
   }
   const winner = Math.random() < pa ? a : b;
   const loser = winner === a ? b : a;
@@ -3820,33 +3858,25 @@ const TAPE_JOHNNY_C_LINES = [
 // enough to fire on anyone, mixed right in with the action beats above.
 const TAPE_ROAST_BEATS = [
   "Would ya look at {R} out there, folks — throwing clotheslines like she's got a personal vendetta against the entire roster!",
-  "{R} thinks she's got this one in the bag, but confidence don't count for much once the bell rings!",
+  "Aunt Kitty is already up out of her seat at ringside, screaming at the referee about a count that was plenty fast enough!",
+  "{R} just missed a clothesline by a full three feet, and Aunt Kitty at ringside is louder about it than anybody in this building!",
+  "{R2} keeps second-guessing herself out there — a wrestler with her instincts shouldn't be hesitating like this!",
   "{R} woke up angry today and made the very reasonable decision to stay that way the whole match!",
-  "Oh, {R} is TALKING now — talk's cheap, sweetheart, let's see the goods!",
-  "{R} has all the grace of a rhinoceros on roller skates — and I mean that as a compliment!",
   "{R}'s {rGimmick} routine is cute, but cute don't win matches, folks!",
-  "That's gotta hurt {R}'s pride more than her back!",
   "{R} came out aggressive tonight — or at least came out yelling a lot, which is basically the same thing!",
   "I've seen scarier things at a church bake sale than whatever {R} is trying to pull off right now!",
   "{R} really thinks she's some kind of {insultR} out here — sweetheart, nobody's buying it!",
-  "{R} is giving it everything she's got — which, let's be honest, isn't always saying much!",
   "Somebody get {R} a towel, she's sweating through that whole gimmick tonight!",
-  "Oh, THAT was original — {R}'s trash talk needs some new material, folks!",
   "{R} struts around like she already owns this ring — somebody should tell her the deed's still up for grabs!",
   "Folks, {R} just said something I can't repeat on air — and honestly, good for her!",
-  "{R} just tripped over her own ego, and folks, that thing is HEAVY!",
-  "Somebody wake up {R2}, she looks bored — oh wait, no, that's just {R}'s offense doing that to her!",
   "{R} is out here throwing wild forearms — sweetheart, that's not a strategy, that's just blind rage!",
-  "I don't know what {R} is doing right now, but I don't think the rulebook covers it, and frankly, neither does good taste!",
   "{R} keeps yelling at the referee like it's going to change something — spoiler alert, it never does!",
-  "That's a bold strategy from {R} — completely incoherent, but bold!",
   "Somebody get {R} a stress ball, because whatever's going on in that head of hers is NOT healthy!",
   "The {rGimmick} shtick was fun for about five minutes, {R} — we're well past five minutes now!",
   "{R} just called {R2} a name I can't repeat, which, considering {R}'s vocabulary, is genuinely impressive!",
   "{R} has been snarling at everybody in sight tonight — the ref, the crowd, even Aunt Kitty down at ringside, you name it!",
   "{R} is sweating more than a fan at a heat wave, and this match just started!",
   "That was a big clothesline attempt from {R} — shame it missed by about three feet, folks!",
-  "{R} is one bad call away from a full meltdown, and folks, we might already be there!",
   "The crowd's booing {R} so loud I can barely hear myself talk, and honestly? Fair!",
   "{R} is out here cutting promos on herself at this point — nobody else needs to insult her, she's got it handled!",
   "Somebody tell this {insultR} that the ring isn't a dinner buffet — {R2} isn't on the menu tonight!",
@@ -3854,13 +3884,9 @@ const TAPE_ROAST_BEATS = [
   "{R} is acting like a total {insultR} out there, and the referee is running out of patience!",
   "You want to talk {insultR}? Look no further than {R} tonight, ladies and gentlemen!",
   "{R2} is doing her best out there, but {R} is being a straight-up {insultR} about the whole thing!",
-  "{R} looks like she's got something to prove and absolutely zero patience left to prove it with!",
-  "I've had enough of {R}'s attitude to last me a whole season, and we're only one match in!",
   "{R} blows a kiss to the crowd like she's won something — she has not!",
   "Somebody explain to {R} that stalling isn't a strategy, it's just stalling!",
-  "{R} is out here talking a big game — shame the wrestling isn't backing it up!",
   "{R} just no-sold a shot that clearly connected — sweetheart, we all saw that!",
-  "That temper of {R}'s is doing her exactly zero favors out there tonight!",
   "{R} is out here throwing tantrums like a toddler who just had her toy taken away!",
   "I don't think {R} has landed a clean move all match, but she sure is landing plenty of attitude!",
   "{R} is stomping around like a toddler who missed her nap — somebody get this woman a juice box!",
@@ -3871,13 +3897,9 @@ const TAPE_ROAST_BEATS = [
   "{R} won't stop running her mouth at {R2} between holds — say what you want about her wrestling, the woman never shuts up!",
   "{R} gets in one last insult at {R2} before the ref separates them — some people just cannot help themselves!",
   "{R} won't stop running her mouth at {R2}, who just keeps wrestling and lets the offense do the talking instead.",
-  "Every time {R} opens her mouth, this match gets a little bit worse — and yet here we are again!",
   "{R} is playing to the cameras more than she's playing to win — and it shows!",
-  "I've refereed cockfights with better sportsmanship than {R} is showing tonight!",
-  "{R} is putting on a real show out there — shame none of it involves actual wrestling!",
   "{R}'s whole strategy tonight seems to be volume — louder isn't the same as better, dear!",
   "{R} just shoved her own tag partner out of the way trying to get at {R2} — there's no team in that gimmick, folks!",
-  "{R}'s patience just left the building, and so did any pretense of fair play!",
   "That's twice now {R} has shoved the timekeeper — somebody's getting a stern letter after tonight!",
   "{R} keeps flexing after every single move — sweetheart, we get it, you're strong, now WRESTLE!",
   "I've seen more restraint from a toddler in a candy aisle than {R} is showing right now!",
@@ -4152,6 +4174,26 @@ const TAPE_LITTLE_FIJI_KNOCKOUT_WIN_LINES = [
   "{helper} storms the ring and flattens {loser} before she even knows what hit her — {loser}'s not moving, and the referee's got no choice but to give this one to Little Fiji by DQ!",
   "Somebody call it — {helper} just cracked {loser} over the head from ringside and she's out cold! Little Fiji wins this one by disqualification, and she never landed a single blow!",
 ];
+
+// A small wrestler goes for a top-rope move against a true giant, who
+// just catches her clean out of the air — no amount of aerial offense
+// is putting a giant on the mat.
+const TAPE_GIANT_CATCH_LINES = [
+  "{X} launches off the top rope right at {Y} — and {Y} just catches her out of the air like it's nothing! You cannot fly your way past a giant, folks!",
+  "{X} goes for a crossbody, and {Y} just plucks her out of midair and slams her right back down — that jump did NOTHING!",
+  "{X} takes to the air with everything she's got, and {Y} doesn't even budge — just catches her and tosses her aside like a rag doll!",
+  "There's {X} soaring in off the ropes, and {Y} snatches her clean out of the sky — all that speed, and it means nothing against this much size!",
+];
+
+
+// giant down for a small wrestler who could never generate that kind of
+// power herself. {helper} gets filled with whoever did the knocking.
+const TAPE_GIANT_KNOCKDOWN_HELP_LINES = [
+  "WAIT — somebody just leveled {loser} from behind! {helper} came flying in out of nowhere and actually knocked {winner}'s giant opponent clean off her feet! The referee's seen enough — DISQUALIFIED! {winner} gets the win she could never have gotten on her own!",
+  "I don't believe it — {helper} just blindsided {loser} and actually put her DOWN! It took outside help, but {winner} is getting the win here by disqualification!",
+  "{helper} comes out of nowhere and drills {loser} — and she's actually down! There was no way {winner} was doing that on her own, but the referee's calling it — DQ, {winner} wins!",
+];
+
 
 // Zelda isn't much of a wrestler — she gets by on wit alone — so when
 // she's about to lose, help sometimes arrives late in the match to turn
@@ -4822,12 +4864,12 @@ const TAPE_ENTRANCE_LINES = {
   ],
   "Olympia": [
     "{X} strides in and stops to flex for the crowd before even reaching the ring — that physique is genuinely something else.",
-    "{X} hits a full double-bicep pose on her way to the ring, and the announcer can't help but be impressed — that's real muscle.",
-    "{X} flexes for the crowd stepping through the ropes — you don't see conditioning like that on most of this roster.",
+    "{X} makes her entrance, and hits a full double-bicep pose on her way to the ring, and the announcer can't help but be impressed — that's real muscle.",
+    "Here she comes — {X} flexes for the crowd stepping through the ropes — you don't see conditioning like that on most of this roster.",
   ],
   "Liberty": [
     "{X} marches in waving a full-sized American flag, and this crowd is on its feet before she's even reached the ring.",
-    "{X} carries Old Glory down the aisle, whipping the crowd into an absolute frenzy on her way in.",
+    "And here comes {X}, who carries Old Glory down the aisle, whipping the crowd into an absolute frenzy on her way in.",
     "Here comes {X}, flag held high — she's got this whole building chanting before the bell's even rung.",
   ],
   "Palestina": [
@@ -4836,124 +4878,124 @@ const TAPE_ENTRANCE_LINES = {
     "{X} marches in swinging her machete overhead, ranting about traitors — {Y} watches from the ring with real concern on her face.",
   ],
   "Melody Trouble Vixen (MTV)": [
-    "{X} spins into the arena like she owns the DJ booth, hyping up the crowd on her way to the ring.",
+    "{X} makes her entrance, and spins into the arena like she owns the DJ booth, hyping up the crowd on her way to the ring.",
     "{X} comes out bumping to her own beat, working the crowd like she's still spinning records at the GLOW Disco.",
-    "{X} grabs her guitar and belts out a quick, off-the-cuff tune mocking {Y} on her way to the ring — the crowd's howling with laughter.",
-    "{X} stops halfway down the aisle to strum her guitar and sing a few mocking lines about {Y} — {Y} does NOT look amused.",
+    "Here she comes — {X} grabs her guitar and belts out a quick, off-the-cuff tune mocking {Y} on her way to the ring — the crowd's howling with laughter.",
+    "And here comes {X}, who stops halfway down the aisle to strum her guitar and sing a few mocking lines about {Y} — {Y} does NOT look amused.",
     "{X} comes out cranking her boombox to deafening volume, drowning out anything {Y} tries to say before the match even starts.",
     "{X} struts out flipping her hair and sneering at the crowd like they should be thanking her for the show.",
-    "{X} pauses at ringside just long enough to razz {Y}'s music taste before hopping in the ring — real mature, {X}.",
+    "{X} makes her entrance, and pauses at ringside just long enough to razz {Y}'s music taste before hopping in the ring — real mature, {X}.",
   ],
   "Little Fiji": [
-    "{X} shakes hands with fans all along the aisle on her way to the ring, all smiles.",
-    "{X} stops to shake hands with as many fans as she can reach — she's clearly not in a hurry to get to the ring.",
+    "Here she comes — {X} shakes hands with fans all along the aisle on her way to the ring, all smiles.",
+    "And here comes {X}, who stops to shake hands with as many fans as she can reach — she's clearly not in a hurry to get to the ring.",
     "Here comes {X}, shaking hands the whole way down — the crowd loves her for it.",
-    "{X} gives a shy little wave to the crowd, and they roar back louder than she probably expected.",
-    "{X} pauses to hug a kid at ringside before continuing on, and this crowd is putty in her hands.",
+    "{X} makes her entrance, and gives a shy little wave to the crowd, and they roar back louder than she probably expected.",
+    "Here she comes — {X} pauses to hug a kid at ringside before continuing on, and this crowd is putty in her hands.",
     "Here comes sweet {X}, practically glowing from all the attention — she deserves every bit of it.",
   ],
   "Little Egypt": [
-    "{X} belly dances her way down to the ring, and the crowd is loving every second of it.",
+    "And here comes {X}, who belly dances her way down to the ring, and the crowd is loving every second of it.",
     "{X} makes her entrance with a full belly dance routine — this crowd came to see a show, and she's delivering one.",
     "Here comes {X}, dancing all the way to the ring — she's got rhythm to spare.",
-    "{X} twirls a veil overhead as she dances her way in, and the crowd claps right along with the rhythm.",
-    "{X} makes a grand, glittering entrance, and this crowd cannot get enough of the showmanship.",
+    "Here she comes — {X} twirls a veil overhead as she dances her way in, and the crowd claps right along with the rhythm.",
+    "And here comes {X}, who makes a grand, glittering entrance, and this crowd cannot get enough of the showmanship.",
     "Here comes {X}, moving like poetry down that aisle — genuinely one of the best entrances in this promotion.",
   ],
   "Angel": [
     "{X} walks in carrying a biker helmet in one hand and a chain in the other — nobody's mistaking her for friendly.",
     "{X} struts to the ring swinging a chain around like she's looking for an excuse to use it.",
     "Here comes {X}, helmet and chain in hand — this crowd knows exactly what kind of night this is going to be.",
-    "{X} kicks over a fan's soda on her way past, not even bothering to apologize — charming as always.",
-    "{X} swings that helmet by the strap and glares at {Y}, daring her to make something of it.",
+    "{X} makes her entrance, and kicks over a fan's soda on her way past, not even bothering to apologize — charming as always.",
+    "Here she comes — {X} swings that helmet by the strap and glares at {Y}, daring her to make something of it.",
     "Here comes {X}, chain dragging on the floor behind her — somebody's about to get an earful, or worse.",
   ],
   "Tina Ferrari": [
-    "{X} waves to the crowd on her way to the ring, and this crowd absolutely loves her for it.",
-    "{X} soaks up the cheers, waving to every corner of the arena — the fans can't get enough of her.",
+    "And here comes {X}, who waves to the crowd on her way to the ring, and this crowd absolutely loves her for it.",
+    "{X} makes her entrance, and soaks up the cheers, waving to every corner of the arena — the fans can't get enough of her.",
     "Here comes {X}, waving the whole way down — this crowd is fully behind her tonight.",
-    "{X} stops to sign a few autographs on her way down, and this crowd absolutely adores her for it.",
-    "{X} flashes that megawatt smile the whole way to the ring — you'd think she was born for this spotlight.",
+    "Here she comes — {X} stops to sign a few autographs on her way down, and this crowd absolutely adores her for it.",
+    "And here comes {X}, who flashes that megawatt smile the whole way to the ring — you'd think she was born for this spotlight.",
     "Here comes {X}, and the roar from this crowd tells you everything about how beloved she is.",
   ],
   "Godiva": [
-    "{X} rides in on her horse, waving to the crowd like true royalty.",
-    "{X} trots in on that horse like she owns the whole arena — nobody asked, dear.",
+    "{X} makes her entrance, and rides in on her horse, waving to the crowd like true royalty.",
+    "Here she comes — {X} trots in on that horse like she owns the whole arena — nobody asked, dear.",
     "Here comes {X}, horse and all, looking down her nose at everybody in this building.",
-    "{X} looks down her nose at the crowd from atop that horse like she's surveying her royal subjects.",
-    "{X} tips an imaginary crown to absolutely nobody, because heaven forbid she acknowledge the peasants.",
+    "And here comes {X}, who looks down her nose at the crowd from atop that horse like she's surveying her royal subjects.",
+    "{X} makes her entrance, and tips an imaginary crown to absolutely nobody, because heaven forbid she acknowledge the peasants.",
     "Here comes {X}, horse clip-clopping in, sneering the whole way — regal and thoroughly insufferable.",
   ],
   "Tammy Jones": [
-    "{X} tosses candy out to the crowd on her way to the ring.",
-    "{X} hands out candy to fans as she makes her way down — an absolute sweetheart.",
+    "Here she comes — {X} tosses candy out to the crowd on her way to the ring.",
+    "And here comes {X}, who hands out candy to fans as she makes her way down — an absolute sweetheart.",
     "Here comes {X}, tossing treats to every kid in the front row — the crowd loves her for it.",
-    "{X} skips down the aisle handing out candy like it's Halloween — this crowd's heart just melted.",
-    "{X} stops to give a high-five to every kid she passes, and the whole arena goes soft for her.",
+    "{X} makes her entrance, and skips down the aisle handing out candy like it's Halloween — this crowd's heart just melted.",
+    "Here she comes — {X} stops to give a high-five to every kid she passes, and the whole arena goes soft for her.",
     "Here comes little {X}, all smiles and sugar — you couldn't invent a more wholesome entrance if you tried.",
   ],
   "Spanish Red": [
-    "{X} tosses red roses out to the crowd as she makes her entrance.",
+    "And here comes {X}, who tosses red roses out to the crowd as she makes her entrance.",
     "{X} makes her entrance flinging roses around like she's trying to buy the crowd's forgiveness in advance.",
     "Here comes {X}, roses flying — don't let the flowers fool you, folks, she's trouble.",
-    "{X} flings a rose at {Y}'s feet like it's an insult, not a gift — real subtle, that one.",
-    "{X} blows past a row of fans without so much as a glance, roses be damned.",
+    "Here she comes — {X} flings a rose at {Y}'s feet like it's an insult, not a gift — real subtle, that one.",
+    "And here comes {X}, who blows past a row of fans without so much as a glance, roses be damned.",
     "Here comes {X}, all smiles and roses on the outside, pure trouble underneath — don't be fooled, folks.",
   ],
   "Matilda the Hun": [
-    "{X} taunts everyone in her path on the way to the ring.",
-    "{X} shoves fans out of her way just to get to the ring — real class act, this one.",
+    "{X} makes her entrance, and taunts everyone in her path on the way to the ring.",
+    "Here she comes — {X} shoves fans out of her way just to get to the ring — real class act, this one.",
     "Here comes {X}, sneering at anyone who so much as looks at her.",
-    "{X} barks something in German at a fan in the front row, and I don't think it was a compliment.",
-    "{X} flexes menacingly at anyone who dares make eye contact — subtlety has never been her thing.",
+    "And here comes {X}, who barks something in German at a fan in the front row, and I don't think it was a compliment.",
+    "{X} makes her entrance, and flexes menacingly at anyone who dares make eye contact — subtlety has never been her thing.",
     "Here comes {X}, stomping down that aisle like she's trying to crack the concrete underneath it.",
   ],
   "Ashley Cartier": [
-    "{X} blows kisses to the crowd as she struts to the ring.",
-    "{X} sends kisses flying to every corner of the arena — the crowd's eating it up.",
+    "Here she comes — {X} blows kisses to the crowd as she struts to the ring.",
+    "And here comes {X}, who sends kisses flying to every corner of the arena — the crowd's eating it up.",
     "Here comes {X}, working the crowd with kisses and a smile — a total crowd-pleaser.",
-    "{X} stops for a quick photo with a fan at ringside — always time for the people who love her.",
-    "{X} works the aisle like a runway, and this crowd is eating up every second of the glamour.",
+    "{X} makes her entrance, and stops for a quick photo with a fan at ringside — always time for the people who love her.",
+    "Here she comes — {X} works the aisle like a runway, and this crowd is eating up every second of the glamour.",
     "Here comes {X}, radiant as ever — this crowd absolutely lights up the moment she appears.",
   ],
   "Beastie": [
     "{X} comes out growling and yelling like a wild animal.",
-    "{X} snarls her way to the ring, and frankly, I don't want to be anywhere near her.",
+    "And here comes {X}, who snarls her way to the ring, and frankly, I don't want to be anywhere near her.",
     "Here comes {X}, already barking at ringside fans — an absolute menace.",
-    "{X} bites at the air toward a few front-row fans, who scramble back in their seats.",
-    "{X} paws at the mat like a bull before she's even reached the ring — pure menace.",
+    "{X} makes her entrance, and bites at the air toward a few front-row fans, who scramble back in their seats.",
+    "Here she comes — {X} paws at the mat like a bull before she's even reached the ring — pure menace.",
     "Here comes {X}, growling at anyone dumb enough to get close — nobody's testing that theory tonight.",
   ],
   "Susie Spirit": [
-    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
-    "{X} tumbles down the aisle with an impressive run of cartwheels — the crowd's already on its feet.",
+    "And here comes {X}, who does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "{X} makes her entrance, and tumbles down the aisle with an impressive run of cartwheels — the crowd's already on its feet.",
     "Here comes {X}, flipping her way to the ring like she never left that dance floor — the crowd cheering her on the whole way.",
-    "{X} tumbles in with pure energy, and this crowd is on its feet before she even reaches the ropes.",
-    "{X} throws in a cartwheel just for the front row, and they go absolutely wild for it.",
+    "Here she comes — {X} tumbles in with pure energy, and this crowd is on its feet before she even reaches the ropes.",
+    "And here comes {X}, who throws in a cartwheel just for the front row, and they go absolutely wild for it.",
     "Here comes {X}, spirit and school pride on full display — this crowd adores everything about her.",
   ],
   "Debbie Debutante": [
-    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
-    "{X} cartwheels down the aisle, all smiles — a natural showwoman, and the crowd shows her plenty of love for it.",
+    "{X} makes her entrance, and does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "Here she comes — {X} cartwheels down the aisle, all smiles — a natural showwoman, and the crowd shows her plenty of love for it.",
     "Here comes {X}, tumbling her way in — the crowd loves every second of it.",
-    "{X} tumbles down that aisle with a big smile, and this crowd showers her with applause the whole way.",
-    "{X} throws in an extra flip just to hear the crowd roar, and roar they do.",
+    "And here comes {X}, who tumbles down that aisle with a big smile, and this crowd showers her with applause the whole way.",
+    "{X} makes her entrance, and throws in an extra flip just to hear the crowd roar, and roar they do.",
     "Here comes {X}, all poise and pep — the crowd's clearly got a soft spot for this one.",
   ],
   "Vicky Victory": [
-    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
-    "{X} shows off some serious acrobatic skill just getting to the ring — the crowd cheering her on with every flip.",
+    "Here she comes — {X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "And here comes {X}, who shows off some serious acrobatic skill just getting to the ring — the crowd cheering her on with every flip.",
     "Here comes {X}, flipping and tumbling her way down the aisle to a big round of applause.",
-    "{X} nails a perfect cartwheel right at ringside, and the crowd erupts like she already won something.",
-    "{X} tumbles in with real polish — this crowd knows genuine talent when they see it.",
+    "{X} makes her entrance, and nails a perfect cartwheel right at ringside, and the crowd erupts like she already won something.",
+    "Here she comes — {X} tumbles in with real polish — this crowd knows genuine talent when they see it.",
     "Here comes {X}, acrobatics and all, and this building is fully behind her tonight.",
   ],
   "Cheyenne Cher": [
-    "{X} does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
-    "{X} tumbles to the ring with real acrobatic flair — always a treat to watch, and the crowd lets her know it.",
+    "And here comes {X}, who does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
+    "{X} makes her entrance, and tumbles to the ring with real acrobatic flair — always a treat to watch, and the crowd lets her know it.",
     "Here comes {X}, cartwheeling in like she's got something to prove tonight — the crowd cheering her on the whole way.",
-    "{X} flips her way in with real flair, and this crowd is soaking up every second of it.",
-    "{X} throws in an extra tumble just for show, and the fans absolutely love the extra effort.",
+    "Here she comes — {X} flips her way in with real flair, and this crowd is soaking up every second of it.",
+    "And here comes {X}, who throws in an extra tumble just for show, and the fans absolutely love the extra effort.",
     "Here comes {X}, all grace and athleticism — the crowd's cheering like she's already won.",
   ],
   "Colonel Ninotchka": [
@@ -4965,27 +5007,27 @@ const TAPE_ENTRANCE_LINES = {
     "Here comes {X}, sneering at the flags in the crowd like they personally betrayed the motherland.",
   ],
   "Mt. Fiji": [
-    "{X} slaps hands with fans all along the aisle on her way to the ring.",
-    "{X} takes her time greeting every fan she passes — an absolute fan favorite.",
+    "{X} makes her entrance, and slaps hands with fans all along the aisle on her way to the ring.",
+    "Here she comes — {X} takes her time greeting every fan she passes — an absolute fan favorite.",
     "Here comes {X}, high-fiving the front row the whole way down — the crowd adores her.",
-    "{X} takes her sweet time down that aisle, soaking up every ounce of love this crowd's got for her.",
-    "{X} scoops up a kid for a photo on her way in, and this whole arena melts on the spot.",
+    "And here comes {X}, who takes her sweet time down that aisle, soaking up every ounce of love this crowd's got for her.",
+    "{X} makes her entrance, and scoops up a kid for a photo on her way in, and this whole arena melts on the spot.",
     "Here comes {X}, and the pop she gets just walking out could power the whole arena.",
   ],
   "Chainsaw": [
-    "{X} fires up her chainsaw the moment she steps through the entrance — it's already roaring before she's even in full view.",
-    "{X} revs that chainsaw the second she comes through the curtain — the sound alone has fans in the front rows covering their ears.",
+    "Here she comes — {X} fires up her chainsaw the moment she steps through the entrance — it's already roaring before she's even in full view.",
+    "And here comes {X}, who revs that chainsaw the second she comes through the curtain — the sound alone has fans in the front rows covering their ears.",
     "Here comes {X}, chainsaw already roaring from the second she walked out — I would very much like her to turn that thing off.",
-    "{X} waves that chainsaw at a few fans in the front row, who scatter like it's an actual threat.",
-    "{X} cackles over the roar of the chainsaw, and honestly, security should be a lot more concerned than they look.",
+    "{X} makes her entrance, and waves that chainsaw at a few fans in the front row, who scatter like it's an actual threat.",
+    "Here she comes — {X} cackles over the roar of the chainsaw, and honestly, security should be a lot more concerned than they look.",
     "Here comes {X}, chainsaw blazing, and I would very much like everyone within ten feet of her to reconsider their seating.",
   ],
   "Zelda": [
-    "{X} trips right over the middle rope getting into the ring — smooth entrance, that was not.",
-    "{X} nearly takes a spill on the ring steps — grace has never been her strong suit.",
+    "And here comes {X}, who trips right over the middle rope getting into the ring — smooth entrance, that was not.",
+    "{X} makes her entrance, and nearly takes a spill on the ring steps — grace has never been her strong suit.",
     "Here comes {X}, fumbling her way in as usual — somehow the crowd loves her more for it.",
-    "{X} trips over her own shoelace before she's even off the ramp — bless her heart.",
-    "{X} waves enthusiastically at the wrong section of the crowd entirely — they wave back anyway.",
+    "Here she comes — {X} trips over her own shoelace before she's even off the ramp — bless her heart.",
+    "And here comes {X}, who waves enthusiastically at the wrong section of the crowd entirely — they wave back anyway.",
     "Here comes {X}, tripping and stumbling as always — somehow this crowd cheers louder every time she does.",
   ],
   "Hollywood": [
@@ -4995,36 +5037,37 @@ const TAPE_ENTRANCE_LINES = {
     "{X} doesn't bother with the aisle at all tonight — she's already climbing in over the barricade to get at {Y}.",
     "{X} shoves a cameraman out of her way just to get to the ring quicker — patience was never her strong suit.",
     "Here comes {X}, or rather, here's {X} already mid-attack — she skipped the whole 'walking down the aisle' part entirely.",
-  ],  "Tiffany Mellon": [
-    "{X} is escorted to the ring by her butler Jeeves, who looks thoroughly unimpressed by the whole affair.",
-    "{X} arrives with Jeeves in tow, carrying her robe like she's walking into a ballroom, not a wrestling ring.",
+  ],
+  "Tiffany Mellon": [
+    "Here she comes — {X} is escorted to the ring by her butler Jeeves, who looks thoroughly unimpressed by the whole affair.",
+    "And here comes {X}, who arrives with Jeeves in tow, carrying her robe like she's walking into a ballroom, not a wrestling ring.",
     "Here comes {X}, every bit the Park Avenue socialite, Jeeves trailing dutifully behind.",
-    "{X} waves a gloved hand to the crowd, every inch the Park Avenue socialite, Jeeves shuffling along behind her.",
-    "{X} pauses to let Jeeves adjust her robe mid-aisle — the crowd finds the whole spectacle charming.",
+    "{X} makes her entrance, and waves a gloved hand to the crowd, every inch the Park Avenue socialite, Jeeves shuffling along behind her.",
+    "Here she comes — {X} pauses to let Jeeves adjust her robe mid-aisle — the crowd finds the whole spectacle charming.",
     "Here comes {X}, dripping in old money glamour, Jeeves trailing along right on cue.",
   ],
   "The California Doll": [
     "{X} comes strolling out carrying a surfboard, because of course she does.",
-    "{X} rides that surfboard-carrying entrance all the way to the ring — pure California cool.",
+    "And here comes {X}, who rides that surfboard-carrying entrance all the way to the ring — pure California cool.",
     "Here comes {X}, surfboard in hand, looking like she just walked off the beach.",
-    "{X} hangs ten off the edge of the ramp just for laughs, and the crowd absolutely eats it up.",
-    "{X} tosses her surfboard to a fan at ringside to hold for her — total California cool.",
+    "{X} makes her entrance, and hangs ten off the edge of the ramp just for laughs, and the crowd absolutely eats it up.",
+    "Here she comes — {X} tosses her surfboard to a fan at ringside to hold for her — total California cool.",
     "Here comes {X}, sunny as ever, surfboard in tow — this crowd's fully caught the wave with her.",
   ],
   "Dallas": [
-    "{X} makes her entrance swinging a lasso around like she just rode in off the range.",
-    "{X} twirls that lasso the whole way to the ring — the crowd loves the showmanship.",
+    "And here comes {X}, swinging a lasso around like she just rode in off the range.",
+    "{X} makes her entrance, and twirls that lasso the whole way to the ring — the crowd loves the showmanship.",
     "Here comes {X}, lasso spinning, boots stomping — pure Texas through and through.",
-    "{X} tips her hat to the crowd on the way down, lasso spinning the whole time.",
-    "{X} lassos an imaginary steer just for showmanship, and the crowd whoops it up.",
+    "Here she comes — {X} tips her hat to the crowd on the way down, lasso spinning the whole time.",
+    "And here comes {X}, who lassos an imaginary steer just for showmanship, and the crowd whoops it up.",
     "Here comes {X}, boots and lasso, every inch the cowgirl — this crowd's fully saddled up behind her.",
   ],
   "Tulsa": [
     "{X} makes her entrance swinging a lasso around like she just rode in off the range.",
     "{X} comes out lasso in hand, working the crowd like she's at a rodeo.",
     "Here comes {X}, twirling that rope with real skill — this isn't just for show.",
-    "{X} tips her hat and gives the crowd a wink on her way down — pure rodeo charm.",
-    "{X} spins that lasso into a big loop just to hear the crowd cheer, and cheer they do.",
+    "Here she comes — {X} tips her hat and gives the crowd a wink on her way down — pure rodeo charm.",
+    "And here comes {X}, who spins that lasso into a big loop just to hear the crowd cheer, and cheer they do.",
     "Here comes {X}, rodeo queen sash and all — this crowd's rooting hard for her tonight.",
   ],
   "Attaché": [
@@ -5032,39 +5075,39 @@ const TAPE_ENTRANCE_LINES = {
     "{X} marches to the ring barking orders at nobody in particular — someone tell her the war's over.",
     "Here comes {X}, spitting at ringside fans on her way in — utterly classless.",
     "{X} snaps a salute at nobody, then spits directly at a fan's shoes — absolutely zero class.",
-    "{X} barks a mock cadence count at the crowd like they're new recruits — nobody signed up for this, ma'am.",
+    "{X} makes her entrance, and barks a mock cadence count at the crowd like they're new recruits — nobody signed up for this, ma'am.",
     "Here comes {X}, marching in like she's storming a beach, sneering at everyone within fatigues' reach.",
   ],
   "Dementia": [
-    "{X} is wheeled to the ring in a restraint cage, silent behind that hockey mask and clutching an axe — dead quiet, and deeply unsettling.",
+    "Here she comes — {X} is wheeled to the ring in a restraint cage, silent behind that hockey mask and clutching an axe — dead quiet, and deeply unsettling.",
     "Here comes {X}, still in that cage — this time clutching that porcelain doll of hers instead, staring blankly at nothing.",
-    "{X} is rolled out in the restraint cage as usual — not a word out of her, just that mask staring back at the crowd.",
-    "{X} presses her mask against the cage bars, staring silently at {Y} — dead quiet, and somehow worse for it.",
+    "And here comes {X}, who is rolled out in the restraint cage as usual — not a word out of her, just that mask staring back at the crowd.",
+    "{X} makes her entrance, and presses her mask against the cage bars, staring silently at {Y} — dead quiet, and somehow worse for it.",
     "The restraint cage creaks to a stop, and {X} just sits there, motionless, axe in hand — the whole arena goes quiet.",
     "Here comes {X} again, silent as ever behind that mask — there's something about the stillness that unsettles this crowd more than any noise could.",
   ],
   "Arlene": [
-    "{X} nags and complains the entire way to the ring — the outfits, the lighting, the crowd, nothing is good enough for her tonight.",
+    "Here she comes — {X} nags and complains the entire way to the ring — the outfits, the lighting, the crowd, nothing is good enough for her tonight.",
     "{X} marches to the ring already mid-rant about something — I stopped listening two complaints ago.",
     "Here comes {X}, griping at everyone she passes — somebody get this woman a vacation.",
-    "{X} stops mid-rant to complain about the ring lighting specifically — she truly has a note for everything.",
+    "And here comes {X}, who stops mid-rant to complain about the ring lighting specifically — she truly has a note for everything.",
     "{X} snaps at a cameraman for getting her 'bad side,' whatever that means for a Housewife.",
     "Here comes {X}, already listing grievances before she's even reached the ropes — exhausting, just exhausting.",
   ],
   "Phyllis": [
-    "{X} nags and complains the entire way to the ring — the outfits, the lighting, the crowd, nothing is good enough for her tonight.",
-    "{X} is already fussing at ringside staff before she's even reached the ring — exhausting, honestly.",
+    "{X} makes her entrance, and nags and complains the entire way to the ring — the outfits, the lighting, the crowd, nothing is good enough for her tonight.",
+    "Here she comes — {X} is already fussing at ringside staff before she's even reached the ring — exhausting, honestly.",
     "Here comes {X}, complaining under her breath the whole way down — some things never change.",
-    "{X} stops mid-rant to gripe about the ring lighting specifically — a note for absolutely everything, this one.",
+    "And here comes {X}, who stops mid-rant to gripe about the ring lighting specifically — a note for absolutely everything, this one.",
     "{X} snaps at a stagehand over something nobody else even noticed — the complaints never stop with her.",
     "Here comes {X}, already muttering complaints before she's reached the ring — some things never change.",
   ],
   "Jungle Woman": [
     "{X} comes out to the ring leading Nature Boy on a leash, stationing him ringside as she climbs in.",
-    "{X} stalks to the ring with Nature Boy trailing meekly right behind her, eyes darting everywhere — he clearly doesn't want to be here.",
+    "{X} makes her entrance, and stalks to the ring with Nature Boy trailing meekly right behind her, eyes darting everywhere — he clearly doesn't want to be here.",
     "Here comes {X}, Nature Boy keeping close to her heel the whole way, timid as ever — she's got him thoroughly trained.",
-    "{X} yanks Nature Boy's leash sharply just to remind everyone who's in charge out here.",
-    "{X} snarls at a few ringside fans who get too close to Nature Boy — protective, in the coldest possible way.",
+    "Here she comes — {X} yanks Nature Boy's leash sharply just to remind everyone who's in charge out here.",
+    "And here comes {X}, who snarls at a few ringside fans who get too close to Nature Boy — protective, in the coldest possible way.",
     "Here comes {X}, Nature Boy cowering right on cue — she rules that leash with an iron fist.",
   ],
 };
@@ -5079,8 +5122,8 @@ const TAPE_STRAITJACKET_ENTRANCE_LINES = [
 ];
 
 // When only one wrestler in the match has a signature entrance, the
-// other one isn't just standing there waiting — she gets a reaction of
-// her own, usually somewhere between unimpressed and disgusted.
+// other one isn't just standing there waiting — she's already got some
+// heat with her opponent, staring her down as she approaches.
 // What third-wrestler interference actually DOES physically, rather
 // than just a generic "helped out" mention — filled with the name of
 // whoever's on the receiving end of it (the beneficiary's opponent).
@@ -5096,14 +5139,12 @@ const TAPE_INTERFERENCE_ACTIONS = [
 ];
 
 const TAPE_ENTRANCE_REACTION_LINES = [
-  "{X} watches all that from the entrance ramp with an expression of pure disgust.",
-  "{X} just stands there, completely unimpressed by the whole spectacle {Y} just put on.",
-  "{X} rolls her eyes at {Y}'s entrance — clearly not a fan of the theatrics.",
-  "{X} looks like she's already regretting being in the same building as {Y}, let alone the same ring.",
-  "{X} watches {Y}'s entrance with a look somewhere between disgust and disbelief.",
-  "{X} just shakes her head — she is clearly not buying whatever {Y} is selling.",
-  "{X} crosses her arms and waits, visibly unimpressed by {Y}'s whole routine.",
-  "{X} makes a face like she just smelled something rotten — {Y}'s entrance did NOT land well with her.",
+  "{X} is staring down {Y} and it looks like they've already got a few choice words for each other as {Y} makes her way to the ring. This one's starting hot already, folks!",
+  "{X} doesn't wait for introductions — she's already jawing at {Y} from across the ring, and this one's heating up fast!",
+  "{X} and {Y} are locking eyes the whole way down that aisle — you can feel the tension from here!",
+  "{X} is right at the ropes waiting, staring a hole through {Y} as she approaches — this one's already personal!",
+  "{X} paces the ring glaring at {Y} the entire way down — there's real heat here before the bell's even rung!",
+  "{X} is barking something at {Y} across the ring already — whatever it is, {Y} doesn't look like she's backing down!",
 ];
 
 // Used to open the commentary when neither wrestler has a signature
@@ -5418,7 +5459,7 @@ function tapeSoloCandidates(w, other, chainsawAlreadyOut) {
 // individual-quirk asides), followed by an in-the-moment announcer call
 // for the finish.
 function generateTapeBlurb(a, b, result) {
-  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation } = result;
+  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper } = result;
 
   // A handful of matchups are known, heated rivalries — these get extra
   // passionate mid-match commentary and a dedicated post-match line
@@ -5843,7 +5884,7 @@ function generateTapeBlurb(a, b, result) {
     const opponentIsBeauty = (TAPE_WRESTLER_DESCRIPTORS[opponent.name] || []).includes("beauty");
     beats = [];
     const usedHousewifeLines = new Set();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       beats.push(capitalizeFirst(tapeHousewifeLine(housewifeMember, opponent, opponentIsBeauty, usedHousewifeLines)));
     }
     if (Math.random() < 0.4) {
@@ -5868,7 +5909,7 @@ function generateTapeBlurb(a, b, result) {
     if (anyGiant) {
       pool = pool.filter(tpl => tapeBeatAllowed(tpl, a, b));
     }
-    beats = shuffleArray(pool).slice(0, 3).map(tpl => {
+    beats = shuffleArray(pool).slice(0, 2).map(tpl => {
       let line = fillMatch(tpl);
       // A regular action beat (not a roast, which is already a joke on its
       // own) occasionally gets a short color-commentator aside tacked on.
@@ -6038,6 +6079,20 @@ function generateTapeBlurb(a, b, result) {
     }
   }
 
+  // A small, aerial-reliant wrestler tries a top-rope move against a
+  // true giant — and just gets caught out of the air. Reinforces the
+  // disadvantage even in the ~99% of matches where the 1% outside-help
+  // knockdown never happens.
+  const smallVsGiantFlavor = [a, b].find(w => TAPE_SMALL_WRESTLERS.has(w.name));
+  const giantVsSmallFlavor = smallVsGiantFlavor && [a, b].find(w => TAPE_TRUE_GIANTS.has(w.name));
+  if (smallVsGiantFlavor && giantVsSmallFlavor && !giantKnockdownHelp && Math.random() < 0.5) {
+    const tpl = TAPE_GIANT_CATCH_LINES[Math.floor(Math.random() * TAPE_GIANT_CATCH_LINES.length)];
+    const line = tpl
+      .replaceAll("{X}", tapeShortName(smallVsGiantFlavor))
+      .replaceAll("{Y}", tapeShortName(giantVsSmallFlavor));
+    beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, line);
+  }
+
   // Communist-themed heels vs. the roster's patriotic faces — 50%
   // chance the crowd breaks into a "USA!" chant mid-match.
   const usaChantHeel = [a, b].find(w => TAPE_USA_CHANT_HEELS.has(w.name));
@@ -6165,6 +6220,9 @@ function generateTapeBlurb(a, b, result) {
   } else if (littleFijiKnockoutWin) {
     const tpl = TAPE_LITTLE_FIJI_KNOCKOUT_WIN_LINES[Math.floor(Math.random() * TAPE_LITTLE_FIJI_KNOCKOUT_WIN_LINES.length)];
     finish = fillWL(tpl.replaceAll("{helper}", knockoutHelper ? knockoutHelper.name : "someone from ringside"));
+  } else if (giantKnockdownHelp) {
+    const tpl = TAPE_GIANT_KNOCKDOWN_HELP_LINES[Math.floor(Math.random() * TAPE_GIANT_KNOCKDOWN_HELP_LINES.length)];
+    finish = fillWL(tpl.replaceAll("{helper}", outsideHelper ? outsideHelper.name : "someone from ringside"));
   } else if (maskTurned) {
     finish = fillWL(TAPE_MASK_TURNED_LINES[Math.floor(Math.random() * TAPE_MASK_TURNED_LINES.length)]);
   } else if (zeldaHelp) {
