@@ -4531,6 +4531,16 @@ const TAPE_MAMA_CRUSH_LINES = [
   "{winner} doesn't bother with fancy offense — she just plants herself on {loser} and lets her sheer size do the rest.",
 ];
 
+// A genuine ratings-gap upset — the clearly lower-rated wrestler still
+// won a clean decision. Called out explicitly right after the count.
+const TAPE_UPSET_LINES = [
+  "What an UPSET, folks! Nobody expected {winner} to walk away with this one tonight!",
+  "Talk about a shocker — {winner} just pulled off a genuine upset here!",
+  "I don't think anybody saw that coming — {winner} just scored a massive upset over {loser}!",
+  "Chalk this one up as an upset, folks — {winner} was not supposed to win this one!",
+  "That's a full-blown upset right there — {winner} gets the job done against all odds!",
+];
+
 // A handful of wrestlers occasionally go digging under the ring apron
 // for a weapon — a length of rope, a stray stick — and use it on their
 // opponent. This specific pool is for the rare times the referee
@@ -6715,6 +6725,14 @@ function tapeAppendDqReaction(text) {
 
   // Aftermath lines — appended after the finish, not part of the action itself.
   const aftermath = [];
+
+  // A genuine ratings-gap upset — the lower-rated wrestler won a clean
+  // (non-DQ) decision despite a real skill gap of 1.1 points or more.
+  // The announcer calls it out explicitly right after the count.
+  const lowerRatedWrestler = (TAPE_RATINGS[a.name] || 5) <= (TAPE_RATINGS[b.name] || 5) ? a : b;
+  if (ratingGap >= 1.1 && method !== "dq" && winner === lowerRatedWrestler) {
+    aftermath.push(fillWL(TAPE_UPSET_LINES[Math.floor(Math.random() * TAPE_UPSET_LINES.length)]));
+  }
 
   // Little Fiji's big sister sometimes shows up after a rough loss —
   // unless Mt. Fiji herself was the one who beat her.
