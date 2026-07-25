@@ -1300,18 +1300,25 @@ function getPhotoUrl(wrestler) {
 
 /* ----------------------------------------------------------------
    Turns any other wrestler's (or key figure's) name mentioned inside
-   a bio into a clickable internal link to that person's own page —
-   good for on-site navigation and internal linking (helps search
-   engines understand the site's structure too). Never links a
-   wrestler's own name within her own bio. Longer names are matched
-   before shorter ones so nothing gets partially matched by mistake.
+   a bio into a clickable internal link to that person's own page, and
+   any skit name mentioned into a link that jumps straight to that
+   skit's spot on the Skits page (not just the top of the page) — good
+   for on-site navigation and internal linking (helps search engines
+   understand the site's structure too). Never links a wrestler's own
+   name within her own bio. Longer names are matched before shorter
+   ones so nothing gets partially matched by mistake. Skit titles are
+   often compound ("Asking Ashley / Godiva's Bare Facts" is really two
+   skits sharing one segment) so each half is matched independently,
+   both pointing at the same skit id.
    ---------------------------------------------------------------- */
 const TAPE_LINKIFY_TARGETS = [...WRESTLERS, ...KEY_FIGURES]
   .filter((w) => w.name)
-  .sort((a, b) => b.name.length - a.name.length);
-function linkifyBio(text, currentId, onNavigate) {
-  if (!text || typeof text !== "string" || !onNavigate) return text;
-  const targets = TAPE_LINKIFY_TARGETS.filter((w) => w.id !== currentId);
+  .map((w) => ({ id: w.id, name: w.name, kind: "person" }));
+function linkifyBio(text, currentId, onNavigate, onNavigateToSkit) {
+  if (!text || typeof text !== "string") return text;
+  const personTargets = TAPE_LINKIFY_TARGETS.filter((w) => w.id !== currentId && onNavigate);
+  const skitTargets = onNavigateToSkit ? TAPE_SKIT_LINKIFY_TARGETS : [];
+  const targets = [...personTargets, ...skitTargets].sort((a, b) => b.name.length - a.name.length);
   if (targets.length === 0) return text;
   const escaped = targets.map((w) => w.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
   const regex = new RegExp(`\\b(${escaped.join("|")})\\b`, "g");
@@ -1323,10 +1330,11 @@ function linkifyBio(text, currentId, onNavigate) {
     if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
     const matchedName = match[0];
     const target = targets.find((w) => w.name === matchedName);
+    const handleClick = target.kind === "skit" ? () => onNavigateToSkit(target.id) : () => onNavigate(target.id);
     parts.push(
       <button
         key={`bio-link-${key++}`}
-        onClick={() => onNavigate(target.id)}
+        onClick={handleClick}
         style={{
           background: "none",
           border: "none",
@@ -1974,10 +1982,25 @@ const SKITS = [
   },
 ];
 
+// Compound skit titles ("Asking Ashley / Godiva's Bare Facts") are
+// really two skits sharing one entry — split on " / " so each half can
+// be matched and linked independently, both pointing at the same skit.
+const TAPE_SKIT_LINKIFY_TARGETS = SKITS.flatMap((skit) =>
+  skit.title.split(" / ").map((segment) => ({ id: skit.id, name: segment.trim(), kind: "skit" }))
+);
+
 /* ----------------------------------------------------------------
    SKITS PAGE
    ---------------------------------------------------------------- */
-function SkitsPage({ onBack, backLabel = "Main" }) {
+function SkitsPage({ onBack, backLabel = "Main", scrollToSkitId }) {
+  // If we arrived here via a bio link pointing at a specific skit, jump
+  // straight to it instead of landing at the top of the page.
+  useEffect(() => {
+    if (!scrollToSkitId) return;
+    const el = document.getElementById(scrollToSkitId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [scrollToSkitId]);
+
   return (
     <div style={{ padding: "20px 18px 80px", maxWidth: 860, marginInline: "auto" }}>
       <style>{`
@@ -2036,6 +2059,7 @@ function SkitsPage({ onBack, backLabel = "Main" }) {
           return (
             <div
               key={skit.id}
+              id={skit.id}
               className="glow-skit-row"
               style={{
                 display: "flex",
@@ -2043,6 +2067,7 @@ function SkitsPage({ onBack, backLabel = "Main" }) {
                 gap: 24,
                 alignItems: "flex-start",
                 flexWrap: "wrap",
+                scrollMarginTop: 20,
               }}
             >
               {photoLeft && (
@@ -8265,7 +8290,7 @@ function VideoLinkCard({ href, title, subtitle }) {
   );
 }
 
-function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWrestler }) {
+function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWrestler, onNavigateToSkit }) {
   const wrestler = useMemo(
     () =>
       WRESTLERS.find((w) => w.id === wrestlerId) ||
@@ -8392,7 +8417,7 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
           marginInline: "auto",
         }}
       >
-        {linkifyBio(wrestler.bio, wrestler.id, onNavigateToWrestler)}
+        {linkifyBio(wrestler.bio, wrestler.id, onNavigateToWrestler, onNavigateToSkit)}
       </p>
 
       {wrestler.finishers && wrestler.finishers.length > 0 && (
@@ -8775,6 +8800,7 @@ export default function GlowApp() {
   }, []);
 
   useEffect(() => {
+    if (view.screen === "skits" && view.scrollToSkitId) return;
     const savedY = scrollPositions.current[view.screen];
     window.scrollTo(0, typeof savedY === "number" ? savedY : 0);
   }, [view]);
@@ -8805,7 +8831,7 @@ export default function GlowApp() {
           onBackToSplash={() => navigate({ screen: "splash" })}
         />
       ) : view.screen === "skits" ? (
-        <SkitsPage onBack={() => navigate({ screen: view.from || "home" })} backLabel={view.from === "splash" ? "Splash" : "Main"} />
+        <SkitsPage onBack={() => navigate({ screen: view.from || "home" })} backLabel={view.from === "splash" ? "Splash" : "Main"} scrollToSkitId={view.scrollToSkitId} />
       ) : view.screen === "history" ? (
         <HistoryPage onBack={() => navigate({ screen: view.from || "home" })} backLabel={view.from === "splash" ? "Splash" : "Main"} />
       ) : view.screen === "misc" ? (
@@ -8820,6 +8846,7 @@ export default function GlowApp() {
           onBack={() => navigate({ screen: view.from || "home", wrestlerId: null })}
           backLabel={view.from === "splash" ? "Splash" : "Roster"}
           onNavigateToWrestler={(id) => navigate({ screen: "wrestler", wrestlerId: id, from: view.from })}
+          onNavigateToSkit={(skitId) => navigate({ screen: "skits", from: view.from || "home", scrollToSkitId: skitId })}
         />
       )}
       <footer
