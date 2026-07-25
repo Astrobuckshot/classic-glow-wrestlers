@@ -1299,6 +1299,57 @@ function getPhotoUrl(wrestler) {
 }
 
 /* ----------------------------------------------------------------
+   Turns any other wrestler's (or key figure's) name mentioned inside
+   a bio into a clickable internal link to that person's own page —
+   good for on-site navigation and internal linking (helps search
+   engines understand the site's structure too). Never links a
+   wrestler's own name within her own bio. Longer names are matched
+   before shorter ones so nothing gets partially matched by mistake.
+   ---------------------------------------------------------------- */
+const TAPE_LINKIFY_TARGETS = [...WRESTLERS, ...KEY_FIGURES]
+  .filter((w) => w.name)
+  .sort((a, b) => b.name.length - a.name.length);
+function linkifyBio(text, currentId, onNavigate) {
+  if (!text || typeof text !== "string" || !onNavigate) return text;
+  const targets = TAPE_LINKIFY_TARGETS.filter((w) => w.id !== currentId);
+  if (targets.length === 0) return text;
+  const escaped = targets.map((w) => w.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const regex = new RegExp(`\\b(${escaped.join("|")})\\b`, "g");
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    const matchedName = match[0];
+    const target = targets.find((w) => w.name === matchedName);
+    parts.push(
+      <button
+        key={`bio-link-${key++}`}
+        onClick={() => onNavigate(target.id)}
+        style={{
+          background: "none",
+          border: "none",
+          padding: 0,
+          margin: 0,
+          font: "inherit",
+          color: "inherit",
+          textDecoration: "underline",
+          textUnderlineOffset: 2,
+          cursor: "pointer",
+        }}
+      >
+        {matchedName}
+      </button>
+    );
+    lastIndex = match.index + matchedName.length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
+}
+
+
+/* ----------------------------------------------------------------
    Decorative chrome/foil ring-rope divider used in a few spots
    ---------------------------------------------------------------- */
 function RopeDivider() {
@@ -8196,7 +8247,7 @@ function VideoLinkCard({ href, title, subtitle }) {
   );
 }
 
-function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster" }) {
+function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWrestler }) {
   const wrestler = useMemo(
     () =>
       WRESTLERS.find((w) => w.id === wrestlerId) ||
@@ -8323,7 +8374,7 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster" }) {
           marginInline: "auto",
         }}
       >
-        {wrestler.bio}
+        {linkifyBio(wrestler.bio, wrestler.id, onNavigateToWrestler)}
       </p>
 
       {wrestler.finishers && wrestler.finishers.length > 0 && (
@@ -8750,6 +8801,7 @@ export default function GlowApp() {
           wrestlerId={view.wrestlerId}
           onBack={() => navigate({ screen: view.from || "home", wrestlerId: null })}
           backLabel={view.from === "splash" ? "Splash" : "Roster"}
+          onNavigateToWrestler={(id) => navigate({ screen: "wrestler", wrestlerId: id, from: view.from })}
         />
       )}
       <footer
