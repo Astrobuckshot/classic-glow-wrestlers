@@ -609,7 +609,7 @@ const WRESTLERS = [
     photo: "justice.jpg",
     videos: ["orocOrY-UgU", "mOA5rmHu-rk"],
     bio: "An ex-cop from Harlem, Justice was a tall, intimidating, law-and-order-themed face active during GLOW's third and fourth seasons. She and Liberty also formed an All-American tag team, dishing out American strength on their opponents.",
-    quote: "Law and order is my game, I'm here to teach you all the same.",
+    quote: "I'll be glad to clean your horse's mess, Godiva -- you're the biggest horse's mess I've ever seen.",
     finishers: [],
   },
   {
@@ -3387,6 +3387,22 @@ function tapeLineOpener(line) {
 }
 
 function simulateTapeMatch(a, b) {
+  // Sara or Mabel occasionally try to hog-tie their opponent with rope
+  // instead of wrestling. 20% chance this gets attempted at all; when it
+  // does, there's a real consequence either way — a 10% chance it
+  // actually works (25% better odds of winning), and a 90% chance it
+  // backfires on her one way or another (33% relative cut to her odds).
+  // Rolled here, at the very top, so it's safe to reference in any
+  // return path below.
+  const hogtieAttempter = [a, b].find(w => w.name === "Sara" || w.name === "Mabel");
+  let hogtieOutcome = null;
+  if (hogtieAttempter && Math.random() < 0.2) {
+    const roll = Math.random();
+    if (roll < 0.45) hogtieOutcome = "reversed";
+    else if (roll < 0.9) hogtieOutcome = "whipped";
+    else hogtieOutcome = "success";
+  }
+
   // Palestina carries her machete to the ring — 5% of matches she
   // actually tries to use it, and about half the time that gets her
   // caught and disqualified (not a guaranteed DQ every time she pulls it).
@@ -3425,7 +3441,7 @@ function simulateTapeMatch(a, b) {
     weaponGrabbed = underRingCandidate;
     if (Math.random() < 0.05) {
       const opponent = underRingCandidate === a ? b : a;
-      return { winner: opponent, loser: underRingCandidate, method: "dq", underRingWeapon: true, weaponGrabbed, injured, injuryMove, palestinaMachete };
+      return { winner: opponent, loser: underRingCandidate, method: "dq", underRingWeapon: true, weaponGrabbed, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3437,7 +3453,7 @@ function simulateTapeMatch(a, b) {
   if (Math.random() < 0.05) {
     refKnockedOut = true;
     if (Math.random() < 0.5) {
-      return { winner: a, loser: b, method: "normal", refKnockedOut: true, refKnockedOutDecisive: true, weaponGrabbed, injured, injuryMove, palestinaMachete };
+      return { winner: a, loser: b, method: "normal", refKnockedOut: true, refKnockedOutDecisive: true, weaponGrabbed, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3447,16 +3463,16 @@ function simulateTapeMatch(a, b) {
     // Extremely rare: even the Heavy Metal Sisters' blatant weapon use
     // sometimes slips past the referee entirely, and she wins clean.
     if (Math.random() < 0.01) {
-      return { winner: dqSide, loser: opponent, method: "normal", refMissed: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+      return { winner: dqSide, loser: opponent, method: "normal", refMissed: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
-    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // Housewives try to humiliate a downed opponent by putting a plunger
   // or mop right on her face — 20% chance this gets her disqualified.
   const housewifeDuelist2 = [a, b].find(w => TAPE_HOUSEWIFE_ROSTER.has(w.name));
   if (housewifeDuelist2 && Math.random() < 0.2) {
     const opponent = housewifeDuelist2 === a ? b : a;
-    return { winner: opponent, loser: housewifeDuelist2, method: "dq", housewifeHumiliation: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: opponent, loser: housewifeDuelist2, method: "dq", housewifeHumiliation: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // Sara and Mabel wrestle in masks — 20% chance their opponent turns
   // the mask around backwards mid-match, blinding them and handing the
@@ -3464,7 +3480,7 @@ function simulateTapeMatch(a, b) {
   const hickInMatch = [a, b].find(w => w.name === "Sara" || w.name === "Mabel");
   if (hickInMatch && Math.random() < 0.2) {
     const opponent = hickInMatch === a ? b : a;
-    return { winner: opponent, loser: hickInMatch, method: "normal", maskTurned: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: opponent, loser: hickInMatch, method: "normal", maskTurned: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // A small, aerial-reliant wrestler simply cannot generate the power to
   // knock a true giant off her feet on her own — the giant just catches
@@ -3477,13 +3493,13 @@ function simulateTapeMatch(a, b) {
     const outsideHelper = helperCandidates.length > 0
       ? helperCandidates[Math.floor(Math.random() * helperCandidates.length)]
       : null;
-    return { winner: smallVsGiantCandidate, loser: giantVsSmallCandidate, method: "dq", giantKnockdownHelp: true, outsideHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: smallVsGiantCandidate, loser: giantVsSmallCandidate, method: "dq", giantKnockdownHelp: true, outsideHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // The Dirty Wrestlers get themselves disqualified about half the time.
   const dirtyWrestler = [a, b].find(w => TAPE_DIRTY_WRESTLERS.has(w.name));
   if (dirtyWrestler && Math.random() < 0.5) {
     const opponent = dirtyWrestler === a ? b : a;
-    return { winner: opponent, loser: dirtyWrestler, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: opponent, loser: dirtyWrestler, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // Some of the roster's dirtiest players — the Housewives, the Soul
   // Patrol, Matilda the Hun, and Palestina — occasionally get away with
@@ -3492,13 +3508,13 @@ function simulateTapeMatch(a, b) {
   const dirtyWinCandidate = [a, b].find(w => TAPE_DIRTY_WIN_ELIGIBLE.has(w.name));
   if (dirtyWinCandidate && Math.random() < 0.05) {
     const opponent = dirtyWinCandidate === a ? b : a;
-    return { winner: dirtyWinCandidate, loser: opponent, method: "normal", dirtyWin: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: dirtyWinCandidate, loser: opponent, method: "normal", dirtyWin: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // A rare double disqualification — both wrestlers brawl their way
   // outside the ring, the referee completely loses control, and the
   // match is thrown out with no winner declared.
   if (Math.random() < 0.05) {
-    return { winner: null, loser: null, method: "double_dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: null, loser: null, method: "double_dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // In the spirit of GLOW's chaos, roughly 1 in 5 matches ends in a DQ
   // regardless of who's wrestling — and it's almost always the heel's
@@ -3506,7 +3522,7 @@ function simulateTapeMatch(a, b) {
   if (Math.random() < 0.2) {
     const dqSide = Math.random() < 0.97 ? a : b;
     const opponent = dqSide === a ? b : a;
-    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Extremely rare: Aunt Kitty herself sneaks ringside and slips her
@@ -3514,7 +3530,7 @@ function simulateTapeMatch(a, b) {
   // a weapon — the referee never catches it, and it's enough to win the
   // match outright.
   if (Math.random() < 0.01) {
-    return { winner: a, loser: b, method: "normal", auntKitty: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: a, loser: b, method: "normal", auntKitty: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Every so often, somebody just plain cheats — nothing specific to
@@ -3528,11 +3544,11 @@ function simulateTapeMatch(a, b) {
     if (cheatCandidates.length === 2) {
       const cheater = Math.random() < 0.5 ? a : b;
       const opponent = cheater === a ? b : a;
-      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     } else if (cheatCandidates.length === 1) {
       const cheater = cheatCandidates[0];
       const opponent = cheater === a ? b : a;
-      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3542,7 +3558,13 @@ function simulateTapeMatch(a, b) {
   // the time does the referee actually catch it and disqualify the
   // beneficiary's side over it — the rest of the time it slips by
   // entirely and just tips the match in the beneficiary's favor.
-  const interferenceCandidates = TAPE_ELIGIBLE.filter(w => w.name !== a.name && w.name !== b.name && w.role);
+  // Hollywood, Vine, and Broadway Rose are their own tight-knit circle
+  // of kleptomaniacs — when one of them is the heel in the match, any
+  // interference she gets is restricted to just the other two, never a
+  // random outside heel.
+  const interferenceCandidates = TAPE_KLEPTO_WRESTLERS.has(a.name)
+    ? TAPE_ELIGIBLE.filter(w => TAPE_KLEPTO_WRESTLERS.has(w.name) && w.name !== a.name)
+    : TAPE_ELIGIBLE.filter(w => w.name !== a.name && w.name !== b.name && w.role);
   let interference = null;
   if (interferenceCandidates.length > 0 && Math.random() < 0.15) {
     const helper = interferenceCandidates[Math.floor(Math.random() * interferenceCandidates.length)];
@@ -3551,7 +3573,7 @@ function simulateTapeMatch(a, b) {
     interference = { helper, beneficiary, caught };
     if (caught) {
       const opponent = beneficiary === a ? b : a;
-      return { winner: opponent, loser: beneficiary, method: "dq", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+      return { winner: opponent, loser: beneficiary, method: "dq", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3583,6 +3605,13 @@ function simulateTapeMatch(a, b) {
   } else if (giantVsSmall) {
     pa = 1 - ((1 - pa) * 0.67);
   }
+  // Apply the hog-tie outcome (rolled at the top of the function) to
+  // win probability now.
+  if (hogtieOutcome === "success") {
+    pa = hogtieAttempter === a ? Math.min(0.95, pa + 0.25) : Math.max(0.05, pa - 0.25);
+  } else if (hogtieOutcome === "reversed" || hogtieOutcome === "whipped") {
+    pa = hogtieAttempter === a ? pa * 0.67 : 1 - ((1 - pa) * 0.67);
+  }
   const winner = Math.random() < pa ? a : b;
   const loser = winner === a ? b : a;
 
@@ -3594,7 +3623,7 @@ function simulateTapeMatch(a, b) {
   const littleFijiInMatch = [a, b].find(w => w.name === "Little Fiji");
   if (littleFijiInMatch && loser === littleFijiInMatch && Math.random() < 0.33) {
     const opponent = littleFijiInMatch === a ? b : a;
-    return { winner: littleFijiInMatch, loser: opponent, method: "dq", mtFijiRescue: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: littleFijiInMatch, loser: opponent, method: "dq", mtFijiRescue: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Little Fiji never wins on her own physical merit — she's simply not
@@ -3609,9 +3638,9 @@ function simulateTapeMatch(a, b) {
       const knockoutHelper = knockoutCandidates.length > 0
         ? knockoutCandidates[Math.floor(Math.random() * knockoutCandidates.length)]
         : null;
-      return { winner: littleFijiInMatch, loser: opponent, method: "dq", littleFijiKnockoutWin: true, knockoutHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+      return { winner: littleFijiInMatch, loser: opponent, method: "dq", littleFijiKnockoutWin: true, knockoutHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
-    return { winner: littleFijiInMatch, loser: opponent, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: littleFijiInMatch, loser: opponent, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Zelda isn't much of a wrestler — she gets by on wit alone — so when
@@ -3620,10 +3649,10 @@ function simulateTapeMatch(a, b) {
   const zeldaInMatch = [a, b].find(w => w.name === "Zelda");
   if (zeldaInMatch && loser === zeldaInMatch && Math.random() < 0.25) {
     const opponent = zeldaInMatch === a ? b : a;
-    return { winner: zeldaInMatch, loser: opponent, method: "normal", zeldaHelp: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+    return { winner: zeldaInMatch, loser: opponent, method: "normal", zeldaHelp: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
-  return { winner, loser, method: "normal", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete };
+  return { winner, loser, method: "normal", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
 }
 
 // Size-aware word banks — giants get a heavier, more brutal vocabulary,
@@ -3721,7 +3750,6 @@ const TAPE_DESCRIPTOR_LINES = {
   ],
   "fan-favorite": [
     "This crowd is fully behind {X} tonight — she's an easy fan-favorite, and you can hear it in the building.",
-    "{X} feeds off this crowd, and this crowd feeds right back — certified fan-favorite energy in the building tonight.",
   ],
   "powerhouse": [
     "{X} is an absolute powerhouse in that ring — you do not want to be on the wrong end of that strength.",
@@ -4061,10 +4089,8 @@ const TAPE_TURNING_POINT_BEATS = [
   "This has officially become {winner}'s living room, and {loser} is just visiting.",
   "{loser} throws a Hail Mary — a desperate, low-percentage move with nothing behind it except hope — but {winner} swats it away like it's nothing.",
   "The crowd's already counting along in their heads — everybody in this building knows what's coming next.",
-  "{loser} is running on fumes and bad decisions at this point, while {winner} looks like she's just getting warmed up.",
   "You could set your watch by this — {winner} is about to close the show, and {loser} can't do a thing about it.",
   "{loser} digs deep for one more push — finds absolutely nothing down there — and {winner} capitalizes immediately.",
-  "Something just flipped a switch in {winner} that nobody saw coming, and {loser} has no answer for it.",
   "{winner} has that look now, folks — the one that means this is about to be over.",
   "{loser} is out of gas and out of ideas, and {winner} knows it better than anybody in this building.",
   "This crowd senses blood in the water — {winner} is closing in, and {loser} has nowhere left to go.",
@@ -4078,6 +4104,40 @@ const TAPE_TURNING_POINT_BEATS = [
   "{loser} tries to catch her breath in the corner, but {winner} isn't giving her the chance.",
   "Every exchange from here on out is one-sided — {winner} has this thing on lockdown.",
   "{loser} is holding on more out of stubbornness than strategy at this point, and {winner} knows it.",
+  "{winner} has been in total control for a while now, and {loser} just hasn't found a way back into it.",
+];
+
+// A more specific alternative to the generic turning-point pool above,
+// used when the loser was hit with an under-ring weapon (rope, etc.)
+// earlier — this describes her actually escaping/breaking free of that
+// specific moment, rather than a vague, unconnected "flipped a switch."
+const TAPE_TURNING_POINT_ESCAPE_LINES = [
+  "{winner} somehow breaks free of it and turns the tables completely — {loser} was not expecting that at all!",
+  "{winner} escapes the hold and comes back swinging — {loser} has no answer for the sudden reversal!",
+  "Out of nowhere, {winner} fights her way loose and turns this whole thing around — {loser} didn't see that coming!",
+  "{winner} wrestles her way free and comes up swinging — {loser} is completely caught off guard by the reversal!",
+];
+
+// The winner lands a clean, decisive move right before the finish — set
+// up to be immediately followed by the "running on fumes" line, so the
+// loser's exhaustion reads as a direct result of what just happened to
+// her, not something coming out of nowhere.
+const TAPE_SUCCESSFUL_MOVE_LINES = [
+  "{winner} catches {loser} with {winnerMove} right in the middle of the ring!",
+  "{winner} connects clean with {winnerMove}, and {loser} goes down hard!",
+  "{winner} lands {winnerMove} picture-perfect — {loser} felt every bit of that!",
+  "{winner} unloads with {winnerMove}, and {loser} crumples from the impact!",
+  "{winner} times it perfectly and drills {loser} with {winnerMove}!",
+];
+
+// One quick, humorously insulting jab from the announcer, optionally
+// tacked on right before the count.
+const TAPE_PRE_COUNT_JAB_LINES = [
+  "{loser} picked a rough night to run out of gas.",
+  "That's what happens when the mouth writes checks the body can't cash.",
+  "{loser} came in talking a big game — the scoreboard's about to disagree.",
+  "Somebody should've told {loser} this wasn't going to be an easy night.",
+  "{loser} is finding out the hard way that {winner} doesn't slow down.",
 ];
 
 // When the talent gap is huge, the match doesn't need a real
@@ -4218,6 +4278,45 @@ const TAPE_GIANT_CATCH_LINES = [
   "{X} goes for a crossbody, and {Y} just plucks her out of midair and slams her right back down — that jump did NOTHING!",
   "{X} takes to the air with everything she's got, and {Y} doesn't even budge — just catches her and tosses her aside like a rag doll!",
   "There's {X} soaring in off the ropes, and {Y} snatches her clean out of the sky — all that speed, and it means nothing against this much size!",
+];
+
+// Sara and Mabel occasionally skip wrestling entirely and go for the
+// rope, looking to hog-tie their opponent — always immediately followed
+// by one of three outcomes, never left hanging without a consequence.
+const TAPE_HOGTIE_ATTEMPT_LINES = [
+  "{X} isn't interested in wrestling holds — she's got rope and chains ready to tie {Y} right up.",
+  "{X} skips the lock-up entirely and goes straight for the rope, looking to hog-tie {Y} before she knows what's happening.",
+  "{X} skips the wrestling entirely and goes straight for the rope, looking to hog-tie {Y}.",
+  "{X} pulls out a length of chain instead of locking up — {Y} is not thrilled about that development.",
+];
+// 45% chance: the opponent breaks free and turns it around on her.
+const TAPE_HOGTIE_REVERSED_LINES = [
+  "{Y} breaks free before the ropes even go on and turns the tables — now it's {X} who's all tied up!",
+  "{Y} wrestles her way out of it and flips the whole situation — {X} is the one getting hog-tied now!",
+  "{Y} shakes loose and reverses it completely — {X} ends up tangled in her own rope!",
+];
+// 45% chance: the opponent grabs the rope and starts whipping her with it.
+const TAPE_HOGTIE_WHIPPED_LINES = [
+  "{Y} wrenches the rope away and starts whipping {X} with it — {X} brought the weapon, and now it's being used against her!",
+  "{Y} rips the rope out of {X}'s hands and starts cracking it against her back — that backfired badly!",
+  "{Y} snatches the rope away and turns it into a weapon of her own, lashing {X} with it!",
+];
+// 10% chance: it actually works.
+const TAPE_HOGTIE_SUCCESS_LINES = [
+  "{X} actually gets the rope around {Y} and yanks it tight — {Y} is bound up and in real trouble now!",
+  "{X} manages to hog-tie {Y} completely — she's stuck, and {X} is taking full advantage of it!",
+  "It actually works — {X} gets {Y} tied up tight, and now she's completely defenseless!",
+];
+
+// "{X} feeds off this crowd..." needs to follow an actual good moment
+// for her, not just appear at a random point in the match — paired with
+// one of these move lines right before it so the crowd energy has
+// something real to react to.
+const TAPE_FAN_FAVORITE_MOVE_LINES = [
+  "{X} catches {Y} with a beautiful dropkick, and this crowd pops huge for it!",
+  "{X} nails a picture-perfect suplex, and the crowd is right there with her!",
+  "{X} connects with a big clothesline, and this crowd erupts!",
+  "{X} strings together a run of offense that has this crowd on its feet!",
 ];
 
 
@@ -4569,14 +4668,6 @@ const TAPE_ECCENTRIC_LINES = {
   "Phyllis": [
     "{X} unloads an aerosol can directly at {Y}, following it up with a mop to the face — housewife chaos in full effect.",
     "{X} chases {Y} down with a mop, griping the whole way — this looks more like spring cleaning than wrestling.",
-  ],
-  "Sara": [
-    "{X} isn't interested in wrestling holds — she's got rope and chains ready to tie {Y} right up.",
-    "{X} skips the lock-up entirely and goes straight for the rope, looking to hog-tie {Y} before she knows what's happening.",
-  ],
-  "Mabel": [
-    "{X} skips the wrestling entirely and goes straight for the rope, looking to hog-tie {Y}.",
-    "{X} pulls out a length of chain instead of locking up — {Y} is not thrilled about that development.",
   ],
   "Envy": [
     "{X} pulls out a pair of nunchucks mid-match — this has gone from wrestling to a straight-up weapons brawl.",
@@ -5188,6 +5279,12 @@ const TAPE_ENTRANCE_REACTION_LINES = [
   "{X} is right at the ropes waiting, staring a hole through {Y} as she approaches — this one's already personal!",
   "{X} paces the ring glaring at {Y} the entire way down — there's real heat here before the bell's even rung!",
   "{X} is barking something at {Y} across the ring already — whatever it is, {Y} doesn't look like she's backing down!",
+  "{X} is already in the ring yelling something at {Y} the whole way down the aisle — and {Y} is yelling right back!",
+  "{X} is pacing the ring, shouting at {Y} from a distance — and {Y}'s giving it right back to her on her way in!",
+  "{X} cups her hands and hollers something at {Y} clear across the arena — whatever it was, {Y} did NOT appreciate it!",
+  "{X} is already trading insults with {Y} before she's even reached the ring — this crowd is eating up every second of it!",
+  "{X} and {Y} are already going back and forth, shouting across the whole arena — the referee hasn't even called for the bell yet!",
+  "{X} is right there waiting, mouth already running at {Y} — and {Y} isn't holding back her response either!",
 ];
 
 // Used to open the commentary when neither wrestler has a signature
@@ -5502,7 +5599,7 @@ function tapeSoloCandidates(w, other, chainsawAlreadyOut) {
 // individual-quirk asides), followed by an in-the-moment announcer call
 // for the finish.
 function generateTapeBlurb(a, b, result) {
-  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper } = result;
+  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper, hogtieAttempter, hogtieOutcome } = result;
 
   // A handful of matchups are known, heated rivalries — these get extra
   // passionate mid-match commentary and a dedicated post-match line
@@ -5634,6 +5731,7 @@ function generateTapeBlurb(a, b, result) {
   let chainsawAlreadyOut = false;
 
   let entranceLines;
+  let aAlreadyReacted = false;
   // MTV's entrance needs to come after her opponent's — and after
   // everything else that happens pre-bell (reactions, mic-grabs,
   // mocking) — so her own line is held aside here and appended dead
@@ -5725,6 +5823,7 @@ function generateTapeBlurb(a, b, result) {
       if (reactor !== hmsMocker) {
         const tpl = TAPE_ENTRANCE_REACTION_LINES[Math.floor(Math.random() * TAPE_ENTRANCE_REACTION_LINES.length)];
         entranceLines.push(tpl.replaceAll("{X}", reactor.name).replaceAll("{Y}", performer.name));
+        if (reactor === a) aAlreadyReacted = true;
       }
     }
   }
@@ -5736,8 +5835,10 @@ function generateTapeBlurb(a, b, result) {
 
   // The announcer doesn't hide his disdain for the heels — even the ones
   // without a signature entrance of their own still get a sneering aside
-  // worked in after the intro.
-  if (!TAPE_ENTRANCE_LINES[a.name] && !ambusherInMatch && Math.random() < 0.5) {
+  // worked in after the intro. Skipped if she's already been introduced
+  // via a reaction line above — that already covered her "entrance," so
+  // this would just be a redundant re-introduction.
+  if (!TAPE_ENTRANCE_LINES[a.name] && !ambusherInMatch && !aAlreadyReacted && Math.random() < 0.5) {
     const tpl = TAPE_HEEL_DISDAIN_LINES[Math.floor(Math.random() * TAPE_HEEL_DISDAIN_LINES.length)];
     entranceLines = [...entranceLines, tpl.replaceAll("{X}", a.name)];
   }
@@ -6285,6 +6386,39 @@ function generateTapeBlurb(a, b, result) {
     }
   }
 
+  // Sara or Mabel's hog-tie attempt, rolled back in simulateTapeMatch —
+  // always inserted as an adjacent pair, the attempt immediately
+  // followed by its outcome. Appended (not spliced at a random
+  // position) so nothing can ever land between the two lines.
+  if (hogtieAttempter && hogtieOutcome) {
+    const hogtieOpponent = hogtieAttempter === a ? b : a;
+    const attemptTpl = TAPE_HOGTIE_ATTEMPT_LINES[Math.floor(Math.random() * TAPE_HOGTIE_ATTEMPT_LINES.length)];
+    const outcomePool = hogtieOutcome === "reversed" ? TAPE_HOGTIE_REVERSED_LINES
+      : hogtieOutcome === "whipped" ? TAPE_HOGTIE_WHIPPED_LINES
+      : TAPE_HOGTIE_SUCCESS_LINES;
+    const outcomeTpl = outcomePool[Math.floor(Math.random() * outcomePool.length)];
+    const fillHogtie = (tpl) => tpl
+      .replaceAll("{X}", tapeShortName(hogtieAttempter))
+      .replaceAll("{Y}", tapeShortName(hogtieOpponent));
+    beats.push(fillHogtie(attemptTpl), fillHogtie(outcomeTpl));
+  }
+
+  // "{X} feeds off this crowd..." needs to follow an actual good moment
+  // for her — paired with a move line right before it, same adjacency
+  // guarantee as the hog-tie pair above (appended, never spliced).
+  const fanFavoriteCandidate = [a, b].find(w => (TAPE_WRESTLER_DESCRIPTORS[w.name] || []).includes("fan-favorite"));
+  if (fanFavoriteCandidate && Math.random() < 0.3) {
+    const fanFavoriteOpponent = fanFavoriteCandidate === a ? b : a;
+    const moveTpl = TAPE_FAN_FAVORITE_MOVE_LINES[Math.floor(Math.random() * TAPE_FAN_FAVORITE_MOVE_LINES.length)];
+    const fillFan = (tpl) => tpl
+      .replaceAll("{X}", tapeShortName(fanFavoriteCandidate))
+      .replaceAll("{Y}", tapeShortName(fanFavoriteOpponent));
+    beats.push(
+      fillFan(moveTpl),
+      fillFan("{X} feeds off this crowd, and this crowd feeds right back — certified fan-favorite energy in the building tonight.")
+    );
+  }
+
 // A quick excited or shocked reaction tacked onto the end of any finish
 // line that ends abruptly right on "DQ!" or "DISQUALIFIED!" — gives the
 // announcer a beat to react instead of just stopping cold.
@@ -6418,13 +6552,34 @@ function tapeAppendDqReaction(text) {
   }
 
   // A normal (non-DQ) finish gets a turning-point line right before it,
-  // so the outcome feels earned rather than sudden.
+  // so the outcome feels earned rather than sudden. Sometimes that's a
+  // deliberate 2-3 line sequence: the winner lands a clean move, the
+  // loser is immediately described as running on fumes because of it,
+  // and optionally one quick jab before the count.
   const opening = [...entranceLines, kickoff];
   const carryover = injuryCarryoverLine ? [injuryCarryoverLine] : [];
 
   if (method !== "dq") {
-    const turn = fillWL(TAPE_TURNING_POINT_BEATS[Math.floor(Math.random() * TAPE_TURNING_POINT_BEATS.length)]);
-    return [...opening, ...beats, ...carryover, turn, finish, ...aftermath, ...rivalryPostMatchLine()];
+    let turnLines;
+    if (Math.random() < 0.25) {
+      const moveTpl = TAPE_SUCCESSFUL_MOVE_LINES[Math.floor(Math.random() * TAPE_SUCCESSFUL_MOVE_LINES.length)];
+      const moveLine = fillWL(moveTpl);
+      const fumesLine = fillWL("{loser} is running on fumes and bad decisions at this point, while {winner} looks like she's just getting warmed up.");
+      turnLines = [moveLine, fumesLine];
+      if (Math.random() < 0.5) {
+        const jabTpl = TAPE_PRE_COUNT_JAB_LINES[Math.floor(Math.random() * TAPE_PRE_COUNT_JAB_LINES.length)];
+        turnLines.push(fillWL(jabTpl));
+      }
+    } else if (weaponGrabbed && weaponGrabbed === loser) {
+      // The loser used the under-ring weapon (rope, etc.) on her
+      // opponent earlier but still ended up losing — describe the
+      // winner actually escaping/breaking free of that, instead of a
+      // generic, unconnected "flipped a switch."
+      turnLines = [fillWL(TAPE_TURNING_POINT_ESCAPE_LINES[Math.floor(Math.random() * TAPE_TURNING_POINT_ESCAPE_LINES.length)])];
+    } else {
+      turnLines = [fillWL(TAPE_TURNING_POINT_BEATS[Math.floor(Math.random() * TAPE_TURNING_POINT_BEATS.length)])];
+    }
+    return [...opening, ...beats, ...carryover, ...turnLines, finish, ...aftermath, ...rivalryPostMatchLine()];
   }
 
   return [...opening, ...beats, ...carryover, finish, ...aftermath, ...rivalryPostMatchLine()];
