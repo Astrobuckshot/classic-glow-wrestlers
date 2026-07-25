@@ -3067,7 +3067,7 @@ const TAPE_RATINGS = {
   "Colonel Ninotchka": 9,
   "Corporal Kelly": 7,
   "Daisy": 9.2,
-  "Dallas": 7.6,
+  "Dallas": 7.8,
   "Debbie Debutante": 7.5,
   "Dementia": 6,
   "Ebony": 7.3,
@@ -3148,7 +3148,7 @@ const TAPE_UNDERRING_WEAPON_WRESTLERS = new Set([
 // True silent types — these four genuinely don't talk trash, so a match
 // involving any of them drops roast beats entirely rather than putting
 // words in their mouths.
-const TAPE_NO_TRASH_TALK = new Set(["Dementia", "Mana", "Chainsaw", "Spike"]);
+const TAPE_NO_TRASH_TALK = new Set(["Dementia", "Mana", "Chainsaw", "Spike", "The Widow"]);
 
 // Wholesome, sweet-natured types who never dish out trash talk
 // themselves — their matches still get the normal roast treatment
@@ -3214,6 +3214,25 @@ function tapeBeatAllowed(tpl, a, b) {
   // — a generic mid-match "running splash" would step on that and still
   // counts as a leaping move regardless.
   if (tpl === "{B} whips {A} into the turnbuckle, following up with a running splash." && bTrueGiant) return false;
+  // Little Fiji is far too weak to rough anyone up — she's always the
+  // face (b), so any template where {B} dishes out real offense on {A}
+  // gets filtered out whenever she's in the match. Templates that only
+  // involve her attempting something (and getting caught/stopped) are
+  // fine; only ones where she actually lands real, damaging offense
+  // need to go.
+  const bIsFiji = b.name === "Little Fiji";
+  if (bIsFiji && (
+    tpl === "{B} reverses out of a hold and flips {A} onto her back." ||
+    TAPE_BOSTON_CRAB_BEATS.has(tpl) ||
+    tpl === "{B} reverses an Irish whip, sending {A} hard into the opposite turnbuckle." ||
+    tpl === "{B} answers right back with {moveB} of her own, and it's every bit as {adjB}!" ||
+    tpl === "{B} answers with a slap of her own, right across {A}'s cheek!" ||
+    tpl === "{B} answers with a leg drop of her own, and {A} feels every bit of it." ||
+    tpl === "{B} catches {A} off guard, driving her back-first into a ringside pillar — it holds, barely, but {A} felt every bit of that." ||
+    tpl === "{B} answers back, sending {A} flying into McLane's announcer table this time — he barely gets out of the way in time!" ||
+    tpl === "{A} opens with a stiff clothesline, but {B} answers right back with a dropkick that sends the crowd into a frenzy." ||
+    tpl === "{B} no-sells a big strike and fires back with one of her own, popping the crowd."
+  )) return false;
   return true;
 }
 
@@ -4012,7 +4031,55 @@ const TAPE_HOUSEWIFE_DRAG_CANVAS_LINES = [
   "{X} grabs {Y} by the hair and drags her along the canvas, still complaining the entire time!",
   "{X} drags {Y} across the mat like she's dragging out the trash — not a shred of sympathy in this one!",
 ];
-function tapeHousewifeLine(housewife, opponent, opponentIsBeauty, usedTemplates) {
+// Which physical item each opener/cleaning line revolves around — used
+// to make sure the Housewives never use the same item on two
+// consecutive lines, and to acknowledge it explicitly if the same item
+// comes back later in the same match.
+const TAPE_HOUSEWIFE_ITEM_TAGS = new Map([
+  ["{X} doesn't even bother with a lock-up — she blasts {Y} right in the face with a can of aerosol spray before the match has barely started!", "aerosol"],
+  ["{X} swings a broom directly into {Y}'s face before either of them has even circled the ring once — some opening move!", "broom"],
+  ["{X} unloads a full spray of aerosol right in {Y}'s eyes the second the bell rings — {Y} never saw it coming!", "aerosol"],
+  ["{X} cracks {Y} across the face with a broom handle right out of the gate — this housewife doesn't believe in a fair start!", "broom"],
+  ["{X} takes a swing at {Y} with that rolling pin — more kitchen than combat, but it clearly still stings!", "rolling pin"],
+  ["{X} chases {Y} around the ring with a mop, still nagging the entire time — this has stopped resembling wrestling entirely!", "mop"],
+  ["{X} unloads a spray of aerosol in {Y}'s direction — housewife warfare in full effect out here!", "aerosol"],
+  ["{X} swats {Y} with a broom between complaints — somewhere in all this nagging there's actually a wrestling match trying to happen!", "broom"],
+  ["{X} dumps the contents of a whole bucket on {Y} without missing a beat in her rant — this is chaos, folks, pure chaos!", "bucket"],
+  // DQ weapon finish lines (Arlene/Phyllis) — same tracking, same items,
+  // just using {winner}/{loser} tokens instead of {X}/{Y}.
+  ["{loser} cracks {winner} over the head with a frying pan she had hidden in her robe — the ref sees the whole thing! DISQUALIFIED!", "frying pan"],
+  ["{loser} unloads a can of aerosol spray directly in {winner}'s face — the referee's had enough of this housewife nonsense! DQ!", "aerosol"],
+  ["{loser} takes a broom to {winner} right in front of the referee — that's an automatic disqualification, and she doesn't even stop nagging!", "broom"],
+  ["{loser} nails {winner} with a mop handle right across the back — that's an automatic disqualification, and the ref isn't having any of it!", "mop"],
+  ["{loser} pulls a plunger out of nowhere and just goes after {winner} with it — the referee calls for the bell immediately!", "plunger"],
+  ["{loser} dumps an entire bucket of soapy water over {winner}'s head — the ref's seen enough of this housewife warfare! DQ!", "bucket"],
+  // Humiliation DQ lines (plunger/mop while opponent's down) — same
+  // tracking, same items.
+  ["{loser} has {winner} down on the mat and grabs a plunger from out of nowhere — she SHOVES it right on {winner}'s face! The referee is having none of that — DISQUALIFIED!", "plunger"],
+  ["With {winner} down, {loser} grabs a mop and just presses it right into her face — the referee calls it immediately! That's a disqualification, and frankly, deserved!", "mop"],
+  ["{loser} reaches for a plunger while {winner}'s still down and plants it right on her face — the referee's seen enough, DQ! Somebody get that thing out of the ring!", "plunger"],
+]);
+const TAPE_HOUSEWIFE_SECOND_ITEM_LINES = {
+  "aerosol": "Oh my goodness, {X} has another aerosol can she's about to empty on {Y}'s face!",
+  "broom": "Would you believe it — {X} grabs ANOTHER broom and goes right back to swinging it at {Y}!",
+  "rolling pin": "{X} pulls out a second rolling pin from who-knows-where and takes another swing at {Y}!",
+  "mop": "{X} grabs another mop — how many of these does she even have back there? — and goes right back after {Y}!",
+  "bucket": "{X} finds ANOTHER bucket somehow and dumps it right on {Y} again!",
+  "frying pan": "{X} pulls out yet another frying pan and cracks {Y} with it again!",
+  "plunger": "{X} produces a second plunger from somewhere and goes right back after {Y} with it!",
+};
+// Same idea, for the DQ finish line specifically, where the tokens are
+// {winner}/{loser} instead of {X}/{Y}.
+const TAPE_HOUSEWIFE_SECOND_ITEM_DQ_LINES = {
+  "aerosol": "Oh my goodness, {loser} has ANOTHER aerosol can, and she empties it right on {winner}'s face! The referee's seen enough — DISQUALIFIED!",
+  "broom": "Would you believe it — {loser} grabs a SECOND broom and goes right after {winner} with it! DISQUALIFIED!",
+  "rolling pin": "{loser} pulls out yet another rolling pin and cracks {winner} with it! That's a disqualification!",
+  "mop": "{loser} grabs another mop — where does she keep finding these? — and goes right after {winner} with it! DISQUALIFIED!",
+  "bucket": "{loser} finds ANOTHER bucket somehow and dumps it right on {winner}! DISQUALIFIED!",
+  "frying pan": "{loser} pulls out a second frying pan and cracks {winner} with it again! DISQUALIFIED!",
+  "plunger": "{loser} produces a second plunger and goes right back after {winner} with it! The referee's had enough — DISQUALIFIED!",
+};
+function tapeHousewifeLine(housewife, opponent, opponentIsBeauty, usedTemplates, itemState) {
   let pool;
   if (opponentIsBeauty && Math.random() < 0.5) {
     pool = TAPE_HOUSEWIFE_TRAMP_LINES;
@@ -4030,11 +4097,31 @@ function tapeHousewifeLine(housewife, opponent, opponentIsBeauty, usedTemplates)
   if (available.length === 0) {
     available = pool;
   }
+  // Never use the same physical item two lines in a row.
+  if (itemState && itemState.lastItem) {
+    const noAdjacentRepeat = available.filter(tpl => TAPE_HOUSEWIFE_ITEM_TAGS.get(tpl) !== itemState.lastItem);
+    if (noAdjacentRepeat.length > 0) available = noAdjacentRepeat;
+  }
   const tpl = available[Math.floor(Math.random() * available.length)];
   usedTemplates.add(tpl);
-  return tpl
+  const item = TAPE_HOUSEWIFE_ITEM_TAGS.get(tpl);
+  let text = tpl
     .replaceAll("{X}", tapeShortName(housewife))
     .replaceAll("{Y}", tapeShortName(opponent));
+  if (item && itemState) {
+    // Same item coming back for a second time in this match — call it
+    // out explicitly instead of just repeating the same kind of line.
+    if (itemState.usedItems.has(item)) {
+      text = capitalizeFirst(TAPE_HOUSEWIFE_SECOND_ITEM_LINES[item]
+        .replaceAll("{X}", tapeShortName(housewife))
+        .replaceAll("{Y}", tapeShortName(opponent)));
+    }
+    itemState.usedItems.add(item);
+    itemState.lastItem = item;
+  } else if (itemState) {
+    itemState.lastItem = null;
+  }
+  return text;
 }
 
 const TAPE_MOVE_AFTERTHOUGHTS = [
@@ -4135,7 +4222,6 @@ const TAPE_SUCCESSFUL_MOVE_LINES = [
 const TAPE_PRE_COUNT_JAB_LINES = [
   "{loser} picked a rough night to run out of gas.",
   "That's what happens when the mouth writes checks the body can't cash.",
-  "{loser} came in talking a big game — the scoreboard's about to disagree.",
   "Somebody should've told {loser} this wasn't going to be an easy night.",
   "{loser} is finding out the hard way that {winner} doesn't slow down.",
 ];
@@ -4662,12 +4748,10 @@ const TAPE_ECCENTRIC_LINES = {
     "{X} isn't talking, isn't flaunting, isn't doing anything but staring — and that empty, evil look in her eyes has {Y} rattled.",
   ],
   "Arlene": [
-    "{X} isn't wrestling so much as chasing {Y} around with a rolling pin and a frying pan — pure kitchen warfare.",
-    "{X} swings a frying pan at {Y} between complaints — even mid-chase, she's still nagging her the entire time.",
+    "\"You call THAT a wrestling move?\" {X} snaps at {Y}, not missing a beat with the complaints even mid-hold.",
   ],
   "Phyllis": [
-    "{X} unloads an aerosol can directly at {Y}, following it up with a mop to the face — housewife chaos in full effect.",
-    "{X} chases {Y} down with a mop, griping the whole way — this looks more like spring cleaning than wrestling.",
+    "{X} won't stop griping at {Y} even mid-hold — the nagging never actually stops, not even for a second.",
   ],
   "Envy": [
     "{X} pulls out a pair of nunchucks mid-match — this has gone from wrestling to a straight-up weapons brawl.",
@@ -5949,6 +6033,7 @@ function generateTapeBlurb(a, b, result) {
   const intimidator = intimidatorInMatch || a;
   const intimidated = intimidator === a ? b : a;
   const littleFijiKickoff = [a, b].some(w => w.name === "Little Fiji");
+  const widowKickoff = [a, b].find(w => w.name === "The Widow");
   const niceFaceInMatch = [a, b].find(w => w.name === "Sally the Farmer's Daughter" || w.name === "Amy the Farmer's Daughter");
   // The Housewives' signature opening move is the aerosol/broom-to-the-
   // face trick (handled later, in the housewife beats block) — the
@@ -5962,6 +6047,15 @@ function generateTapeBlurb(a, b, result) {
   let kickoff;
   if (ambusherInMatch) {
     kickoff = fillAB(TAPE_HOLLYWOOD_AMBUSH_KICKOFF[Math.floor(Math.random() * TAPE_HOLLYWOOD_AMBUSH_KICKOFF.length)]);
+  } else if (widowKickoff) {
+    // The poisoned drink is The Widow's actual first move — it needs to
+    // BE the kickoff, not something added afterward, so nothing generic
+    // can end up placed before it.
+    const widowVictim = widowKickoff === a ? b : a;
+    const offerTpl = TAPE_WIDOW_POISON_OFFER_LINES[Math.floor(Math.random() * TAPE_WIDOW_POISON_OFFER_LINES.length)];
+    kickoff = offerTpl
+      .replaceAll("{X}", tapeShortName(widowKickoff))
+      .replaceAll("{Y}", tapeShortName(widowVictim));
   } else if (littleFijiKickoff) {
     if (kickoffRoll < 0.3) {
       kickoff = TAPE_STAREDOWN_LINES[Math.floor(Math.random() * TAPE_STAREDOWN_LINES.length)]
@@ -6040,11 +6134,16 @@ function generateTapeBlurb(a, b, result) {
   // real wrestling mixed in. This overrides the normal beat pool
   // entirely instead of just nudging the odds.
   const housewifeMember = [a, b].find(w => TAPE_HOUSEWIFE_ROSTER.has(w.name));
+  // Shared across the mid-match beats AND the DQ weapon finish line
+  // below, so a Housewife's item choice stays tracked end-to-end
+  // through the whole match, not just within the mid-match beats.
+  const housewifeItemState = { lastItem: null, usedItems: new Set() };
   let beats;
   if (housewifeMember) {
     const opponent = housewifeMember === a ? b : a;
     const opponentIsBeauty = (TAPE_WRESTLER_DESCRIPTORS[opponent.name] || []).includes("beauty");
     beats = [];
+    const itemState = housewifeItemState;
     // Opens with the aerosol-or-broom-to-the-face trick, before any
     // actual wrestling has a chance to happen — unless the rare
     // cheap-shot dropkick kickoff already opened the match instead,
@@ -6055,10 +6154,13 @@ function generateTapeBlurb(a, b, result) {
       beats.push(capitalizeFirst(openerTpl
         .replaceAll("{X}", tapeShortName(housewifeMember))
         .replaceAll("{Y}", tapeShortName(opponent))));
+      const openerItem = TAPE_HOUSEWIFE_ITEM_TAGS.get(openerTpl);
+      itemState.lastItem = openerItem;
+      if (openerItem) itemState.usedItems.add(openerItem);
     }
     const usedHousewifeLines = new Set();
     for (let i = 0; i < 2; i++) {
-      beats.push(capitalizeFirst(tapeHousewifeLine(housewifeMember, opponent, opponentIsBeauty, usedHousewifeLines)));
+      beats.push(capitalizeFirst(tapeHousewifeLine(housewifeMember, opponent, opponentIsBeauty, usedHousewifeLines, itemState)));
     }
     // Whatever real wrestling shows up is limited to exactly three
     // moves — body slam always eligible, throwing her opponent only
@@ -6087,7 +6189,7 @@ function generateTapeBlurb(a, b, result) {
     let pool = anySilent
       ? TAPE_ACTION_BEATS.filter(tpl => !TAPE_SPEECH_ACTION_BEATS.has(tpl))
       : [...TAPE_ACTION_BEATS, ...TAPE_ROAST_BEATS, ...heelRoastBeats, ...TAPE_PILLAR_LINES, ...ringsideAuthorityPool];
-    if (anyGiant) {
+    if (anyGiant || [a, b].some(w => w.name === "Little Fiji")) {
       pool = pool.filter(tpl => tapeBeatAllowed(tpl, a, b));
     }
     beats = shuffleArray(pool).slice(0, 2).map(tpl => {
@@ -6329,20 +6431,13 @@ function generateTapeBlurb(a, b, result) {
   }
 
   const widowInMatch = [a, b].find(w => w.name === "The Widow");
-  if (widowInMatch) {
+  if (widowInMatch && Math.random() < 0.55) {
     const victim = widowInMatch === a ? b : a;
-    const offerTpl = TAPE_WIDOW_POISON_OFFER_LINES[Math.floor(Math.random() * TAPE_WIDOW_POISON_OFFER_LINES.length)];
-    const offerLine = offerTpl
+    const afterTpl = TAPE_WIDOW_POISON_AFTEREFFECT_LINES[Math.floor(Math.random() * TAPE_WIDOW_POISON_AFTEREFFECT_LINES.length)];
+    const afterLine = afterTpl
       .replaceAll("{X}", tapeShortName(widowInMatch))
       .replaceAll("{Y}", tapeShortName(victim));
-    beats.unshift(offerLine);
-    if (Math.random() < 0.55) {
-      const afterTpl = TAPE_WIDOW_POISON_AFTEREFFECT_LINES[Math.floor(Math.random() * TAPE_WIDOW_POISON_AFTEREFFECT_LINES.length)];
-      const afterLine = afterTpl
-        .replaceAll("{X}", tapeShortName(widowInMatch))
-        .replaceAll("{Y}", tapeShortName(victim));
-      beats.push(afterLine);
-    }
+    beats.push(afterLine);
   }
 
   // Priority 1: both wrestlers share a category (rich girls, giants, etc.)
@@ -6469,7 +6564,22 @@ function tapeAppendDqReaction(text) {
   } else if (palestinaMacheteDQ) {
     finish = fillWL(TAPE_PALESTINA_MACHETE_DQ_LINES[Math.floor(Math.random() * TAPE_PALESTINA_MACHETE_DQ_LINES.length)]);
   } else if (housewifeHumiliation) {
-    finish = fillWL(TAPE_HOUSEWIFE_HUMILIATION_LINES[Math.floor(Math.random() * TAPE_HOUSEWIFE_HUMILIATION_LINES.length)]);
+    let candidates = TAPE_HOUSEWIFE_HUMILIATION_LINES;
+    if (housewifeItemState.lastItem) {
+      const filtered = candidates.filter(tpl => TAPE_HOUSEWIFE_ITEM_TAGS.get(tpl) !== housewifeItemState.lastItem);
+      if (filtered.length > 0) candidates = filtered;
+    }
+    const humiliationTpl = candidates[Math.floor(Math.random() * candidates.length)];
+    const humiliationItem = TAPE_HOUSEWIFE_ITEM_TAGS.get(humiliationTpl);
+    if (humiliationItem && housewifeItemState.usedItems.has(humiliationItem)) {
+      finish = fillWL(TAPE_HOUSEWIFE_SECOND_ITEM_DQ_LINES[humiliationItem]);
+    } else {
+      finish = fillWL(humiliationTpl);
+    }
+    if (humiliationItem) {
+      housewifeItemState.usedItems.add(humiliationItem);
+      housewifeItemState.lastItem = humiliationItem;
+    }
   } else if (refMissedCheating) {
     finish = fillWL(TAPE_REF_MISSED_CHEATING_LINES[Math.floor(Math.random() * TAPE_REF_MISSED_CHEATING_LINES.length)]);
   } else if (method === "dq") {
@@ -6481,7 +6591,31 @@ function tapeAppendDqReaction(text) {
       ? [...(chainsawAlreadyOut ? TAPE_DQ_CHAINSAW_ALREADY_ARMED_LINES : TAPE_DQ_WEAPON_LINES["Chainsaw"]), ...TAPE_CHAINSAW_ROPE_DQ_LINES]
       : TAPE_DQ_WEAPON_LINES[loser.name];
     if (weaponPool && Math.random() < 0.7) {
-      finish = fillWL(weaponPool[Math.floor(Math.random() * weaponPool.length)]);
+      // Arlene/Phyllis: keep the item consistent with what's already
+      // been tracked through the match — avoid an adjacent repeat, and
+      // call it out explicitly if it's a genuine second use.
+      let chosenTpl;
+      if (TAPE_HOUSEWIFE_ROSTER.has(loser.name)) {
+        let candidates = weaponPool;
+        if (housewifeItemState.lastItem) {
+          const filtered = candidates.filter(tpl => TAPE_HOUSEWIFE_ITEM_TAGS.get(tpl) !== housewifeItemState.lastItem);
+          if (filtered.length > 0) candidates = filtered;
+        }
+        chosenTpl = candidates[Math.floor(Math.random() * candidates.length)];
+        const item = TAPE_HOUSEWIFE_ITEM_TAGS.get(chosenTpl);
+        if (item && housewifeItemState.usedItems.has(item)) {
+          finish = fillWL(TAPE_HOUSEWIFE_SECOND_ITEM_DQ_LINES[item]);
+        } else {
+          finish = fillWL(chosenTpl);
+        }
+        if (item) {
+          housewifeItemState.usedItems.add(item);
+          housewifeItemState.lastItem = item;
+        }
+      } else {
+        chosenTpl = weaponPool[Math.floor(Math.random() * weaponPool.length)];
+        finish = fillWL(chosenTpl);
+      }
     } else if (Math.random() < 0.5) {
       finish = fillWL(TAPE_DQ_RANDOM_OBJECT_LINES[Math.floor(Math.random() * TAPE_DQ_RANDOM_OBJECT_LINES.length)]);
     } else {
