@@ -8755,7 +8755,8 @@ function viewToHash(view) {
   if (view.screen === "home") return "#home";
   if (NAV_FROM_SCREENS.has(view.screen)) {
     const from = view.from || "home";
-    return `#${view.screen}/from-${from}`;
+    const scrollPart = view.scrollToSkitId ? `/scroll-${view.scrollToSkitId}` : "";
+    return `#${view.screen}/from-${from}${scrollPart}`;
   }
   return `#${view.screen}`;
 }
@@ -8770,9 +8771,9 @@ function hashToView() {
     const from = fromMatch ? fromMatch[1] : "home";
     return { screen: "wrestler", wrestlerId: id, from };
   }
-  const simpleMatch = raw.match(/^(skits|history|misc|quiz|tape)\/from-(\w+)$/);
+  const simpleMatch = raw.match(/^(skits|history|misc|quiz|tape)\/from-(\w+)(?:\/scroll-([\w-]+))?$/);
   if (simpleMatch) {
-    return { screen: simpleMatch[1], from: simpleMatch[2] };
+    return { screen: simpleMatch[1], from: simpleMatch[2], scrollToSkitId: simpleMatch[3] || undefined };
   }
   if (raw === "home" || raw === "skits" || raw === "history" || raw === "misc" || raw === "quiz" || raw === "tape") {
     return { screen: raw, from: "home" };
