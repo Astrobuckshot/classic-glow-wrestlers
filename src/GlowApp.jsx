@@ -2842,7 +2842,7 @@ const QUIZ_QUESTIONS = [
   { quote: "So you wanted to see Gorgeous Ladies — well feast your eyes! Here's the cream of the crop!", answer: "Big Bad Mama" },
   { quote: "This is their (Housewives) chance, man — national television, in this wrestling match, and look how they dress?", answer: "Tina Ferrari" },
   { quote: "Hollywood's wrestling techniques are definitely street material — just like her. Well I plan on cleaning up the streets and using her hair as a mop.", answer: "Roxy Astor" },
-  { quote: "You know, lots of friends of mine have lost a lot of money to people like Evangelina. So during this match, I'm gonna awake her pay.", answer: "Babe the Farmer's Daughter" },
+  { quote: "You know, lots of friends of mine have lost a lot of money to people like Evangelina. So during this match, I'm gonna make her pay.", answer: "Babe the Farmer's Daughter" },
 ];
 
 // Each playthrough pulls a random subset of this size from the full
