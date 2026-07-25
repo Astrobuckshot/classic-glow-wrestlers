@@ -3063,7 +3063,7 @@ const TAPE_RATINGS = {
   "Beastie": 8,
   "Big Bad Mama": 8.3,
   "Broadway Rose": 6.8,
-  "Cheyenne Cher": 7.8,
+  "Cheyenne Cher": 8.0,
   "Colonel Ninotchka": 9,
   "Corporal Kelly": 7,
   "Daisy": 9.2,
@@ -3084,7 +3084,7 @@ const TAPE_RATINGS = {
   "Little Egypt": 5.5,
   "Little Feather": 3.5,
   "Little Fiji": 1.5,
-  "Major Tanya": 8,
+  "Major Tanya": 7.9,
   "Matilda the Hun": 8.5,
   "Melody Trouble Vixen (MTV)": 4.5,
   "Mt. Fiji": 10,
@@ -5318,6 +5318,14 @@ const TAPE_HEEL_DISDAIN_LINES = [
   "{X} makes her way down looking pleased with herself, as usual — I can't imagine why.",
 ];
 
+// Mana doesn't strut or talk — she's silent and primal, so she gets her
+// own version of the heel-disdain moment instead of the generic pool.
+const TAPE_MANA_DISDAIN_LINES = [
+  "{X} growls at anyone who gets too close on her way down — not a word out of her, just pure menace.",
+  "{X} yells at everyone in her vicinity, moving like a tribal warrior ready for battle.",
+  "{X} snarls her way down that aisle — this crowd is giving her a very wide berth.",
+];
+
 // A guaranteed opener right after the intro — the bell rings and the
 // match actually kicks off, so it doesn't drift straight from
 // introductions into random mid-match action.
@@ -5839,7 +5847,8 @@ function generateTapeBlurb(a, b, result) {
   // via a reaction line above — that already covered her "entrance," so
   // this would just be a redundant re-introduction.
   if (!TAPE_ENTRANCE_LINES[a.name] && !ambusherInMatch && !aAlreadyReacted && Math.random() < 0.5) {
-    const tpl = TAPE_HEEL_DISDAIN_LINES[Math.floor(Math.random() * TAPE_HEEL_DISDAIN_LINES.length)];
+    const pool = a.name === "Mana" ? TAPE_MANA_DISDAIN_LINES : TAPE_HEEL_DISDAIN_LINES;
+    const tpl = pool[Math.floor(Math.random() * pool.length)];
     entranceLines = [...entranceLines, tpl.replaceAll("{X}", a.name)];
   }
 
