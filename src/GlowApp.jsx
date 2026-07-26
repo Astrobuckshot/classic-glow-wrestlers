@@ -1537,9 +1537,80 @@ function WrestlerIcon({ wrestler, size = 120 }) {
 }
 
 /* ----------------------------------------------------------------
+   Favorites — persisted to localStorage, shared shape across screens
+   ---------------------------------------------------------------- */
+const FAVORITES_KEY = "glowFavoriteWrestlers";
+
+function readFavorites() {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function useFavorites() {
+  const [favorites, setFavorites] = useState(readFavorites);
+
+  const toggleFavorite = (id) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      try {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify([...next]));
+      } catch {
+        // localStorage unavailable (private browsing, etc.) — favorites just won't persist
+      }
+      return next;
+    });
+  };
+
+  return { favorites, toggleFavorite, isFavorite: (id) => favorites.has(id) };
+}
+
+/* ----------------------------------------------------------------
+   Favorite star toggle button — used on roster cards and wrestler pages
+   ---------------------------------------------------------------- */
+function FavoriteStarButton({ active, onToggle, size = 22 }) {
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle();
+      }}
+      aria-label={active ? "Remove from favorites" : "Add to favorites"}
+      aria-pressed={active}
+      style={{
+        background: "rgba(20,10,30,0.55)",
+        border: "1px solid rgba(255,255,255,0.25)",
+        borderRadius: "50%",
+        width: size,
+        height: size,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        padding: 0,
+        lineHeight: 1,
+        fontSize: size * 0.62,
+        color: active ? "#ffd23f" : "#e8e2f0",
+        boxShadow: active ? "0 0 8px rgba(255,210,63,0.6)" : "0 2px 6px rgba(0,0,0,0.35)",
+        transition: "transform 120ms ease, box-shadow 160ms ease, color 160ms ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.12)")}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+    >
+      {active ? "★" : "☆"}
+    </button>
+  );
+}
+
+/* ----------------------------------------------------------------
    Roster card — picture + name, clickable
    ---------------------------------------------------------------- */
-function RosterCard({ wrestler, onSelect }) {
+function RosterCard({ wrestler, onSelect, isFavorite, onToggleFavorite }) {
   return (
     <button
       onClick={() => onSelect(wrestler.id)}
@@ -1566,8 +1637,11 @@ function RosterCard({ wrestler, onSelect }) {
       }}
       aria-label={`View ${wrestler.name}'s page`}
     >
-      <div className="glow-roster-icon">
+      <div className="glow-roster-icon" style={{ position: "relative" }}>
         <WrestlerIcon wrestler={wrestler} size={92} />
+        <div style={{ position: "absolute", top: -2, right: -2, zIndex: 2 }}>
+          <FavoriteStarButton active={isFavorite} onToggle={() => onToggleFavorite(wrestler.id)} />
+        </div>
       </div>
       <span
         className="glow-roster-name"
@@ -7638,6 +7712,8 @@ function SplashScreen({ onWrestlers, onRandomWrestler, onSkits, onHistory, onQui
 function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBackToSplash }) {
   const [factionFilter, setFactionFilter] = React.useState("all");
   const [yearFilter, setYearFilter] = React.useState("all");
+  const [favoritesOnly, setFavoritesOnly] = React.useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const filteredWrestlers = SORTED_WRESTLERS.filter(w => {
     const factionMatch =
@@ -7648,7 +7724,8 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
     const yearMatch =
       yearFilter === "all" ||
       getYears(w.years).includes(parseInt(yearFilter));
-    return factionMatch && yearMatch;
+    const favoriteMatch = !favoritesOnly || isFavorite(w.id);
+    return factionMatch && yearMatch && favoriteMatch;
   });
 
   const dropdownStyle = {
@@ -7720,7 +7797,25 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             <option key={y} value={y} style={{ color: "#f0e6fa", background: "#2a1140" }}>{y}</option>
           ))}
         </select>
+        <button
+          onClick={() => setFavoritesOnly(f => !f)}
+          aria-pressed={favoritesOnly}
+          style={{
+            ...dropdownStyle,
+            minWidth: "auto",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontWeight: 700,
+            background: favoritesOnly ? "rgba(255,210,63,0.18)" : dropdownStyle.background,
+            border: favoritesOnly ? "1px solid rgba(255,210,63,0.6)" : dropdownStyle.border,
+            color: favoritesOnly ? "#ffd23f" : "#e8d5f5",
+          }}
+        >
+          {favoritesOnly ? "★" : "☆"} Favorites Only
+        </button>
       </div>
+
 
       {factionFilter !== "wrestlersOnly" && <KeyFiguresRow onSelect={onSelect} factionFilter={factionFilter} yearFilter={yearFilter} />}
       <div
@@ -7776,7 +7871,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
         className="glow-roster-grid"
       >
         {filteredWrestlers.length > 0 ? filteredWrestlers.map((w) => (
-          <RosterCard key={w.id} wrestler={w} onSelect={onSelect} />
+          <RosterCard key={w.id} wrestler={w} onSelect={onSelect} isFavorite={isFavorite(w.id)} onToggleFavorite={toggleFavorite} />
         )) : (
           <div style={{
             gridColumn: "1 / -1",
@@ -7786,7 +7881,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             fontSize: 13,
             padding: "40px 0",
           }}>
-            No wrestlers found for these filters.
+            {favoritesOnly ? "No favorites yet — tap the ☆ on any wrestler's photo to add one." : "No wrestlers found for these filters."}
           </div>
         )}
       </div>
@@ -8399,6 +8494,8 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
       KEY_FIGURES.find((k) => k.id === wrestlerId),
     [wrestlerId]
   );
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [shareCopied, setShareCopied] = useState(false);
 
   if (!wrestler) {
     return (
@@ -8409,11 +8506,38 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
     );
   }
 
+  const isTrueWrestler = WRESTLERS.some((w) => w.id === wrestlerId);
+
+  const handleShare = async () => {
+    const shareUrl = `https://${SITE_URL}/#wrestler/${wrestler.id}`;
+    const shareData = {
+      title: `${wrestler.name} — Classic GLOW Wrestlers`,
+      text: `Check out ${wrestler.name} on Classic GLOW Wrestlers!`,
+      url: shareUrl,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // user cancelled the share sheet — no action needed
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      // clipboard unavailable — silently no-op
+    }
+  };
+
   const ytSearchQuery = encodeURIComponent(`GLOW Gorgeous Ladies of Wrestling ${wrestler.name} vs`);
   const ytSearchUrl = `https://www.youtube.com/results?search_query=${ytSearchQuery}`;
 
   return (
     <div style={{ padding: "20px 18px 60px", maxWidth: 760, marginInline: "auto" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 24 }}>
       <button
         onClick={onBack}
         style={{
@@ -8429,11 +8553,47 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
           fontSize: 13,
           fontWeight: 600,
           cursor: "pointer",
-          marginBottom: 24,
         }}
       >
         ← Back to {backLabel}
       </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {isTrueWrestler && (
+            <FavoriteStarButton active={isFavorite(wrestler.id)} onToggle={() => toggleFavorite(wrestler.id)} size={36} />
+          )}
+          <button
+            onClick={handleShare}
+            aria-label={`Share ${wrestler.name}'s page`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              color: "#ffe3f3",
+              borderRadius: 999,
+              padding: "8px 16px",
+              fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            {shareCopied ? "Link copied!" : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.6" y1="13.5" x2="15.4" y2="17.5" />
+                  <line x1="15.4" y1="6.5" x2="8.6" y2="10.5" />
+                </svg>
+                Share
+              </>
+            )}
+          </button>
+        </div>
+      </div>
 
       <div
         style={{
