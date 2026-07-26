@@ -1890,7 +1890,7 @@ const SKITS = [
     id: "skit-spanish-kitchen",
     title: "Spanish Kitchen / Angel's Hell's Kitchen / Beastie's Beanery",
     photo: "skit-spanish-kitchen.jpg",
-    summary: "Customers being waited on by Spanish Red get either roasted or battered by the enraged heel. This skit was passed off to Angel for Season 2 (Angel's Hell's Kitchen), then to Beastie for the final two seasons (Beastie's Beanery).",
+    summary: "People are being waited on by an impatient Spanish Red who gives sass to the customers -- or in some cases, a few smacks. This skit was passed off to Angel for Season 2 (Angel's Hell's Kitchen), then to Beastie for the final two seasons (Beastie's Beanery).",
   },
   {
     id: "skit-bad-girls-poker",
@@ -2231,7 +2231,7 @@ const MOMENTS_IN_HISTORY = [
     id: "history-sugar-torched",
     title: "Sugar Gets Torched by Spike",
     photo: "history-sugar-torched.jpg",
-    summary: "Sugar only had one televised match under her belt before taking on the Heavy Metal Sisters in a tag team match with California Doll. Spike decided to use her infamous blow torch on Sugar's face and burned her badly — she was then pounced on by the unhinged sisters. Sugar left the ring with her hands covering her face — upon her return, she wore a mask to hide her scars, with some opponents trying to rip it off her head (Palestina would somewhat succeed). Sugar left after Season 2 and never did take her mask off in the GLOW ring.",
+    summary: "Sugar only had one televised match under her belt before taking on the Heavy Metal Sisters in a tag team match with California Doll. Spike decided to use her infamous blow torch on Sugar's face and burned her badly — she was then pounced on by the unhinged sisters, and chaos erupted with paramedics and security mixed in the whole mess. Sugar left the ring with her hands covering her face — upon her return, she wore a mask to hide her scars, with some opponents trying to rip it off her head (Palestina would somewhat succeed). Sugar left after Season 2 and never did take her mask off in the GLOW ring.",
   },
   {
     id: "history-tina-ferrari-crown",
@@ -4671,7 +4671,7 @@ const TAPE_DQ_TEMPLATES = [
 const TAPE_DQ_WEAPON_LINES = {
   "Spike": [
     "{loser} grabs a 2x4 from under the ring and sets it ON FIRE with that blow torch! WHAT IS HAPPENING?! The ref has seen enough — {loser} is disqualified!",
-    "{loser} pulls the blow torch out of her gear bag and just goes to work — the referee immediately calls for the bell! DISQUALIFIED!",
+    "{loser} just goes to work with that blow torch, no signs of stopping — the referee immediately calls for the bell! DISQUALIFIED!",
   ],
   "Chainsaw": [
     "{loser} reaches under the ring and pulls out an ACTUAL RUNNING CHAINSAW — the referee is not sticking around to see what happens next! DISQUALIFIED!",
@@ -5368,6 +5368,14 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and scoops up a kid for a photo on her way in, and this whole arena melts on the spot.",
     "Here comes {X}, and the pop she gets just walking out could power the whole arena.",
   ],
+  "Spike": [
+    "Here she comes — {X} fires up that blow torch the moment she steps through the entrance, the flame already roaring before she's even in full view.",
+    "And here comes {X}, who waves that blow torch at a few fans in the front row, who scatter like it's an actual threat.",
+    "Here comes {X}, torch already lit and hissing — I would very much like her to turn that thing off.",
+    "{X} makes her entrance, and cackles over the roar of her own blow torch, and honestly, security should be a lot more concerned than they look.",
+    "Here she comes — {X} swings that lit blow torch at nothing in particular just to hear the crowd gasp.",
+    "Here comes {X}, torch blazing, and I would very much like everyone within ten feet of her to reconsider their seating.",
+  ],
   "Chainsaw": [
     "Here she comes — {X} fires up her chainsaw the moment she steps through the entrance — it's already roaring before she's even in full view.",
     "And here comes {X}, who revs that chainsaw the second she comes through the curtain — the sound alone has fans in the front rows covering their ears.",
@@ -5447,6 +5455,7 @@ const TAPE_ENTRANCE_LINES = {
     "And here comes {X}, who stops mid-rant to complain about the ring lighting specifically — she truly has a note for everything.",
     "{X} snaps at a cameraman for getting her 'bad side,' whatever that means for a Housewife.",
     "Here comes {X}, already listing grievances before she's even reached the ropes — exhausting, just exhausting.",
+    "There's {X} — and already I can feel this crowd's collective eye-roll.",
   ],
   "Phyllis": [
     "{X} makes her entrance, and nags and complains the entire way to the ring — the outfits, the lighting, the crowd, nothing is good enough for her tonight.",
@@ -5455,6 +5464,7 @@ const TAPE_ENTRANCE_LINES = {
     "And here comes {X}, who stops mid-rant to gripe about the ring lighting specifically — a note for absolutely everything, this one.",
     "{X} snaps at a stagehand over something nobody else even noticed — the complaints never stop with her.",
     "Here comes {X}, already muttering complaints before she's reached the ring — some things never change.",
+    "There's {X} — and already I can feel this crowd's collective eye-roll.",
   ],
   "Jungle Woman": [
     "{X} comes out to the ring leading Nature Boy on a leash, stationing him ringside as she climbs in.",
@@ -5529,7 +5539,6 @@ const TAPE_GENERIC_INTROS = [
 // her own signature entrance line above.
 const TAPE_HEEL_DISDAIN_LINES = [
   "And of course, {X} can't just walk to the ring like a normal competitor.",
-  "There's {X} — and already I can feel this crowd's collective eye-roll.",
   "{X} soaks in the boos like she's earned a standing ovation. She has not.",
   "I'll say this for {X} — she's exactly as unpleasant in person as she is on paper.",
   "Here's {X}, folks. Try to contain your excitement.",
