@@ -4929,7 +4929,7 @@ const TAPE_NON_WRESTLING = new Set(["Spike", "Chainsaw", "Arlene", "Phyllis", "D
 const TAPE_SPELL_CAST_LINES = {
   "Big Bad Mama": [
     "Early on, {X} throws some kind of hex at {Y} — and {Y}'s whole demeanor changes right there on the spot.",
-    "Right off the bat, {X} curses {Y} under her breath — {Y} doesn't seem to notice yet, but oh, she will.",
+    "Right off the bat, {X} puts a Voodoo curse on {Y} under her breath — {Y} doesn't seem to notice yet, but oh, she will.",
     "Before the match even gets going, {X} slaps a voodoo charm against {Y}'s forehead — folks, that's never a good sign.",
   ],
 };
@@ -4964,6 +4964,9 @@ const TAPE_TRANCE_AFTEREFFECT_LINES = [
   "{Y} is meowing now. Just — meowing. I have no explanation, folks.",
   "{Y} tried to autograph the referee's shirt mid-match — he did NOT appreciate it!",
   "{Y} keeps insisting she's actually a different wrestler entirely — {X}'s hex has really scrambled something up there!",
+  "{Y} is doing an uncanny impression of {X}'s own moves and mannerisms — even her own corner is doing a double take!",
+  "{Y} has started mimicking another wrestler entirely, right down to the walk and the poses — nobody can explain it!",
+  "{Y} is doing full ballet pirouettes around the ring right now — utterly graceful, and utterly bizarre given the circumstances!",
   "{Y} just tried to do the worm — the actual dance move — in the middle of the ring!",
 ];
 
@@ -6167,6 +6170,13 @@ function generateTapeBlurb(a, b, result) {
   const intimidated = intimidator === a ? b : a;
   const littleFijiKickoff = [a, b].some(w => w.name === "Little Fiji");
   const widowKickoff = [a, b].find(w => w.name === "The Widow");
+  // Big Bad Mama's curse needs to actually be the kickoff (post-entrance,
+  // pre-fight) instead of a mid-match beat, since the line itself always
+  // reads like it happens right away ("right off the bat", "before the
+  // match even gets going"). Rolled here so the same result can be used
+  // both for the kickoff line and the guaranteed follow-through later.
+  const mamaCurseCandidate = [a, b].find(w => w.name === "Big Bad Mama");
+  const mamaCurses = mamaCurseCandidate && Math.random() < 0.5;
   const niceFaceInMatch = [a, b].find(w => w.name === "Sally the Farmer's Daughter" || w.name === "Amy the Farmer's Daughter");
   // The Housewives' signature opening move is the aerosol/broom-to-the-
   // face trick (handled later, in the housewife beats block) — the
@@ -6189,6 +6199,14 @@ function generateTapeBlurb(a, b, result) {
     kickoff = offerTpl
       .replaceAll("{X}", tapeShortName(widowKickoff))
       .replaceAll("{Y}", tapeShortName(widowVictim));
+  } else if (mamaCurses) {
+    // Same idea as The Widow above — the curse always reads like it
+    // happens immediately, so it needs to BE the kickoff.
+    const mamaVictim = mamaCurseCandidate === a ? b : a;
+    const castPool = TAPE_SPELL_CAST_LINES["Big Bad Mama"];
+    kickoff = castPool[Math.floor(Math.random() * castPool.length)]
+      .replaceAll("{X}", tapeShortName(mamaCurseCandidate))
+      .replaceAll("{Y}", tapeShortName(mamaVictim));
   } else if (littleFijiKickoff) {
     if (kickoffRoll < 0.3) {
       kickoff = TAPE_STAREDOWN_LINES[Math.floor(Math.random() * TAPE_STAREDOWN_LINES.length)]
@@ -6248,7 +6266,18 @@ function generateTapeBlurb(a, b, result) {
   const ratingGap = Math.abs((TAPE_RATINGS[a.name] || 5) - (TAPE_RATINGS[b.name] || 5));
   if (method === "normal" && !interference && !auntKitty && !dirtyWin && !refMissed && !weaponGrabbed && !refMissedCheating && !zeldaHelp && !refKnockedOutDecisive && !rivalryMatch && ratingGap >= 5) {
     const squashLine = fillWL(TAPE_SQUASH_LINES[Math.floor(Math.random() * TAPE_SQUASH_LINES.length)]);
-    return [...entranceLines, kickoff, squashLine];
+    const squashFollowThrough = [];
+    if (mamaCurses) {
+      const victim = mamaCurseCandidate === a ? b : a;
+      const victimIsFace = victim.role && victim.role.startsWith("Face");
+      const followTpl = (victimIsFace && Math.random() < 0.5)
+        ? TAPE_MAMA_SNAP_OUT_LINES[Math.floor(Math.random() * TAPE_MAMA_SNAP_OUT_LINES.length)]
+        : TAPE_TRANCE_AFTEREFFECT_LINES[Math.floor(Math.random() * TAPE_TRANCE_AFTEREFFECT_LINES.length)];
+      squashFollowThrough.push(followTpl
+        .replaceAll("{X}", tapeShortName(mamaCurseCandidate))
+        .replaceAll("{Y}", tapeShortName(victim)));
+    }
+    return [...entranceLines, kickoff, ...squashFollowThrough, squashLine];
   }
 
   // A double disqualification skips the normal pin-or-DQ finish entirely
@@ -6259,7 +6288,18 @@ function generateTapeBlurb(a, b, result) {
     const illegalLine = fillABShort(TAPE_DOUBLE_DQ_ILLEGAL_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_ILLEGAL_LINES.length)]);
     const countLine = fillABShort(TAPE_DOUBLE_DQ_COUNT_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_COUNT_LINES.length)]);
     const chaosLine = fillABShort(TAPE_DOUBLE_DQ_LINES[Math.floor(Math.random() * TAPE_DOUBLE_DQ_LINES.length)]);
-    return [...entranceLines, kickoff, illegalLine, countLine, chaosLine, ...rivalryPostMatchLine()];
+    const doubleDqFollowThrough = [];
+    if (mamaCurses) {
+      const victim = mamaCurseCandidate === a ? b : a;
+      const victimIsFace = victim.role && victim.role.startsWith("Face");
+      const followTpl = (victimIsFace && Math.random() < 0.5)
+        ? TAPE_MAMA_SNAP_OUT_LINES[Math.floor(Math.random() * TAPE_MAMA_SNAP_OUT_LINES.length)]
+        : TAPE_TRANCE_AFTEREFFECT_LINES[Math.floor(Math.random() * TAPE_TRANCE_AFTEREFFECT_LINES.length)];
+      doubleDqFollowThrough.push(followTpl
+        .replaceAll("{X}", tapeShortName(mamaCurseCandidate))
+        .replaceAll("{Y}", tapeShortName(victim)));
+    }
+    return [...entranceLines, kickoff, illegalLine, countLine, ...doubleDqFollowThrough, chaosLine, ...rivalryPostMatchLine()];
   }
 
   // The Housewives barely wrestle — their matches are dominated by
@@ -6521,26 +6561,24 @@ function generateTapeBlurb(a, b, result) {
     }
   }
 
-  // Big Bad Mama's voodoo trance only lands about half the time — and
-  // faces have a real shot at snapping out of it before it matters.
-  const mamaInMatch = [a, b].find(w => w.name === "Big Bad Mama");
-  if (mamaInMatch && Math.random() < 0.5) {
-    const victim = mamaInMatch === a ? b : a;
-    const castPool = TAPE_SPELL_CAST_LINES["Big Bad Mama"];
-    const castLine = castPool[Math.floor(Math.random() * castPool.length)]
-      .replaceAll("{X}", tapeShortName(mamaInMatch))
-      .replaceAll("{Y}", tapeShortName(victim));
-    beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, castLine);
-
+  // Big Bad Mama's voodoo trance follow-through — guaranteed whenever
+  // the curse actually landed (rolled earlier, alongside the kickoff),
+  // since the curse-cast line now only ever appears as the kickoff
+  // itself. Faces get a real shot at snapping out of it before it
+  // matters; if she doesn't (or the victim's a heel), the aftereffect
+  // is guaranteed, not just a chance — a curse that showed up in the
+  // commentary always has to actually do something.
+  if (mamaCurses) {
+    const victim = mamaCurseCandidate === a ? b : a;
     const victimIsFace = victim.role && victim.role.startsWith("Face");
     if (victimIsFace && Math.random() < 0.5) {
       const snapLine = TAPE_MAMA_SNAP_OUT_LINES[Math.floor(Math.random() * TAPE_MAMA_SNAP_OUT_LINES.length)]
-        .replaceAll("{X}", tapeShortName(mamaInMatch))
+        .replaceAll("{X}", tapeShortName(mamaCurseCandidate))
         .replaceAll("{Y}", tapeShortName(victim));
       beats.push(snapLine);
-    } else if (Math.random() < 0.85) {
+    } else {
       const afterLine = TAPE_TRANCE_AFTEREFFECT_LINES[Math.floor(Math.random() * TAPE_TRANCE_AFTEREFFECT_LINES.length)]
-        .replaceAll("{X}", tapeShortName(mamaInMatch))
+        .replaceAll("{X}", tapeShortName(mamaCurseCandidate))
         .replaceAll("{Y}", tapeShortName(victim));
       beats.push(afterLine);
     }
