@@ -4653,7 +4653,7 @@ const TAPE_PALESTINA_MACHETE_FLAVOR_LINES = [
 const TAPE_DQ_TEMPLATES = [
   "WAIT — {loser} just grabbed a chair from ringside! The referee's had enough — HE'S CALLING FOR THE BELL! {winner} wins by disqualification!",
   "{loser} chokes {winner} out with the ring rope and just won't let go — the ref counts to five and calls it right there! DISQUALIFIED!",
-  "That's a low blow if I've ever seen one! {loser} goes below the belt, and the referee doesn't hesitate — DQ!",
+  "{loser} gets {winner} in a choke and just won't let go, even with the referee counting — DISQUALIFIED!",
   "{loser} just raked {winner}'s eyes right in front of the referee — no way to ignore that one! DISQUALIFIED!",
   "{loser} yanks a fistful of {winner}'s hair and just won't let go, even with the ref right there counting — that's a DQ!",
   "{loser} tosses {winner} clean over the top rope to the floor — automatic disqualification, no way around it!",
@@ -7803,6 +7803,9 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
         @media (min-width: 1040px) {
           .glow-roster-grid { grid-template-columns: repeat(6, 1fr) !important; }
         }
+        @media (min-width: 820px) {
+          .glow-main-nav-btn { width: 700px !important; }
+        }
       `}</style>
 
       <div
@@ -7827,6 +7830,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
       <div style={{ textAlign: "center", marginTop: 28 }}>
         <button
           onClick={onSkits}
+          className="glow-main-nav-btn"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -7866,6 +7870,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
       <div style={{ textAlign: "center", marginTop: 16 }}>
         <button
           onClick={onHistory}
+          className="glow-main-nav-btn"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -7905,6 +7910,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
       <div style={{ textAlign: "center", marginTop: 16 }}>
         <button
           onClick={onQuiz}
+          className="glow-main-nav-btn"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -7944,6 +7950,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
       <div style={{ textAlign: "center", marginTop: 16 }}>
         <button
           onClick={onTape}
+          className="glow-main-nav-btn"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -7983,6 +7990,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
       <div style={{ textAlign: "center", marginTop: 16 }}>
         <button
           onClick={onMisc}
+          className="glow-main-nav-btn"
           style={{
             display: "inline-flex",
             alignItems: "center",
