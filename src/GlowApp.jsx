@@ -7804,7 +7804,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           .glow-roster-grid { grid-template-columns: repeat(6, 1fr) !important; }
         }
         @media (min-width: 820px) {
-          .glow-main-nav-btn { width: 700px !important; }
+          .glow-main-nav-btn { width: 620px !important; }
         }
       `}</style>
 
