@@ -7804,7 +7804,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           .glow-roster-grid { grid-template-columns: repeat(6, 1fr) !important; }
         }
         @media (min-width: 820px) {
-          .glow-main-nav-btn { width: 620px !important; }
+          .glow-main-nav-btn { width: 580px !important; }
         }
       `}</style>
 
@@ -8083,7 +8083,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
             border: "1px solid rgba(255,255,255,0.25)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 340,
+            width: 370,
             textAlign: "center",
           }}
           onMouseEnter={(e) => {
@@ -8125,7 +8125,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
             border: "1px solid rgba(255,255,255,0.25)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 340,
+            width: 370,
             textAlign: "center",
           }}
           onMouseEnter={(e) => {
@@ -8167,7 +8167,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
             border: "1px solid rgba(255,255,255,0.25)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 340,
+            width: 370,
             textAlign: "center",
             lineHeight: 1.5,
           }}
@@ -8210,7 +8210,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
             border: "1px solid rgba(255,255,255,0.25)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 340,
+            width: 370,
             textAlign: "center",
           }}
           onMouseEnter={(e) => {
@@ -8252,7 +8252,7 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
             border: "1px solid rgba(255,255,255,0.25)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 340,
+            width: 370,
             textAlign: "center",
             lineHeight: 1.5,
           }}
