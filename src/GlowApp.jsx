@@ -4435,10 +4435,10 @@ const TAPE_PRE_COUNT_JAB_LINES = [
 // back-and-forth — a single decisive blow ends it fast, ratings-friendly
 // squash style.
 const TAPE_SQUASH_LINES = [
-  "This isn't even a contest, folks — {winner} catches {loser} with one single shot, and it's already over before it started!",
-  "{winner} doesn't even need a game plan here — one big move on {loser} and this one's done in a flash!",
-  "That's all she wrote, folks — a single, decisive blow from {winner}, and {loser} is finished before the crowd even gets settled in!",
-  "No feeling-out process needed — {winner} ends this in one shot, and {loser} never had a chance!",
+  "This isn't even a contest, folks — {winner} catches {loser} with one single shot, and the referee barely needs to count! ONE, TWO, THREE — it's already over before it started!",
+  "{winner} doesn't even need a game plan here — one big move on {loser}, cover, ONE! TWO! THREE! Done in a flash!",
+  "That's all she wrote, folks — a single, decisive blow from {winner}, down goes the cover — ONE, TWO, THREE! {loser} is finished before the crowd even gets settled in!",
+  "No feeling-out process needed — {winner} ends this in one shot, hooks the leg — ONE! TWO! THREE!! {loser} never had a chance!",
 ];
 
 // A rare chaos finish — both wrestlers brawl their way outside the ring
@@ -4514,7 +4514,7 @@ const TAPE_REF_MISSED_LINES = [
 const TAPE_REF_MISSED_CHEATING_LINES = [
   "The referee's back is turned at exactly the wrong moment — {winner} grabs a fistful of tights for leverage on that pin, and nobody catches it! ONE, TWO, THREE!!",
   "{winner} has her feet up on the ropes for extra leverage on that cover — the referee doesn't see it, and counts it anyway! ONE! TWO! THREE!!",
-  "Somehow the referee completely misses {winner} cheating her way through that finish — {loser} is left arguing with him after the fact, but the decision stands!",
+  "Somehow the referee completely misses {winner} cheating her way through that finish — {loser} is left arguing with him after the fact, but the count still lands official! ONE, TWO, THREE!!",
   "{winner} gets away with one right there — a handful of hair, a boot on the ropes, something — and the referee counts the pin clean! ONE, TWO, THREE!!",
 ];
 
@@ -4556,7 +4556,7 @@ const TAPE_MT_FIJI_MIDMATCH_RESCUE_LINES = [
 // a generic "someone" if no eligible helper turned up).
 const TAPE_LITTLE_FIJI_KNOCKOUT_WIN_LINES = [
   "Out of nowhere — {helper} comes flying in from ringside and lays {loser} out cold with a forearm shot! The referee has no choice — this one's over, Little Fiji wins by disqualification!",
-  "Did you SEE that? {helper} just knocked {loser} out cold from behind! The ref calls it immediately — Little Fiji gets the win, and she didn't even have to lift a finger for that one!",
+  "Did you SEE that? {helper} just knocked {loser} out cold from behind! The ref calls it immediately — Little Fiji wins by disqualification, and she didn't even have to lift a finger for that one!",
   "{helper} storms the ring and flattens {loser} before she even knows what hit her — {loser}'s not moving, and the referee's got no choice but to give this one to Little Fiji by DQ!",
   "Somebody call it — {helper} just cracked {loser} over the head from ringside and she's out cold! Little Fiji wins this one by disqualification, and she never landed a single blow!",
 ];
