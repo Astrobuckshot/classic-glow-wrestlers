@@ -1319,9 +1319,17 @@ function getPhotoUrl(wrestler) {
    happens to share that phrase). TAPE_BIO_HISTORY_LINKS below is a
    manual, per-wrestler-id map for exactly this.
    ---------------------------------------------------------------- */
+// Some bios refer to a wrestler by a shortened form of her name rather
+// than her full registered name (e.g. "Col. Ninotchka" instead of
+// "Colonel Ninotchka") — these aliases point to the same id so those
+// mentions link correctly too.
+const TAPE_LINKIFY_ALIASES = [
+  { id: "ninotchka", name: "Col. Ninotchka", kind: "person" },
+];
 const TAPE_LINKIFY_TARGETS = [...WRESTLERS, ...KEY_FIGURES]
   .filter((w) => w.name)
-  .map((w) => ({ id: w.id, name: w.name, kind: "person" }));
+  .map((w) => ({ id: w.id, name: w.name, kind: "person" }))
+  .concat(TAPE_LINKIFY_ALIASES);
 function linkifyBio(text, currentId, onNavigate, onNavigateToSkit, onNavigateToHistory) {
   if (!text || typeof text !== "string") return text;
   const personTargets = TAPE_LINKIFY_TARGETS.filter((w) => w.id !== currentId && onNavigate);
@@ -1978,25 +1986,25 @@ const SKITS = [
     id: "skit-bad-girls-poker",
     title: "Bad Girls Poker",
     photo: "skit-bad-girls-poker.jpg",
-    summary: "Kitty's Killers are at the casino playing poker when cheating or a bad joke ensues — leading to some sort of pummeling, sometimes at the expense of others like David McLane. In Season 4, they'd play poker in a basic room instead, but it otherwise had the same premise.",
+    summary: "Kitty's Killers are at the casino playing poker when cheating or a bad joke ensues — leading to some sort of pummeling, usually at the expense of others such as David McLane. In Season 4, they'd play poker in a basic room instead, but it otherwise had the same premise.",
   },
   {
     id: "skit-asking-ashley",
     title: "Asking Ashley / Godiva's Bare Facts",
     photo: "skit-asking-ashley.jpg",
-    summary: "Ashley Cartier answers letters from curious women and sleazy men. The format of this skit evolved into a phone call-in segment called Godiva's Bare Facts when Ashley left after Season 2.",
+    summary: "Ashley Cartier answers letters from curious women and sleazy men in this comedic 'advice' skit. The format evolved into a phone call-in segment called Godiva's Bare Facts when Ashley left after Season 2.",
   },
   {
     id: "skit-farmers-daughter",
     title: "Farmer's Daughter's Letters Home / Amy's Letters Home",
     photo: "skit-farmers-daughter.jpg",
-    summary: "Sally the Farmer's Daughter writes home to family, and humorously shows off her naivete in the big city. When Sally left in Season 2, Amy the Farmer's Daughter took over the skit and it was retitled Amy's Letters Home.",
+    summary: "Sally the Farmer's Daughter writes home to family, and humorously shows off her charming naivete in the big city. When Sally left in Season 2, Amy the Farmer's Daughter took over the skit and it was retitled Amy's Letters Home.",
   },
   {
     id: "skit-points-to-ponder",
     title: "Points to Ponder",
     photo: "skit-points-to-ponder.jpg",
-    summary: "While wearing a graduation cap and reading a book, The California Doll uses wordplay — sharing silly metaphors (e.g. \"There are only two things you can't have for breakfast — lunch and dinner!\"). This skit ended with California Doll's departure after Season 2.",
+    summary: "While wearing a smiley face graduation cap and reading a book, The California Doll humorously uses wordplay — sharing silly metaphors (e.g. \"There are only two things you can't have for breakfast — lunch and dinner!\"). This skit ended with California Doll's departure after Season 2.",
   },
   {
     id: "skit-satanic-services",
@@ -2026,13 +2034,13 @@ const SKITS = [
     id: "skit-zeldas-zingers",
     title: "Zelda's Zingers",
     photo: "skit-zeldas-zingers.jpg",
-    summary: "A loud background score accompanies Zelda as she contemplates social matters while writing with a quill pen at her desk. These zingers are more serious than comedic.",
+    summary: "A loud background score accompanies Zelda as she contemplates social matters while writing with a quill pen at her desk. These zingers are more curious than comedic.",
   },
   {
     id: "skit-mtv-connection",
     title: "MTV's GLOW Connection",
     photo: "skit-mtv-connection.jpg",
-    summary: "Melody Trouble Vixen brings high energy and rocks out as club DJ at the GLOW Disco, all while she spins jokes and ribs her fellow GLOW wrestlers.",
+    summary: "Melody Trouble Vixen brings high energy and rocks out as club DJ at the GLOW Disco — all while she spins jokes and ribs other GLOW wrestlers.",
   },
   {
     id: "skit-mt-miranda",
@@ -2270,7 +2278,7 @@ const HISTORY_EXTRAS = [
     id: "history-glow-games",
     title: "GLOW Games",
     photo: "history-glow-games.jpg",
-    summary: "The Riviera Hotel hosted the GLOW Games in Season 2, which held various head-to-head challenges between Stallone's Sweethearts & Kitty's Killers — a race up and down escalators, tug of war, swimming on rafts, arm wrestling, and a pizza-eating contest between Mt. Fiji and Matilda the Hun — which, of course, led to a food fight.",
+    summary: "The Riviera Hotel hosted the GLOW Games in Season 2, which held various head-to-head challenges between Stallone's Sweethearts & Kitty's Killers — a race up and down escalators, tug of war, swimming race on rafts, arm wrestling, and a pizza-eating contest between Mt. Fiji and Matilda the Hun — which, of course, led to a food fight.",
   },
   {
     id: "history-music-videos",
