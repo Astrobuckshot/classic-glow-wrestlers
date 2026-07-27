@@ -3648,10 +3648,12 @@ function simulateTapeMatch(a, b) {
   // just a line of flavor text.
   let injured = null;
   let injuryMove = null;
+  let injuryBodyPart = null;
   if (Math.random() < 0.22) {
     injured = Math.random() < 0.5 ? a : b;
     const injuryOpponent = injured === a ? b : a;
-    injuryMove = tapeMove(injuryOpponent);
+    injuryMove = tapeMove(injuryOpponent, injured);
+    injuryBodyPart = TAPE_INJURY_BODY_PARTS[Math.floor(Math.random() * TAPE_INJURY_BODY_PARTS.length)];
   }
 
   // A handful of wrestlers will go digging under the ring apron for a
@@ -3666,7 +3668,7 @@ function simulateTapeMatch(a, b) {
     weaponGrabbed = underRingCandidate;
     if (Math.random() < 0.05) {
       const opponent = underRingCandidate === a ? b : a;
-      return { winner: opponent, loser: underRingCandidate, method: "dq", underRingWeapon: true, weaponGrabbed, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: opponent, loser: underRingCandidate, method: "dq", underRingWeapon: true, weaponGrabbed, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3678,7 +3680,7 @@ function simulateTapeMatch(a, b) {
   if (Math.random() < 0.05) {
     refKnockedOut = true;
     if (Math.random() < 0.5) {
-      return { winner: a, loser: b, method: "normal", refKnockedOut: true, refKnockedOutDecisive: true, weaponGrabbed, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: a, loser: b, method: "normal", refKnockedOut: true, refKnockedOutDecisive: true, weaponGrabbed, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3688,16 +3690,16 @@ function simulateTapeMatch(a, b) {
     // Extremely rare: even the Heavy Metal Sisters' blatant weapon use
     // sometimes slips past the referee entirely, and she wins clean.
     if (Math.random() < 0.01) {
-      return { winner: dqSide, loser: opponent, method: "normal", refMissed: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: dqSide, loser: opponent, method: "normal", refMissed: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
-    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // Housewives try to humiliate a downed opponent by putting a plunger
   // or mop right on her face — 20% chance this gets her disqualified.
   const housewifeDuelist2 = [a, b].find(w => TAPE_HOUSEWIFE_ROSTER.has(w.name));
   if (housewifeDuelist2 && Math.random() < 0.2) {
     const opponent = housewifeDuelist2 === a ? b : a;
-    return { winner: opponent, loser: housewifeDuelist2, method: "dq", housewifeHumiliation: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: opponent, loser: housewifeDuelist2, method: "dq", housewifeHumiliation: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // Sara and Mabel wrestle in masks — 20% chance their opponent turns
   // the mask around backwards mid-match, blinding them and handing the
@@ -3705,7 +3707,7 @@ function simulateTapeMatch(a, b) {
   const hickInMatch = [a, b].find(w => w.name === "Sara" || w.name === "Mabel");
   if (hickInMatch && Math.random() < 0.2) {
     const opponent = hickInMatch === a ? b : a;
-    return { winner: opponent, loser: hickInMatch, method: "normal", maskTurned: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: opponent, loser: hickInMatch, method: "normal", maskTurned: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // A small, aerial-reliant wrestler simply cannot generate the power to
   // knock a true giant off her feet on her own — the giant just catches
@@ -3718,13 +3720,13 @@ function simulateTapeMatch(a, b) {
     const outsideHelper = helperCandidates.length > 0
       ? helperCandidates[Math.floor(Math.random() * helperCandidates.length)]
       : null;
-    return { winner: smallVsGiantCandidate, loser: giantVsSmallCandidate, method: "dq", giantKnockdownHelp: true, outsideHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: smallVsGiantCandidate, loser: giantVsSmallCandidate, method: "dq", giantKnockdownHelp: true, outsideHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // The Dirty Wrestlers get themselves disqualified about half the time.
   const dirtyWrestler = [a, b].find(w => TAPE_DIRTY_WRESTLERS.has(w.name));
   if (dirtyWrestler && Math.random() < 0.5) {
     const opponent = dirtyWrestler === a ? b : a;
-    return { winner: opponent, loser: dirtyWrestler, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: opponent, loser: dirtyWrestler, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // Some of the roster's dirtiest players — the Housewives, the Soul
   // Patrol, Matilda the Hun, and Palestina — occasionally get away with
@@ -3733,13 +3735,13 @@ function simulateTapeMatch(a, b) {
   const dirtyWinCandidate = [a, b].find(w => TAPE_DIRTY_WIN_ELIGIBLE.has(w.name));
   if (dirtyWinCandidate && Math.random() < 0.05) {
     const opponent = dirtyWinCandidate === a ? b : a;
-    return { winner: dirtyWinCandidate, loser: opponent, method: "normal", dirtyWin: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: dirtyWinCandidate, loser: opponent, method: "normal", dirtyWin: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // A rare double disqualification — both wrestlers brawl their way
   // outside the ring, the referee completely loses control, and the
   // match is thrown out with no winner declared.
   if (Math.random() < 0.05) {
-    return { winner: null, loser: null, method: "double_dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: null, loser: null, method: "double_dq", weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
   // In the spirit of GLOW's chaos, roughly 1 in 5 matches ends in a DQ
   // regardless of who's wrestling — and it's almost always the heel's
@@ -3747,7 +3749,7 @@ function simulateTapeMatch(a, b) {
   if (Math.random() < 0.2) {
     const dqSide = Math.random() < 0.97 ? a : b;
     const opponent = dqSide === a ? b : a;
-    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Extremely rare: Aunt Kitty herself sneaks ringside and slips her
@@ -3755,7 +3757,7 @@ function simulateTapeMatch(a, b) {
   // a weapon — the referee never catches it, and it's enough to win the
   // match outright.
   if (Math.random() < 0.01) {
-    return { winner: a, loser: b, method: "normal", auntKitty: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: a, loser: b, method: "normal", auntKitty: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Every so often, somebody just plain cheats — nothing specific to
@@ -3769,11 +3771,11 @@ function simulateTapeMatch(a, b) {
     if (cheatCandidates.length === 2) {
       const cheater = Math.random() < 0.5 ? a : b;
       const opponent = cheater === a ? b : a;
-      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     } else if (cheatCandidates.length === 1) {
       const cheater = cheatCandidates[0];
       const opponent = cheater === a ? b : a;
-      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: cheater, loser: opponent, method: "normal", refMissedCheating: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3798,7 +3800,7 @@ function simulateTapeMatch(a, b) {
     interference = { helper, beneficiary, caught };
     if (caught) {
       const opponent = beneficiary === a ? b : a;
-      return { winner: opponent, loser: beneficiary, method: "dq", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: opponent, loser: beneficiary, method: "dq", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
   }
 
@@ -3848,7 +3850,7 @@ function simulateTapeMatch(a, b) {
   const littleFijiInMatch = [a, b].find(w => w.name === "Little Fiji");
   if (littleFijiInMatch && loser === littleFijiInMatch && Math.random() < 0.33) {
     const opponent = littleFijiInMatch === a ? b : a;
-    return { winner: littleFijiInMatch, loser: opponent, method: "dq", mtFijiRescue: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: littleFijiInMatch, loser: opponent, method: "dq", mtFijiRescue: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Little Fiji never wins on her own physical merit — she's simply not
@@ -3863,9 +3865,9 @@ function simulateTapeMatch(a, b) {
       const knockoutHelper = knockoutCandidates.length > 0
         ? knockoutCandidates[Math.floor(Math.random() * knockoutCandidates.length)]
         : null;
-      return { winner: littleFijiInMatch, loser: opponent, method: "dq", littleFijiKnockoutWin: true, knockoutHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+      return { winner: littleFijiInMatch, loser: opponent, method: "dq", littleFijiKnockoutWin: true, knockoutHelper, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
-    return { winner: littleFijiInMatch, loser: opponent, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: littleFijiInMatch, loser: opponent, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
   // Zelda isn't much of a wrestler — she gets by on wit alone — so when
@@ -3874,10 +3876,10 @@ function simulateTapeMatch(a, b) {
   const zeldaInMatch = [a, b].find(w => w.name === "Zelda");
   if (zeldaInMatch && loser === zeldaInMatch && Math.random() < 0.25) {
     const opponent = zeldaInMatch === a ? b : a;
-    return { winner: zeldaInMatch, loser: opponent, method: "normal", zeldaHelp: true, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    return { winner: zeldaInMatch, loser: opponent, method: "normal", zeldaHelp: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
 
-  return { winner, loser, method: "normal", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, palestinaMachete, hogtieAttempter, hogtieOutcome };
+  return { winner, loser, method: "normal", interference, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
 }
 
 // Size-aware word banks — giants get a heavier, more brutal vocabulary,
@@ -3899,12 +3901,21 @@ const TAPE_TINY_MOVES = ["a dropkick", "a flying crossbody off the top rope", "a
 const TAPE_WRESTLER_MOVES = {
   "Jungle Woman": ["a vicious clawing", "a clawing attack"],
 };
-function tapeMove(w) {
+function tapeMove(w, opponent) {
   if (TAPE_WRESTLER_MOVES[w.name]) {
     const pool = TAPE_WRESTLER_MOVES[w.name];
     return pool[Math.floor(Math.random() * pool.length)];
   }
-  const pool = TAPE_FRAGILE.has(w.name) ? TAPE_TINY_MOVES : TAPE_POWER_MOVES;
+  let pool = TAPE_FRAGILE.has(w.name) ? TAPE_TINY_MOVES : TAPE_POWER_MOVES;
+  // Suplexing a true giant takes real size and strength — Daisy's tall
+  // enough to actually pull it off, nobody else on the roster is. True
+  // giants also never suplex anybody themselves, consistent with them
+  // never leaving their feet.
+  const suplexBlocked = TAPE_TRUE_GIANTS.has(w.name)
+    || (opponent && TAPE_TRUE_GIANTS.has(opponent.name) && w.name !== "Daisy");
+  if (suplexBlocked && pool.includes("a suplex")) {
+    pool = pool.filter(m => m !== "a suplex");
+  }
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
@@ -4364,20 +4375,40 @@ const TAPE_MOVE_AFTERTHOUGHTS = [
 // move that caused it, with a matching set of carryover lines that get
 // used later in the same match to keep the injury feeling ongoing
 // rather than forgotten the moment it happens.
+const TAPE_INJURY_BODY_PARTS = ["arm", "leg", "shoulder", "back", "head"];
+
 const TAPE_INJURY_LINES = [
-  "{Y} catches {X} with {move}, and {X} goes down hard, clutching at it in real pain — this doesn't look good at all.",
-  "{Y} lands {move} flush, and {X} is moving gingerly now, favoring it noticeably with every step.",
-  "{X} takes {move} right on the money from {Y} — she's still in this, but you can see her wincing every time she puts weight on it.",
-  "{Y} connects with {move}, and {X}'s whole body seizes up for a second — the referee actually checks on her before the match continues.",
-  "That's a nasty landing for {X} off {move} — she's holding it and shaking out the pain, trying not to let {Y} see how much that hurt.",
-  "{X} crumples after {move} from {Y}, and for a second there it looks like this might be over right then and there.",
+  "{Y} catches {X} with {move}, and {X} goes down hard, clutching at her {part} in real pain — this doesn't look good at all.",
+  "{Y} lands {move} flush, and {X} is moving gingerly now, favoring her {part} noticeably with every step.",
+  "{X} takes {move} right on the money from {Y} — she's still in this, but you can see her wincing every time she puts weight on that {part}.",
+  "{Y} connects with {move}, and {X}'s {part} seizes up for a second — the referee actually checks on her before the match continues.",
+  "That's a nasty landing for {X} off {move} — she's holding her {part} and shaking out the pain, trying not to let {Y} see how much that hurt.",
+  "{X} crumples after {move} from {Y}, grabbing at her {part}, and for a second there it looks like this might be over right then and there.",
+];
+// Nobody clutches their own head the same way — this variant fires
+// instead whenever the injured body part rolls as "head", using dazed/
+// woozy language rather than the generic clutching phrasing above.
+const TAPE_INJURY_HEAD_LINES = [
+  "{Y} catches {X} with {move}, and {X} goes down hard, clearly dazed — this doesn't look good at all.",
+  "{Y} lands {move} flush, and {X} looks genuinely woozy now, blinking hard trying to shake it off.",
+  "{X} takes {move} right on the money from {Y} — she's still in this, but you can see it in her eyes, she's not all the way there right now.",
+  "{Y} connects with {move}, and {X} staggers, clearly rattled — the referee actually checks on her before the match continues.",
+  "That's a nasty shot for {X} off {move} — she's holding her head and blinking hard, trying not to let {Y} see how out of it she is.",
+  "{X} crumples after {move} from {Y}, dazed and slow to get back up, and for a second there it looks like this might be over right then and there.",
 ];
 const TAPE_INJURY_CARRYOVER_LINES = [
-  "{X} is still favoring that same spot from earlier — {Y} zeroes right back in on it like she's been waiting for the opening.",
-  "You can see {X} protecting that same area she banged up before — it's clearly still bothering her, and {Y} knows it.",
-  "That earlier injury hasn't gone anywhere — {X} is moving noticeably slower on that side, and {Y} isn't about to let her forget it.",
-  "Every time {X} plants on that side, you can see it in her face — {Y} keeps testing it on purpose now.",
-  "{X} is fighting through it, but that injury from earlier is clearly still there, and {Y} is targeting it relentlessly.",
+  "{X} is still favoring that same {part} from earlier — {Y} zeroes right back in on it like she's been waiting for the opening.",
+  "You can see {X} protecting that {part} she banged up before — it's clearly still bothering her, and {Y} knows it.",
+  "That pain in her {part} from earlier isn't going away — {X} is moving noticeably slower because of it, and {Y} isn't about to let her forget it.",
+  "Every time {X} puts weight on that {part}, you can see it in her face — {Y} keeps testing it on purpose now.",
+  "{X} has taken a beating from {Y} — {X}'s {part} is obviously still hurt, but she's fighting through it with all she's got.",
+];
+const TAPE_INJURY_HEAD_CARRYOVER_LINES = [
+  "{X} still looks a little foggy from that shot earlier — {Y} zeroes right back in on it like she's been waiting for the opening.",
+  "You can see {X} still isn't quite all the way back after that shot to the head — it's clearly still bothering her, and {Y} knows it.",
+  "That daze from earlier hasn't fully cleared — {X} looks a step slow, and {Y} isn't about to let her forget it.",
+  "Every time {X} takes a hard shot, you can see her blink it off — {Y} keeps testing that on purpose now.",
+  "{X} has taken a beating from {Y} — {X}'s obviously still rattled from earlier, but fighting through it with all she's got.",
 ];
 
 const TAPE_TURNING_POINT_BEATS = [
@@ -5169,14 +5200,14 @@ const TAPE_CATEGORIES = [
   },
   {
     name: "Giants",
-    members: ["Mt. Fiji", "Matilda the Hun", "Big Bad Mama"],
+    members: ["Mt. Fiji", "Matilda the Hun", "Big Bad Mama", "Daisy"],
     matchupLines: [
       "Two absolute giants collide in the center of the ring — the whole structure seems to shake.",
       "{A} and {B} lock up and neither budges an inch. This is a genuine battle of titans.",
       "The sheer size of {A} and {B} both is something else — this is a heavyweight collision in every sense.",
     ],
     soloLines: [
-      "{X} looms over the ring, an intimidating presence before the bell even rings.",
+      "{X} looms over the ring, an intimidating presence that never seems to let up.",
       "{X} just manhandles {Y} — picks her up like she weighs nothing and tosses her clean across the ring.",
       "{Y} tries everything to put {X} down, and {X} barely even staggers — she is next to impossible to knock off her feet.",
     ],
@@ -5968,7 +5999,7 @@ const TAPE_INTERFERENCE_CAUGHT_FINISH_LINES = [
 ];
 
 function generateTapeBlurb(a, b, result) {
-  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper, hogtieAttempter, hogtieOutcome } = result;
+  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, injuryBodyPart, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper, hogtieAttempter, hogtieOutcome } = result;
 
   // A handful of matchups are known, heated rivalries — these get extra
   // passionate mid-match commentary and a dedicated post-match line
@@ -6049,8 +6080,8 @@ function generateTapeBlurb(a, b, result) {
       .replaceAll("{rGimmick}", tapeGimmick(roastTarget))
       .replaceAll("{adjA}", tapeAdjective(a))
       .replaceAll("{adjB}", tapeAdjective(b))
-      .replaceAll("{moveA}", tapeMove(a))
-      .replaceAll("{moveB}", tapeMove(b))
+      .replaceAll("{moveA}", tapeMove(a, b))
+      .replaceAll("{moveB}", tapeMove(b, a))
       .replaceAll("{insultR}", tapeInsult(roastTarget))
       .replaceAll("{insultR2}", tapeInsult(roastOther))
       .replaceAll("{emotion}", tapeEmotion())));
@@ -6069,7 +6100,7 @@ function generateTapeBlurb(a, b, result) {
       .replaceAll("{loser}", loserName)
       .replaceAll("{winnerGimmick}", tapeGimmick(winner))
       .replaceAll("{loserGimmick}", tapeGimmick(loser))
-      .replaceAll("{winnerMove}", tapeMove(winner))
+      .replaceAll("{winnerMove}", tapeMove(winner, loser))
       .replaceAll("{winnerFinisher}", tapeFinisherDisplay(winner))));
   };
 
@@ -6547,17 +6578,22 @@ function generateTapeBlurb(a, b, result) {
   let injuryCarryoverLine = null;
   if (injured) {
     const injuryVictimOpponent = injured === a ? b : a;
-    const initTpl = TAPE_INJURY_LINES[Math.floor(Math.random() * TAPE_INJURY_LINES.length)];
+    const isHeadInjury = injuryBodyPart === "head";
+    const initPool = isHeadInjury ? TAPE_INJURY_HEAD_LINES : TAPE_INJURY_LINES;
+    const initTpl = initPool[Math.floor(Math.random() * initPool.length)];
     const initLine = capitalizeFirst(initTpl
       .replaceAll("{X}", tapeShortName(injured))
       .replaceAll("{Y}", tapeShortName(injuryVictimOpponent))
-      .replaceAll("{move}", injuryMove));
+      .replaceAll("{move}", injuryMove)
+      .replaceAll("{part}", injuryBodyPart));
     beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, initLine);
 
-    const carryTpl = TAPE_INJURY_CARRYOVER_LINES[Math.floor(Math.random() * TAPE_INJURY_CARRYOVER_LINES.length)];
+    const carryPool = isHeadInjury ? TAPE_INJURY_HEAD_CARRYOVER_LINES : TAPE_INJURY_CARRYOVER_LINES;
+    const carryTpl = carryPool[Math.floor(Math.random() * carryPool.length)];
     injuryCarryoverLine = capitalizeFirst(carryTpl
       .replaceAll("{X}", tapeShortName(injured))
-      .replaceAll("{Y}", tapeShortName(injuryVictimOpponent)));
+      .replaceAll("{Y}", tapeShortName(injuryVictimOpponent))
+      .replaceAll("{part}", injuryBodyPart));
   }
 
   // One of the roster's dirtiest players got away completely clean this
@@ -6825,7 +6861,11 @@ function generateTapeBlurb(a, b, result) {
   const fanFavoriteCandidate = [a, b].find(w => (TAPE_WRESTLER_DESCRIPTORS[w.name] || []).includes("fan-favorite"));
   if (fanFavoriteCandidate && Math.random() < 0.3) {
     const fanFavoriteOpponent = fanFavoriteCandidate === a ? b : a;
-    const moveTpl = TAPE_FAN_FAVORITE_MOVE_LINES[Math.floor(Math.random() * TAPE_FAN_FAVORITE_MOVE_LINES.length)];
+    const suplexBlocked = TAPE_TRUE_GIANTS.has(fanFavoriteOpponent.name) && fanFavoriteCandidate.name !== "Daisy";
+    const moveCandidates = suplexBlocked
+      ? TAPE_FAN_FAVORITE_MOVE_LINES.filter(tpl => !tpl.includes("suplex"))
+      : TAPE_FAN_FAVORITE_MOVE_LINES;
+    const moveTpl = moveCandidates[Math.floor(Math.random() * moveCandidates.length)];
     const fillFan = (tpl) => tpl
       .replaceAll("{X}", tapeShortName(fanFavoriteCandidate))
       .replaceAll("{Y}", tapeShortName(fanFavoriteOpponent));
