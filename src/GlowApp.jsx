@@ -3509,7 +3509,7 @@ function tapeGimmick(w) {
   const parts = w.role.split("—").map(s => s.trim());
   const descriptor = parts.length > 1 && parts[1]
     ? parts[1]
-    : (parts[0] === "Face" ? "fan-favorite spirit" : "villainous instinct");
+    : (parts[0] === "Face" ? "fighting spirit" : "villainous instinct");
   // Strip a leading "The" (e.g. "The Russian" -> "Russian") so this bare
   // descriptor never carries its own article — every caller (templates,
   // tapeLabel, etc.) adds "the"/"The" itself where it's needed, so this
@@ -3607,7 +3607,9 @@ function stripRedundantArticles(str) {
 // sure two wrestlers in the same match don't both get an entrance
 // starting with the same phrase (e.g. two "Here comes X" openers).
 function tapeLineOpener(line) {
-  return line.trim().split(/\s+/).slice(0, 2).join(" ").toLowerCase().replace(/[^a-z]/g, "");
+  const stripped = line.trim().replace(/^(?:And|But|Then|Also)\s+/i, "");
+  if (/^here/i.test(stripped)) return "here";
+  return stripped.split(/\s+/).slice(0, 2).join(" ").toLowerCase().replace(/[^a-z]/g, "");
 }
 
 function simulateTapeMatch(a, b) {
@@ -3955,13 +3957,18 @@ function tapeInsult(w) {
 // the roast system since these are the opposite tone.
 const TAPE_WRESTLER_DESCRIPTORS = {
   "Tara the Southern Belle": ["beauty"],
-  "The California Doll": ["beauty"],
+  "The California Doll": ["beauty", "fan-favorite"],
   "Godiva": ["beauty"],
   "Ashley Cartier": ["beauty"],
   "Tina Ferrari": ["fan-favorite"],
   "Susie Spirit": ["fan-favorite"],
   "Mt. Fiji": ["fan-favorite", "powerhouse"],
   "Americana": ["fan-favorite"],
+  "Debbie Debutante": ["fan-favorite"],
+  "Sally the Farmer's Daughter": ["fan-favorite"],
+  "Babe the Farmer's Daughter": ["fan-favorite"],
+  "Little Egypt": ["fan-favorite"],
+  "Little Fiji": ["fan-favorite"],
   "Matilda the Hun": ["powerhouse"],
   "Big Bad Mama": ["powerhouse"],
   "Daisy": ["tall"],
@@ -4036,7 +4043,7 @@ const TAPE_ACTION_BEATS = [
   "{A} talks trash to the crowd, and {B} makes her pay for the distraction with a quick strike.",
   "The referee warns {A} about choking her opponent — she backs off, but only for a moment.",
   "{B} tries to catch her breath in the corner, but {A} charges in with a running attack.",
-  "A close two-count from {A} has the crowd on its feet, sure that's the finish.",
+  "{B} is down and {A} hooks the leg! The crowd is on its feet -- one, two... no! She escapes before three!",
   "{B} reverses an Irish whip, sending {A} hard into the opposite turnbuckle.",
   "The two exchange a series of pinning combinations, each one broken up at the last second.",
   "{A} plants both feet and refuses to budge as {B} bounces off her with a shoulder block.",
@@ -4641,7 +4648,7 @@ const TAPE_REF_KNOCKOUT_DECISIVE_LINES = [
 // actually change how this one ends.
 const TAPE_REF_KNOCKOUT_FLAVOR_LINES = [
   "The referee gets knocked out cold in the chaos — completely unconscious for a moment there! {X} tries to take advantage, getting away with all sorts of illegal stuff while he's out, but it's not quite enough to change the outcome.",
-  "The referee goes down and out for a few seconds — {X} makes the most of it, getting in some cheap shots nobody's around to call, but the match still plays out the way it was always going to.",
+  "The referee goes down and out for a few seconds — {X} makes the most of it, getting in some cheap shots nobody's around to call.",
 ];
 
 // The Heavy Metal Sisters' weapons chaos sometimes gets so out of hand
@@ -5307,6 +5314,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} marches in waving a full-sized American flag, and this crowd is on its feet before she's even reached the ring.",
     "And here comes {X}, who carries Old Glory down the aisle, whipping the crowd into an absolute frenzy on her way in.",
     "Here comes {X}, flag held high — she's got this whole building chanting before the bell's even rung.",
+    "{X} strides out under a shower of red, white, and blue streamers, flag snapping overhead the whole way down.",
   ],
   "Palestina": [
     "{X} storms to the ring wielding a machete, screaming something about traitors — security keeps a very close eye on this one.",
@@ -5329,6 +5337,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and gives a shy little wave to the crowd, and they roar back louder than she probably expected.",
     "Here she comes — {X} pauses to hug a kid at ringside before continuing on, and this crowd is putty in her hands.",
     "Here comes sweet {X}, practically glowing from all the attention — she deserves every bit of it.",
+    "{X} peeks out from behind the curtain first, like she's not quite sure the crowd's really for her — then breaks into a grin and heads down.",
   ],
   "Little Egypt": [
     "And here comes {X}, who belly dances her way down to the ring, and the crowd is loving every second of it.",
@@ -5337,6 +5346,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} twirls a veil overhead as she dances her way in, and the crowd claps right along with the rhythm.",
     "And here comes {X}, who makes a grand, glittering entrance, and this crowd cannot get enough of the showmanship.",
     "Here comes {X}, moving like poetry down that aisle — genuinely one of the best entrances in this promotion.",
+    "{X} sways to her own music the whole way down, veils trailing behind her — this is as much performance as it is entrance.",
   ],
   "Angel": [
     "{X} walks in carrying a biker helmet in one hand and a chain in the other — nobody's mistaking her for friendly.",
@@ -5353,6 +5363,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} stops to sign a few autographs on her way down, and this crowd absolutely adores her for it.",
     "And here comes {X}, who flashes that megawatt smile the whole way to the ring — you'd think she was born for this spotlight.",
     "Here comes {X}, and the roar from this crowd tells you everything about how beloved she is.",
+    "{X} strides out to a wall of noise, soaking in every second of it before she even reaches the ring.",
   ],
   "Godiva": [
     "{X} makes her entrance, and rides in on her horse, waving to the crowd like true royalty.",
@@ -5369,6 +5380,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and skips down the aisle handing out candy like it's Halloween — this crowd's heart just melted.",
     "Here she comes — {X} stops to give a high-five to every kid she passes, and the whole arena goes soft for her.",
     "Here comes little {X}, all smiles and sugar — you couldn't invent a more wholesome entrance if you tried.",
+    "{X} bounds out with a bag of candy already open, tossing handfuls to every kid she passes.",
   ],
   "Spanish Red": [
     "And here comes {X}, who tosses red roses out to the crowd as she makes her entrance.",
@@ -5377,6 +5389,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} flings a rose at {Y}'s feet like it's an insult, not a gift — real subtle, that one.",
     "And here comes {X}, who blows past a row of fans without so much as a glance, roses be damned.",
     "Here comes {X}, all smiles and roses on the outside, pure trouble underneath — don't be fooled, folks.",
+    "{X} strolls out with a rose between her teeth, playing the crowd favorite she absolutely is not.",
   ],
   "Matilda the Hun": [
     "{X} makes her entrance, and taunts everyone in her path on the way to the ring.",
@@ -5393,6 +5406,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and stops for a quick photo with a fan at ringside — always time for the people who love her.",
     "Here she comes — {X} works the aisle like a runway, and this crowd is eating up every second of the glamour.",
     "Here comes {X}, radiant as ever — this crowd absolutely lights up the moment she appears.",
+    "{X} sashays out in full glamour mode, pausing just long enough for the cameras to catch her best angle.",
   ],
   "Beastie": [
     "{X} comes out growling and yelling like a wild animal.",
@@ -5409,6 +5423,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} tumbles in with pure energy, and this crowd is on its feet before she even reaches the ropes.",
     "And here comes {X}, who throws in a cartwheel just for the front row, and they go absolutely wild for it.",
     "Here comes {X}, spirit and school pride on full display — this crowd adores everything about her.",
+    "{X} bursts out with a pom-pom shake and a grin, cartwheeling the length of the aisle like it's homecoming.",
   ],
   "Debbie Debutante": [
     "{X} makes her entrance, and does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
@@ -5425,6 +5440,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and nails a perfect cartwheel right at ringside, and the crowd erupts like she already won something.",
     "Here she comes — {X} tumbles in with real polish — this crowd knows genuine talent when they see it.",
     "Here comes {X}, acrobatics and all, and this building is fully behind her tonight.",
+    "{X} springs out with a tumbling pass down the entire aisle — she's warmed up and ready before she's even hit the ring.",
   ],
   "Cheyenne Cher": [
     "And here comes {X}, who does a series of flips and cartwheels on her way to the ring, and the crowd applauds every one of them.",
@@ -5433,6 +5449,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} flips her way in with real flair, and this crowd is soaking up every second of it.",
     "And here comes {X}, who throws in an extra tumble just for show, and the fans absolutely love the extra effort.",
     "Here comes {X}, all grace and athleticism — the crowd's cheering like she's already won.",
+    "{X} comes charging out with a full tumbling run, landing it clean right at ringside to a big pop.",
   ],
   "Colonel Ninotchka": [
     "The crowd erupts in boos the moment {X} steps into view.",
@@ -5457,6 +5474,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and cackles over the roar of her own blow torch, and honestly, security should be a lot more concerned than they look.",
     "Here she comes — {X} swings that lit blow torch at nothing in particular just to hear the crowd gasp.",
     "Here comes {X}, torch blazing, and I would very much like everyone within ten feet of her to reconsider their seating.",
+    "{X} kicks the curtain open and comes barreling down the aisle, torch sparking behind her the whole way.",
   ],
   "Chainsaw": [
     "Here she comes — {X} fires up her chainsaw the moment she steps through the entrance — it's already roaring before she's even in full view.",
@@ -5465,6 +5483,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and waves that chainsaw at a few fans in the front row, who scatter like it's an actual threat.",
     "Here she comes — {X} cackles over the roar of the chainsaw, and honestly, security should be a lot more concerned than they look.",
     "Here comes {X}, chainsaw blazing, and I would very much like everyone within ten feet of her to reconsider their seating.",
+    "{X} bursts through the curtain revving that chainsaw at full volume, and the front rows scramble to get some distance.",
   ],
   "Zelda": [
     "And here comes {X}, who trips right over the middle rope getting into the ring — smooth entrance, that was not.",
@@ -5473,6 +5492,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} trips over her own shoelace before she's even off the ramp — bless her heart.",
     "And here comes {X}, who waves enthusiastically at the wrong section of the crowd entirely — they wave back anyway.",
     "Here comes {X}, tripping and stumbling as always — somehow this crowd cheers louder every time she does.",
+    "{X} shuffles out looking thoroughly lost, somehow still finding her way to the ring in one piece.",
   ],
   "Hollywood": [
     "{X} doesn't even wait for the bell — she jumps {Y} from behind before the introductions are even finished! Absolutely no honor in that.",
@@ -5489,6 +5509,7 @@ const TAPE_ENTRANCE_LINES = {
     "{X} makes her entrance, and waves a gloved hand to the crowd, every inch the Park Avenue socialite, Jeeves shuffling along behind her.",
     "Here she comes — {X} pauses to let Jeeves adjust her robe mid-aisle — the crowd finds the whole spectacle charming.",
     "Here comes {X}, dripping in old money glamour, Jeeves trailing along right on cue.",
+    "{X} glides out on Jeeves's arm like she's arriving at a gala, not a wrestling ring.",
   ],
   "The California Doll": [
     "{X} comes strolling out carrying a surfboard, because of course she does.",
@@ -5505,6 +5526,7 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} tips her hat to the crowd on the way down, lasso spinning the whole time.",
     "And here comes {X}, who lassos an imaginary steer just for showmanship, and the crowd whoops it up.",
     "Here comes {X}, boots and lasso, every inch the cowgirl — this crowd's fully saddled up behind her.",
+    "{X} struts out boots-first, lasso already spinning before she clears the curtain.",
   ],
   "Tulsa": [
     "{X} makes her entrance swinging a lasso around like she just rode in off the range.",
