@@ -2974,7 +2974,6 @@ const QUIZ_QUESTIONS = [
   { quote: "Nature Boy -- I'm coming for ya!", answer: "Tina Ferrari" },
   { quote: "I'm gonna take Dallas off the planet earth — and I'm gonna have a great time doing it, buddy!", answer: "Corporal Kelly" },
   { quote: "Olympia is simply a... mindless mass of steroids.", answer: "Palestina" },
-  { quote: "In this language that I don't understand — and I think that she's saying mean things about me, but I'm not sure. So I'm gonna have to give her a drop kick to hush her up.", answer: "Sally the Farmer's Daughter" },
   { quote: "Little Feather and I want to unmask Sara and Mabel.", answer: "Ebony" },
   { quote: "I will rip them apart, chew them up and — spit them out at their fans!", answer: "Palestina" },
   { quote: "Let me say something. That's right — Ninotchka came in and interfered, but you know what? You're lucky, only in the USA you can do something like that, honey! Back home, they'd throw you out in Siberia!", answer: "Mt. Fiji" },
@@ -4745,7 +4744,6 @@ const TAPE_DQ_TEMPLATES = [
   "{loser} just raked {winner}'s eyes right in front of the referee — no way to ignore that one! DISQUALIFIED!",
   "{loser} yanks a fistful of {winner}'s hair and just won't let go, even with the ref right there counting — that's a DQ!",
   "{loser} tosses {winner} clean over the top rope to the floor — automatic disqualification, no way around it!",
-  "Somebody just ran in from the back to jump {winner} — {loser}'s getting disqualified for the interference!",
   "The referee calls for a clean break, and {loser} just keeps throwing punches anyway — that's a DQ, plain and simple!",
   "{loser} had something hidden in her boot, and the referee just found it before she could even use it — DISQUALIFIED!",
   "{loser} just can't help herself — the ref rings the bell, {winner} wins by DQ, and the ring's turned into a zoo!",
@@ -5959,6 +5957,16 @@ function tapeSoloCandidates(w, other, chainsawAlreadyOut) {
 // generic action exchanges (plus optional shared-trait, rivalry, or
 // individual-quirk asides), followed by an in-the-moment announcer call
 // for the finish.
+// The interference beat earlier already fully narrated who ran in and
+// what she did — this finish just needs to close the loop on the DQ
+// itself, not re-describe the interference from scratch (which would
+// contradict the beat by making it sound anonymous all over again).
+const TAPE_INTERFERENCE_CAUGHT_FINISH_LINES = [
+  "The referee's finally caught up with what {helper} did — that's it, {loser} is disqualified!",
+  "There's no ignoring {helper}'s interference now — the referee calls it, {loser} is disqualified!",
+  "The damage is done and the referee saw all of it — {loser}'s getting disqualified thanks to {helper}!",
+];
+
 function generateTapeBlurb(a, b, result) {
   const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper, hogtieAttempter, hogtieOutcome } = result;
 
@@ -6884,6 +6892,10 @@ function tapeAppendDqReaction(text) {
       housewifeItemState.usedItems.add(humiliationItem);
       housewifeItemState.lastItem = humiliationItem;
     }
+  } else if (interference && interference.caught) {
+    const tpl = TAPE_INTERFERENCE_CAUGHT_FINISH_LINES[Math.floor(Math.random() * TAPE_INTERFERENCE_CAUGHT_FINISH_LINES.length)]
+      .replaceAll("{helper}", interference.helper.name);
+    finish = fillWL(tpl);
   } else if (refMissedCheating) {
     finish = fillWL(TAPE_REF_MISSED_CHEATING_LINES[Math.floor(Math.random() * TAPE_REF_MISSED_CHEATING_LINES.length)]);
   } else if (method === "dq") {
