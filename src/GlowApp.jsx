@@ -8186,7 +8186,8 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
             border: "1px solid rgba(255,255,255,0.25)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 370,
+            width: "min(370px, calc(100vw - 40px))",
+            boxSizing: "border-box",
             textAlign: "center",
           }}
           onMouseEnter={(e) => {
@@ -8228,7 +8229,8 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(74,0,128,0.55)",
             border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 370,
+            width: "min(370px, calc(100vw - 40px))",
+            boxSizing: "border-box",
             textAlign: "center",
           }}
           onMouseEnter={(e) => {
@@ -8270,7 +8272,8 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(74,0,128,0.55)",
             border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 370,
+            width: "min(370px, calc(100vw - 40px))",
+            boxSizing: "border-box",
             textAlign: "center",
             lineHeight: 1.5,
           }}
@@ -8313,7 +8316,8 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(0,0,0,0.55)",
             border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 370,
+            width: "min(370px, calc(100vw - 40px))",
+            boxSizing: "border-box",
             textAlign: "center",
           }}
           onMouseEnter={(e) => {
@@ -8355,7 +8359,8 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             boxShadow: "0 6px 16px rgba(0,0,0,0.55)",
             border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
-            width: 370,
+            width: "min(370px, calc(100vw - 40px))",
+            boxSizing: "border-box",
             textAlign: "center",
             lineHeight: 1.5,
           }}
