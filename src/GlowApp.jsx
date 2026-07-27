@@ -1333,15 +1333,23 @@ function linkifyBio(text, currentId, onNavigate, onNavigateToSkit, onNavigateToH
   const targets = [...personTargets, ...skitTargets, ...historyTargets].sort((a, b) => b.name.length - a.name.length);
   if (targets.length === 0) return text;
   const escaped = targets.map((w) => w.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const regex = new RegExp(`\\b(${escaped.join("|")})\\b`, "g");
+  const regex = new RegExp(`(?<![\\p{L}\\p{N}_])(${escaped.join("|")})(?![\\p{L}\\p{N}_])`, "gu");
   const parts = [];
   let lastIndex = 0;
   let match;
   let key = 0;
+  const usedTargets = new Set();
   while ((match = regex.exec(text)) !== null) {
     if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
     const matchedName = match[0];
     const target = targets.find((w) => w.name === matchedName);
+    const targetKey = `${target.kind || "person"}:${target.id}`;
+    if (usedTargets.has(targetKey)) {
+      parts.push(matchedName);
+      lastIndex = match.index + matchedName.length;
+      continue;
+    }
+    usedTargets.add(targetKey);
     const handleClick = target.kind === "skit" ? () => onNavigateToSkit(target.id)
       : target.kind === "history" ? () => onNavigateToHistory(target.id)
       : () => onNavigate(target.id);
@@ -8209,16 +8217,16 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             justifyContent: "center",
             gap: 10,
             textDecoration: "none",
-            color: "#fff",
+            color: "#ffd200",
             fontFamily: "'Trebuchet MS', Verdana, sans-serif",
             fontWeight: 700,
             fontSize: 14.5,
             letterSpacing: 0.5,
             padding: "12px 26px",
             borderRadius: 999,
-            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
-            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
-            border: "1px solid rgba(255,255,255,0.25)",
+            background: "#33005c",
+            boxShadow: "0 6px 16px rgba(74,0,128,0.55)",
+            border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
             width: 370,
             textAlign: "center",
@@ -8226,15 +8234,15 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
             e.currentTarget.style.boxShadow =
-              "0 9px 20px rgba(255,45,146,0.6)";
+              "0 9px 20px rgba(74,0,128,0.75)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow =
-              "0 6px 16px rgba(255,45,146,0.45)";
+              "0 6px 16px rgba(74,0,128,0.55)";
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffd200">
             <path d="M8 5v14l11-7z" />
           </svg>
           Watch Classic GLOW Season 3 on Tubi
@@ -8251,16 +8259,16 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             justifyContent: "center",
             gap: 10,
             textDecoration: "none",
-            color: "#fff",
+            color: "#ffd200",
             fontFamily: "'Trebuchet MS', Verdana, sans-serif",
             fontWeight: 700,
             fontSize: 11.5,
             letterSpacing: 0.3,
             padding: "12px 26px",
             borderRadius: 999,
-            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
-            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
-            border: "1px solid rgba(255,255,255,0.25)",
+            background: "#33005c",
+            boxShadow: "0 6px 16px rgba(74,0,128,0.55)",
+            border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
             width: 370,
             textAlign: "center",
@@ -8269,15 +8277,15 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
             e.currentTarget.style.boxShadow =
-              "0 9px 20px rgba(255,45,146,0.6)";
+              "0 9px 20px rgba(74,0,128,0.75)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow =
-              "0 6px 16px rgba(255,45,146,0.45)";
+              "0 6px 16px rgba(74,0,128,0.55)";
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd200" style={{ flexShrink: 0 }}>
             <path d="M8 5v14l11-7z" />
           </svg>
           Watch GLOW: The Story of the Gorgeous Ladies of Wrestling on Tubi
@@ -8294,16 +8302,16 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             justifyContent: "center",
             gap: 10,
             textDecoration: "none",
-            color: "#fff",
+            color: "#ffd200",
             fontFamily: "'Trebuchet MS', Verdana, sans-serif",
             fontWeight: 700,
             fontSize: 14.5,
             letterSpacing: 0.5,
             padding: "12px 26px",
             borderRadius: 999,
-            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
-            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
-            border: "1px solid rgba(255,255,255,0.25)",
+            background: "#0a0a0a",
+            boxShadow: "0 6px 16px rgba(0,0,0,0.55)",
+            border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
             width: 370,
             textAlign: "center",
@@ -8311,15 +8319,15 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
             e.currentTarget.style.boxShadow =
-              "0 9px 20px rgba(255,45,146,0.6)";
+              "0 9px 20px rgba(0,0,0,0.7)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow =
-              "0 6px 16px rgba(255,45,146,0.45)";
+              "0 6px 16px rgba(0,0,0,0.55)";
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffd200">
             <path d="M8 5v14l11-7z" />
           </svg>
           Watch Classic GLOW Season 3 on Pluto TV
@@ -8336,16 +8344,16 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
             justifyContent: "center",
             gap: 10,
             textDecoration: "none",
-            color: "#fff",
+            color: "#ffd200",
             fontFamily: "'Trebuchet MS', Verdana, sans-serif",
             fontWeight: 700,
             fontSize: 11.5,
             letterSpacing: 0.3,
             padding: "12px 26px",
             borderRadius: 999,
-            background: "linear-gradient(135deg, #ff2d92, #b3001f)",
-            boxShadow: "0 6px 16px rgba(255,45,146,0.45)",
-            border: "1px solid rgba(255,255,255,0.25)",
+            background: "#0a0a0a",
+            boxShadow: "0 6px 16px rgba(0,0,0,0.55)",
+            border: "1px solid rgba(255,210,0,0.35)",
             transition: "transform 160ms ease, box-shadow 160ms ease",
             width: 370,
             textAlign: "center",
@@ -8354,15 +8362,15 @@ function HomeScreen({ onSelect, onSkits, onHistory, onMisc, onQuiz, onTape, onBa
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
             e.currentTarget.style.boxShadow =
-              "0 9px 20px rgba(255,45,146,0.6)";
+              "0 9px 20px rgba(0,0,0,0.7)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow =
-              "0 6px 16px rgba(255,45,146,0.45)";
+              "0 6px 16px rgba(0,0,0,0.55)";
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd200" style={{ flexShrink: 0 }}>
             <path d="M8 5v14l11-7z" />
           </svg>
           Watch GLOW: The Story of the Gorgeous Ladies of Wrestling on Pluto TV
