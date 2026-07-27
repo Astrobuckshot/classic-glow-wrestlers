@@ -909,7 +909,7 @@ const WRESTLERS = [
     colorRing: "repeating-conic-gradient(#c62828 0deg 25deg, #ff6f00 25deg 30deg)",
     photo: "susie-spirit.jpg",
     videos: ["kxWui3zxTfU", "tx5sU6moFIc"],
-    bio: "A cheerleader-themed character, and one part of the Cheerleaders tag team alongside Debbie Debutante, Susie Spirit's career was painfully interrupted when the Headhunters inflicted a serious elbow injury to her in a tag team match with partner Debutante — but Susie's comeback was remarkable. She returned to the ring still wearing an arm brace in a match vs. Attaché — and even took on the third Headhunter, Mana. Afterwards, she briefly teamed up with Americana to make 'The All-Americans'. Susie was played by Lauri Thompson — the lead dancer at the Tropicana's Folies Bergère who helped recruit many of the show's other performers.",
+    bio: "Susie Spirit was one part of the Cheerleaders tag team alongside Debbie Debutante, but her career was painfully interrupted when the Headhunters inflicted a serious elbow injury to her in a tag team match with partner Debutante. Susie's comeback was remarkable as she returned to the ring still wearing an arm brace in a match vs. Attaché — she then took on the third Headhunter, Mana, and briefly teamed up with Americana to make 'The All-Americans'. Lauri Thompson was the lead dancer at the Tropicana's Folies Bergère and helped recruit many of the show's other performers.",
     quote: "I love creating excitement and good sportsmanship.",
     finishers: ["Split Crush"],
   },
