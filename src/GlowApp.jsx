@@ -4144,7 +4144,6 @@ const TAPE_ROAST_BEATS = [
   "{R} is sweating more than a fan at a heat wave, and this match just started!",
   "That was a big clothesline attempt from {R} — shame it missed by about three feet, folks!",
   "The crowd's booing {R} so loud I can barely hear myself talk, and honestly? Fair!",
-  "{R} is out here cutting promos on herself at this point — nobody else needs to insult her, she's got it handled!",
   "Somebody tell this {insultR} that the ring isn't a dinner buffet — {R2} isn't on the menu tonight!",
   "That's some real {insultR} energy from {R} right there, folks — I don't know how else to put it!",
   "{R} is acting like a total {insultR} out there, and the referee is running out of patience!",
@@ -4442,10 +4441,10 @@ const TAPE_PRE_COUNT_JAB_LINES = [
 // back-and-forth — a single decisive blow ends it fast, ratings-friendly
 // squash style.
 const TAPE_SQUASH_LINES = [
-  "This isn't even a contest, folks — {winner} catches {loser} with one single shot, and the referee barely needs to count! ONE, TWO, THREE — it's already over before it started!",
-  "{winner} doesn't even need a game plan here — one big move on {loser}, cover, ONE! TWO! THREE! Done in a flash!",
-  "That's all she wrote, folks — a single, decisive blow from {winner}, down goes the cover — ONE, TWO, THREE! {loser} is finished before the crowd even gets settled in!",
-  "No feeling-out process needed — {winner} ends this in one shot, hooks the leg — ONE! TWO! THREE!! {loser} never had a chance!",
+  "This isn't even a contest, folks — {winner} catches {loser} with {winnerMove}, and the referee barely needs to count! ONE, TWO, THREE — it's already over before it started!",
+  "{winner} doesn't even need a game plan here — {winnerMove} on {loser}, cover, ONE! TWO! THREE! Done in a flash!",
+  "That's all she wrote, folks — {winner} lands {winnerMove}, decisive and clean, down goes the cover — ONE, TWO, THREE! {loser} is finished before the crowd even gets settled in!",
+  "No feeling-out process needed — {winner} ends this with {winnerMove}, hooks the leg — ONE! TWO! THREE!! {loser} never had a chance!",
 ];
 
 // A rare chaos finish — both wrestlers brawl their way outside the ring
@@ -4809,6 +4808,13 @@ const TAPE_DQ_CHAINSAW_ALREADY_ARMED_LINES = [
 const TAPE_CHAINSAW_ROPE_DQ_LINES = [
   "{loser} wraps the ring rope around {winner}'s throat and won't let go — the referee's counted to five, that's it! DISQUALIFIED!",
   "{loser} grabs the rope and starts choking {winner} with it right in the corner — the ref calls for the bell immediately! DQ!",
+];
+
+// Spike doesn't only get DQ'd over the blow torch — sometimes it's just
+// her bare hands around {winner}'s throat instead.
+const TAPE_SPIKE_CHOKE_DQ_LINES = [
+  "{loser} gets both hands around {winner}'s throat and just won't let go — the referee's counted to five, that's it! DISQUALIFIED!",
+  "{loser} has {winner} choking in the corner and ignores every warning from the referee — he's seen enough! DQ!",
 ];
 
 // Broader pool of found-object chaos for variety — used sometimes even
@@ -5580,13 +5586,15 @@ const TAPE_ENTRANCE_LINES = {
   ],
 };
 
-// One in four times, whichever Heavy Metal Sister is in the match gets
-// escorted to the ring in a straitjacket instead of her usual entrance —
-// orderlies walking her down, freed right before the bell.
+// A good chunk of the time, whichever Heavy Metal Sister is in the
+// match gets escorted to the ring in a straitjacket instead of her
+// usual entrance — paramedics walking her down, freed right before the
+// bell.
 const TAPE_STRAITJACKET_ENTRANCE_LINES = [
-  "{X} is escorted to the ring in a straitjacket tonight, a couple of very nervous orderlies walking her down the aisle.",
-  "They've got {X} in a straitjacket for this one — the orderlies undo the straps right at ringside and get out of there as fast as they can.",
+  "{X} is escorted to the ring in a straitjacket tonight, a couple of very nervous paramedics walking her down the aisle.",
+  "They've got {X} in a straitjacket for this one — the paramedics undo the straps right at ringside and get out of there as fast as they can.",
   "Here comes {X}, strapped into a straitjacket and grinning the whole way down — the crowd doesn't know whether to laugh or run.",
+  "Here comes {X}, a paramedic gripping either arm and clearly regretting every life choice that led to this assignment.",
 ];
 
 // When only one wrestler in the match has a signature entrance, the
@@ -5619,6 +5627,18 @@ const TAPE_ENTRANCE_REACTION_LINES = [
   "{X} is already trading insults with {Y} before she's even reached the ring — this crowd is eating up every second of it!",
   "{X} and {Y} are already going back and forth, shouting across the whole arena — the referee hasn't even called for the bell yet!",
   "{X} is right there waiting, mouth already running at {Y} — and {Y} isn't holding back her response either!",
+];
+
+// Dementia, Mana, Chainsaw, Spike, and The Widow never talk trash — so
+// when one of them draws entrance-reaction duty, she doesn't get a
+// verbal jawing line like everyone else. This is the silent,
+// physical-intensity equivalent instead.
+const TAPE_SILENT_ENTRANCE_REACTION_LINES = [
+  "{X} is right at the ropes, growling low at {Y} as she makes her way down — not a word out of her, but the message is clear.",
+  "{X} just stares {Y} down without saying a thing, that low growl the only sound she's making.",
+  "{X} paces the ring glaring holes through {Y} — dead silent, but you can feel the menace from here.",
+  "{X} locks eyes with {Y} the whole way down that aisle — no words needed, the growl says it all.",
+  "{X} is already at the ropes, silent and seething, tracking {Y}'s every step with a low growl.",
 ];
 
 // Used to open the commentary when neither wrestler has a signature
@@ -6103,12 +6123,11 @@ function generateTapeBlurb(a, b, result) {
       entranceLines = [ambushLine];
     }
   } else {
-    // 25% of the time, whichever Heavy Metal Sister is in the match gets
-    // escorted to the ring in a straitjacket instead of her usual
-    // entrance (Spike doesn't otherwise have a signature entrance of
-    // her own, so this is the only one she ever gets).
+    // A chunk of the time, whichever Heavy Metal Sister is in the match
+    // gets escorted to the ring in a straitjacket instead of her usual
+    // entrance.
     const straitjacketMember = [a, b].find(w => w.name === "Spike" || w.name === "Chainsaw");
-    const useStraitjacket = !!straitjacketMember && Math.random() < 0.25;
+    const useStraitjacket = !!straitjacketMember && Math.random() < 0.4;
 
     const usedOpeners = new Set();
     entranceLines = [a, b]
@@ -6162,7 +6181,8 @@ function generateTapeBlurb(a, b, result) {
       const performer = aHasEntrance ? a : b;
       const reactor = aHasEntrance ? b : a;
       if (reactor !== hmsMocker) {
-        const tpl = TAPE_ENTRANCE_REACTION_LINES[Math.floor(Math.random() * TAPE_ENTRANCE_REACTION_LINES.length)];
+        const reactorPool = TAPE_NO_TRASH_TALK.has(reactor.name) ? TAPE_SILENT_ENTRANCE_REACTION_LINES : TAPE_ENTRANCE_REACTION_LINES;
+        const tpl = reactorPool[Math.floor(Math.random() * reactorPool.length)];
         entranceLines.push(tpl.replaceAll("{X}", reactor.name).replaceAll("{Y}", performer.name));
         if (reactor === a) aAlreadyReacted = true;
       }
@@ -6868,12 +6888,27 @@ function tapeAppendDqReaction(text) {
     finish = fillWL(TAPE_REF_MISSED_CHEATING_LINES[Math.floor(Math.random() * TAPE_REF_MISSED_CHEATING_LINES.length)]);
   } else if (method === "dq") {
     const isHMSLoser = loser.name === "Spike" || loser.name === "Chainsaw";
-    if (isHMSLoser && Math.random() < 0.05) {
-      finish = fillWL(TAPE_HMS_REF_ATTACK_DQ_LINES[Math.floor(Math.random() * TAPE_HMS_REF_ATTACK_DQ_LINES.length)]);
+    if (isHMSLoser) {
+      const roll = Math.random();
+      if (roll < 0.45) {
+        // Weapon-specific: chainsaw for Chainsaw, blow torch for Spike.
+        const weaponPool = loser.name === "Chainsaw"
+          ? (chainsawAlreadyOut ? TAPE_DQ_CHAINSAW_ALREADY_ARMED_LINES : TAPE_DQ_WEAPON_LINES["Chainsaw"])
+          : TAPE_DQ_WEAPON_LINES["Spike"];
+        finish = fillWL(weaponPool[Math.floor(Math.random() * weaponPool.length)]);
+      } else if (roll < 0.75) {
+        // Choking: rope for Chainsaw, bare hands for Spike.
+        const chokePool = loser.name === "Chainsaw" ? TAPE_CHAINSAW_ROPE_DQ_LINES : TAPE_SPIKE_CHOKE_DQ_LINES;
+        finish = fillWL(chokePool[Math.floor(Math.random() * chokePool.length)]);
+      } else if (roll < 0.9) {
+        finish = fillWL(TAPE_HMS_REF_ATTACK_DQ_LINES[Math.floor(Math.random() * TAPE_HMS_REF_ATTACK_DQ_LINES.length)]);
+      } else if (Math.random() < 0.5) {
+        finish = fillWL(TAPE_DQ_RANDOM_OBJECT_LINES[Math.floor(Math.random() * TAPE_DQ_RANDOM_OBJECT_LINES.length)]);
+      } else {
+        finish = fillWL(TAPE_DQ_TEMPLATES[Math.floor(Math.random() * TAPE_DQ_TEMPLATES.length)]);
+      }
     } else {
-    const weaponPool = loser.name === "Chainsaw"
-      ? [...(chainsawAlreadyOut ? TAPE_DQ_CHAINSAW_ALREADY_ARMED_LINES : TAPE_DQ_WEAPON_LINES["Chainsaw"]), ...TAPE_CHAINSAW_ROPE_DQ_LINES]
-      : TAPE_DQ_WEAPON_LINES[loser.name];
+    const weaponPool = TAPE_DQ_WEAPON_LINES[loser.name];
     if (weaponPool && Math.random() < 0.7) {
       // Arlene/Phyllis: keep the item consistent with what's already
       // been tracked through the match — avoid an adjacent repeat, and
@@ -6964,9 +6999,9 @@ function tapeAppendDqReaction(text) {
   }
 
   // The Heavy Metal Sisters' weapons chaos sometimes needs security to
-  // step in and haul one of them off, win or lose.
+  // step in and haul one of them off after she's been disqualified.
   const hmsMember = [a, b].find(w => w.name === "Spike" || w.name === "Chainsaw");
-  if (hmsMember && Math.random() < 0.35) {
+  if (hmsMember && loser === hmsMember && method === "dq" && Math.random() < 0.55) {
     const tpl = TAPE_SECURITY_CARRYOFF_LINES[Math.floor(Math.random() * TAPE_SECURITY_CARRYOFF_LINES.length)];
     aftermath.push(tpl.replaceAll("{X}", tapeShortName(hmsMember)));
   }
