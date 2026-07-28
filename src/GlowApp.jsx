@@ -3008,6 +3008,8 @@ const QUIZ_QUESTIONS = [
   { quote: "That Sally the Farmer's Daughter -- I'm gonna rip all that blonde hair out of her head.", answer: "Attaché" },
   { quote: "I'm gonna catch her, hogtie her, and brand her butt!", answer: "Sally the Farmer's Daughter" },
   { quote: "Terrorists are not happenin' -- they are not cool.", answer: "The California Doll" },
+  { quote: "I'm just glad I could help out my friends when they needed me.", answer: "Americana" },
+  { quote: "Aunt Kitty has had me on a training schedule of sumo!", answer: "Matilda the Hun" },
 ];
 
 // Each playthrough pulls a random subset of this size from the full
@@ -5374,7 +5376,7 @@ const TAPE_ENTRANCE_LINES = {
   "Palestina": [
     "{X} storms to the ring wielding a machete, screaming something about traitors — security keeps a very close eye on this one.",
     "{X} comes out brandishing that machete of hers, shouting at the crowd about traitors and cowards — nobody in the front rows looks thrilled about it.",
-    "{X} marches in swinging her machete overhead, ranting about traitors — {Y} watches from the ring with real concern on her face.",
+    "{X} marches in swinging her machete overhead, ranting about traitors — security keeps inching closer, ready to step in if this goes any further.",
   ],
   "Melody Trouble Vixen (MTV)": [
     "{X} makes her entrance, and spins into the arena like she owns the DJ booth, hyping up the crowd on her way to the ring.",
@@ -5854,12 +5856,14 @@ const TAPE_STREET_PUNK_AMBUSH_LINES = [
   "There's no formal entrance from {X} tonight — she just attacks {Y} outright. Somebody remind her this is supposed to be a sport.",
 ];
 
-// The 5% of the time Hollywood skips the ambush entirely and just has
-// a normal entrance instead.
-const TAPE_HOLLYWOOD_CALM_ENTRANCE_LINES = [
-  "{X} actually walks out like a normal competitor tonight — no ambush, no cheap shot, just a regular entrance for once.",
-  "Well, would you look at that — {X} is taking the aisle like everybody else tonight, no sneak attack in sight.",
-  "Here comes {X}, and for once she's actually waiting for the bell instead of jumping {Y} outright — mark this date down, folks.",
+// 15% of the time Hollywood skips the ambush entirely and instead
+// tags the arena wall with her own name in giant spray-painted letters
+// before the match even starts.
+const TAPE_HOLLYWOOD_SPRAYPAINT_ENTRANCE_LINES = [
+  "{X} skips the entrance entirely and pulls out a can of spray paint, tagging her name across the arena wall in letters three feet tall — somebody's going to have to explain this to building management.",
+  "Would you look at that — {X} isn't even walking to the ring yet, she's too busy spray-painting \"HOLLYWOOD\" across that wall in massive letters!",
+  "{X} has a can of spray paint out and she is absolutely defacing this arena — her own name, in huge letters, right there for everybody to see. Nobody's stopping her either.",
+  "Forget the entrance, folks — {X} just tagged the whole wall with her name in spray paint, grinning like she just signed an autograph.",
 ];
 
 // The 5% of the time Hollywood's ambush comes from underneath the ring
@@ -6143,13 +6147,14 @@ function generateTapeBlurb(a, b, result) {
   };
 
   const hollywoodInMatch = [a, b].find(w => w.name === "Hollywood");
-  // Hollywood almost always ambushes, but not quite always — 5% of the
-  // time she skips it for a regular entrance, and another 5% she still
-  // ambushes but comes out from underneath the ring where she was
-  // hiding instead of jumping her opponent the usual way.
+  // Hollywood almost always ambushes, but not quite always — 15% of the
+  // time she skips it to spray-paint her name across the arena wall
+  // instead, and another 5% she still ambushes but comes out from
+  // underneath the ring where she was hiding instead of jumping her
+  // opponent the usual way.
   const hollywoodRoll = hollywoodInMatch ? Math.random() : null;
-  const hollywoodNoAmbush = hollywoodInMatch && hollywoodRoll < 0.05;
-  const hollywoodUnderRingAmbush = hollywoodInMatch && hollywoodRoll >= 0.05 && hollywoodRoll < 0.10;
+  const hollywoodSprayPaint = hollywoodInMatch && hollywoodRoll < 0.15;
+  const hollywoodUnderRingAmbush = hollywoodInMatch && hollywoodRoll >= 0.15 && hollywoodRoll < 0.20;
   const palestinaInMatch = [a, b].find(w => w.name === "Palestina");
   // Envy and Adore each get a 25% chance of ambushing their opponent the
   // same way Hollywood always does — rolled once per match.
@@ -6158,7 +6163,7 @@ function generateTapeBlurb(a, b, result) {
   // Whoever's actually doing the ambushing this match, if anyone —
   // Hollywood does unless her "no ambush" roll hit; Envy/Adore only if
   // their roll hit.
-  const ambusherInMatch = (hollywoodInMatch && !hollywoodNoAmbush ? hollywoodInMatch : null) || (streetPunkAmbush ? streetPunkCandidate : null);
+  const ambusherInMatch = (hollywoodInMatch && !hollywoodSprayPaint ? hollywoodInMatch : null) || (streetPunkAmbush ? streetPunkCandidate : null);
   // Chainsaw should only ever be shown getting her chainsaw ONCE per
   // Chainsaw's entrance (revving the chainsaw on the way out) is its own
   // independent moment and always fine on its own. What shouldn't happen
@@ -6206,13 +6211,17 @@ function generateTapeBlurb(a, b, result) {
     const straitjacketMember = [a, b].find(w => w.name === "Spike" || w.name === "Chainsaw");
     const useStraitjacket = !!straitjacketMember && Math.random() < 0.4;
 
+    // Which of the two enters first is just a coin flip — no reason the
+    // heel should always walk out ahead of the face.
+    const entranceOrder = Math.random() < 0.5 ? [a, b] : [b, a];
+
     const usedOpeners = new Set();
-    entranceLines = [a, b]
+    entranceLines = entranceOrder
       .filter(w => TAPE_ENTRANCE_LINES[w.name] || (useStraitjacket && w === straitjacketMember))
       .map(w => {
         const opponent = w === a ? b : a;
         const isStraitjacket = useStraitjacket && w === straitjacketMember;
-        const pool = isStraitjacket ? TAPE_STRAITJACKET_ENTRANCE_LINES : (w.name === "Hollywood" ? TAPE_HOLLYWOOD_CALM_ENTRANCE_LINES : TAPE_ENTRANCE_LINES[w.name]);
+        const pool = isStraitjacket ? TAPE_STRAITJACKET_ENTRANCE_LINES : (w.name === "Hollywood" ? TAPE_HOLLYWOOD_SPRAYPAINT_ENTRANCE_LINES : TAPE_ENTRANCE_LINES[w.name]);
         // Avoid two entrances in the same match opening with the same
         // phrase (e.g. both starting with "Here comes X").
         let candidates = pool.filter(tpl => !usedOpeners.has(tapeLineOpener(tpl)));
