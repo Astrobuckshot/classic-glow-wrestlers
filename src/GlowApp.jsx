@@ -3604,7 +3604,10 @@ function tapeFinisherDisplay(w) {
 // capital letter like any other sentence start.
 function capitalizeFirst(str) {
   if (!str) return str;
-  return str.replace(/(^\s*|[.!?]"?\s+)([a-z])/g, (match, lead, letter) => lead + letter.toUpperCase());
+  // The lookbehind excludes single-letter initials (e.g. "Johnny C.")
+  // from counting as a sentence boundary — only a genuine end-of-word
+  // period/!/? should trigger capitalizing what comes next.
+  return str.replace(/(^\s*|(?<!\b[A-Z])[.!?]"?\s+)([a-z])/g, (match, lead, letter) => lead + letter.toUpperCase());
 }
 
 // A few templates hardcode their own "The"/"the" directly in front of a
@@ -5387,7 +5390,7 @@ const TAPE_ENTRANCE_LINES = {
   ],
   "Olympia": [
     "{X} strides in and stops to flex for the crowd before even reaching the ring — that physique is genuinely something else.",
-    "{X} makes her entrance, and hits a full double-bicep pose on her way to the ring, and the announcer can't help but be impressed — that's real muscle.",
+    "{X} makes her entrance, and hits a full double-bicep pose on her way to the ring, and {authority} can't help but be impressed — that's real muscle.",
     "Here she comes — {X} flexes for the crowd stepping through the ropes — you don't see conditioning like that on most of this roster.",
   ],
   "Liberty": [
@@ -5667,21 +5670,21 @@ const TAPE_ENTRANCE_LINES = {
     "Here comes {X}, Nature Boy cowering right on cue — she rules that leash with an iron fist.",
   ],
   "Sara": [
-    "Here comes {X}, sack still over her head, and the announcer sighs, not even trying to hide his opinion of this whole sackhead routine.",
-    "{X} makes her entrance with that sack over her head as always, and the announcer admits he really doesn't know what else to call her besides a sackhead.",
-    "Here she comes — {X}, sack and all, and the announcer just mutters something about here comes another sackhead, ladies and gentlemen.",
-    "{X} shuffles out with that sack over her head as usual, and the announcer doesn't even bother hiding his exasperation with this sackhead.",
+    "Here comes {X}, sack still over her head, and {authority} sighs, not even trying to hide his opinion of this whole sackhead routine.",
+    "{X} makes her entrance with that sack over her head as always, and {authority} admits he really doesn't know what else to call her besides a sackhead.",
+    "Here she comes — {X}, sack and all, and {authority} just mutters something about here comes another sackhead, ladies and gentlemen.",
+    "{X} shuffles out with that sack over her head as usual, and {authority} doesn't even bother hiding his exasperation with this sackhead.",
   ],
   "Mabel": [
-    "Here comes {X}, sack still over her head, and the announcer sighs, not even trying to hide his opinion of this whole sackhead routine.",
-    "{X} makes her entrance with that sack over her head as always, and the announcer admits he really doesn't know what else to call her besides a sackhead.",
-    "Here she comes — {X}, sack and all, and the announcer just mutters something about here comes another sackhead, ladies and gentlemen.",
-    "{X} shuffles out with that sack over her head as usual, and the announcer doesn't even bother hiding his exasperation with this sackhead.",
+    "Here comes {X}, sack still over her head, and {authority} sighs, not even trying to hide his opinion of this whole sackhead routine.",
+    "{X} makes her entrance with that sack over her head as always, and {authority} admits he really doesn't know what else to call her besides a sackhead.",
+    "Here she comes — {X}, sack and all, and {authority} just mutters something about here comes another sackhead, ladies and gentlemen.",
+    "{X} shuffles out with that sack over her head as usual, and {authority} doesn't even bother hiding his exasperation with this sackhead.",
   ],
   "Americana": [
     "Here comes {X}, waving to every corner of the arena — this crowd absolutely adores her, and she knows it.",
-    "{X} makes her entrance with a big wave to the crowd, and the announcer can't help but gush about how much this audience just loves this woman.",
-    "Here she comes — {X}, waving the whole way down, and the announcer sums it up perfectly — this crowd simply cannot get enough of her.",
+    "{X} makes her entrance with a big wave to the crowd, and {authority} can't help but gush about how much this audience just loves this woman.",
+    "Here she comes — {X}, waving the whole way down, and {authority} sums it up perfectly — this crowd simply cannot get enough of her.",
     "{X} waves enthusiastically to every section of the arena on her way down, and it's clear this crowd would follow her anywhere.",
   ],
 };
@@ -6276,7 +6279,8 @@ function generateTapeBlurb(a, b, result) {
         usedOpeners.add(tapeLineOpener(chosen));
         const line = chosen
           .replaceAll("{X}", w.name)
-          .replaceAll("{Y}", opponent.name);
+          .replaceAll("{Y}", opponent.name)
+          .replaceAll("{authority}", Math.random() < 0.5 ? "David McLane" : "Johnny C.");
         if (mtvInMatch && w === mtvInMatch) {
           mtvOwnEntranceLine = line;
           return null;
@@ -6734,7 +6738,7 @@ function generateTapeBlurb(a, b, result) {
       .replaceAll("{opp}", tapeShortName(opponentOfBeneficiary));
     const line = interference.caught
       ? `Out of nowhere, ${helperName} comes flying down to ringside and ${action} — the referee sees every bit of it, and ${beneficiaryName} is getting disqualified over it!`
-      : `Did anybody else catch that? ${helperName} sneaks in from ringside and ${action} — the referee's back is completely turned, and that interference just swings this match hard in ${beneficiaryName}'s favor!`;
+      : `Did anybody else catch that? ${helperName} sneaks in from ringside and ${action} — the referee's back is completely turned, and that'll give ${beneficiaryName} an upper hand for the moment!`;
     beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, line);
   }
 
