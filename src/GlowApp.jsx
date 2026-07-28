@@ -2345,13 +2345,13 @@ const MOMENTS_IN_HISTORY = [
     id: "history-daisy-breaks-free",
     title: "Daisy Breaks Free",
     photo: "history-daisy-breaks-free.jpg",
-    summary: "In Season 3, Daisy started her GLOW career enslaved by the evil dwarf Gremlina — to whom she was in debt. Gremlina made Daisy wrestle her matches, while having Daisy's size advantage on her villainous side. Daisy was forced to wrestle for Kitty's Killers until she finally turned against her captor in a match versus Zelda — resulting in Gremlina being stuffed into a trash can. From there, Daisy found herself wrestling Kitty's Killers & Stallone's Sweethearts, establishing her independence as a character.",
+    summary: "In Season 3, Daisy started her GLOW career enslaved by the evil dwarf Gremlina — to whom she was in debt. Gremlina made Daisy wrestle her matches, and used Daisy's size advantage to beat her opponents. She was forced to wrestle for Kitty's Killers until finally turning against her captor in a match versus Zelda — resulting in Gremlina being stuffed into a trash can. From there, Daisy found herself wrestling Kitty's Killers & Stallone's Sweethearts, establishing her independence as a character.",
   },
   {
     id: "history-run-for-rubies",
     title: "Run for the Rubies",
     photo: "history-run-for-rubies.jpg",
-    summary: "With the crown vacant in Season 3, a tournament was held to see who'd be the next GLOW Champion. Col. Ninotchka shocked everyone by relinquishing the crown — this was the inception of Run for the Rubies. The championship tournament lasted most of Season 3, and was single elimination with a wildcard Battle Royal match. Cheyenne Cher would win the tourney, defeating Godiva in the final.",
+    summary: "With the crown vacant in Season 3, a tournament was held to see who'd be the next GLOW Champion. Col. Ninotchka shocked everyone by relinquishing the crown — and this was the inception of Run for the Rubies. The championship tournament lasted most of Season 3, and was single elimination with a wildcard Battle Royal match. Cheyenne Cher would win the tourney, defeating Godiva in the final.",
   },
 ];
 
@@ -3004,6 +3004,10 @@ const QUIZ_QUESTIONS = [
   { quote: "This is their (Housewives) chance, man — national television, in this wrestling match, and look how they dress?", answer: "Tina Ferrari" },
   { quote: "Hollywood's wrestling techniques are definitely street material — just like her. Well I plan on cleaning up the streets and using her hair as a mop.", answer: "Roxy Astor" },
   { quote: "You know, lots of friends of mine have lost a lot of money to people like Evangelina. So during this match, I'm gonna make her pay.", answer: "Babe the Farmer's Daughter" },
+  { quote: "Wait a minute -- why are you matching me up with her (Spanish Red)? I hire people like her to clean my toilets.", answer: "Ashley Cartier" },
+  { quote: "That Sally the Farmer's Daughter -- I'm gonna rip all that blonde hair out of her head.", answer: "Attaché" },
+  { quote: "I'm gonna catch her, hogtie her, and brand her butt!", answer: "Sally the Farmer's Daughter" },
+  { quote: "Terrorists are not happenin' -- they are not cool.", answer: "The California Doll" },
 ];
 
 // Each playthrough pulls a random subset of this size from the full
@@ -4572,6 +4576,20 @@ const TAPE_FRAGILE_LOSS_LINES = [
   "{loser} goes down hard — she's always been one of the most fragile wrestlers on the roster, and it shows.",
 ];
 
+// When Zelda ("Brain") is on the losing end against one of the roster's
+// genuine powerhouses, the commentary sometimes calls out the obvious —
+// wit only gets you so far against sheer strength.
+const TAPE_ZELDA_BRUTE_STRENGTH_OPPONENTS = new Set([
+  "Matilda the Hun", "Colonel Ninotchka", "The Royal Hawaiian", "Angel",
+  "Attaché", "Beastie", "Big Bad Mama", "Corporal Kelly", "Godiva",
+  "Major Tanya", "The Widow",
+]);
+const TAPE_ZELDA_BRUTE_STRENGTH_LOSS_LINES = [
+  "You can't outwit brute strength there, Brain!",
+  "All the wit in the world doesn't help against brute strength like that, Brain!",
+  "That's the problem, Brain — you can't out-think this one, only out-muscle her, and that was never going to happen tonight.",
+];
+
 // After a rough loss for Little Fiji specifically, her big sister Mt. Fiji
 // sometimes shows up to check on her — as long as Mt. Fiji wasn't the one
 // who beat her up in the first place.
@@ -4720,13 +4738,6 @@ const TAPE_NINOTCHKA_POST_WIN_LINES = [
   "{X} grabs the mic again after the bell — \"You see?! Russia is STRONG! America is weak, soft, pathetic — always it loses to the Motherland!\"",
   "{X} isn't done yet — she snatches the mic and gloats — \"This is what happens when America faces REAL strength! Long live the Motherland!\"",
   "{X} grabs the mic one more time, practically glowing with pride — \"Another victory for Russia! America, take note — you cannot compete with us!\"",
-];
-
-// Big Bad Mama's whole strategy is sitting on people — except against
-// Mt. Fiji, who's just as big as she is.
-const TAPE_MAMA_CRUSH_LINES = [
-  "{winner} simply sits down right on top of {loser} and crushes her under all that weight — there's nothing {loser} can do about it.",
-  "{winner} doesn't bother with fancy offense — she just plants herself on {loser} and lets her sheer size do the rest.",
 ];
 
 // A genuine ratings-gap upset — the clearly lower-rated wrestler still
@@ -5151,14 +5162,6 @@ const TAPE_MT_FIJI_FINISH_LINES = [
   "{winner} doesn't even bother going to the mat herself — she just stomps a foot down on {loser} for the cover! ONE! TWO! THREE!! And that's the match!",
 ];
 
-// Big Bad Mama's "Voodoo" finish is a curse, not an attack — she hexes
-// her opponent right into the pin.
-const TAPE_VOODOO_FINISH_LINES = [
-  "{winner} throws some kind of voodoo curse at {loser} — and {loser} just crumples to the mat like her strings got cut! Cover — ONE! TWO! THREE!! What in the world was THAT?!",
-  "{winner} doesn't even need to lay a hand on {loser} this time — one look, one hex, and {loser} goes down for the count! ONE, TWO, THREE! Somebody explain that to me!",
-  "There's that voodoo magic again — {winner} curses {loser} right where she stands, and down she goes for the pin! ONE! TWO! THREE!! I've seen a lot in this business, but never that!",
-];
-
 // Voodoo is Big Bad Mama's signature, but it's the exception — most of
 // the time she just wins the old-fashioned way, with a big splash.
 const TAPE_BIG_SPLASH_FINISH_LINES = [
@@ -5166,6 +5169,15 @@ const TAPE_BIG_SPLASH_FINISH_LINES = [
   "{winner} drops a big splash right on top of {loser}, and there's nowhere for her to go! ONE, TWO, THREE! Match over!",
   "That's a whole lot of woman coming down on {loser} — {winner} connects with the big splash, and it's academic from there! ONE! TWO! THREE!!",
   "{winner} doesn't miss with that big splash, and {loser} is not getting up from it! Cover — ONE, TWO, THREE!! Ballgame!",
+];
+
+// Big Bad Mama and Matilda the Hun don't need a fancy finisher — half
+// the time they just sit right down on their opponent and that's the
+// whole match.
+const TAPE_GIANT_SIT_FINISH_LINES = [
+  "{winner} doesn't bother with a finisher — she just sits straight down on top of {loser} and that's the whole match! ONE! TWO! THREE!! There's nothing {loser} could've done about that.",
+  "{winner} plants herself right on top of {loser} and lets all that weight do the talking — cover, ONE, TWO, THREE! Match over, just like that.",
+  "That's it, folks — {winner} simply sits down on {loser} and pins her under all that weight! ONE! TWO! THREE!! No fancy finisher required.",
 ];
 
 // Shared-trait groups. When both wrestlers in a matchup belong to the
@@ -5620,6 +5632,24 @@ const TAPE_ENTRANCE_LINES = {
     "Here she comes — {X} yanks Nature Boy's leash sharply just to remind everyone who's in charge out here.",
     "And here comes {X}, who snarls at a few ringside fans who get too close to Nature Boy — protective, in the coldest possible way.",
     "Here comes {X}, Nature Boy cowering right on cue — she rules that leash with an iron fist.",
+  ],
+  "Sara": [
+    "Here comes {X}, sack still over her head — \"and there's a sackhead if I've ever seen one,\" the announcer sighs, not even trying to hide it.",
+    "{X} makes her entrance with that burlap sack over her head as always — \"folks, I really don't know what else to call her besides a sackhead.\"",
+    "Here she comes — {X}, sack and all, and the announcer just mutters, \"here comes another sackhead, ladies and gentlemen.\"",
+    "{X} shuffles out with that sack over her head as usual, and the announcer doesn't even bother hiding his exasperation with this sackhead.",
+  ],
+  "Mabel": [
+    "Here comes {X}, sack still over her head — \"and there's a sackhead if I've ever seen one,\" the announcer sighs, not even trying to hide it.",
+    "{X} makes her entrance with that burlap sack over her head as always — \"folks, I really don't know what else to call her besides a sackhead.\"",
+    "Here she comes — {X}, sack and all, and the announcer just mutters, \"here comes another sackhead, ladies and gentlemen.\"",
+    "{X} shuffles out with that sack over her head as usual, and the announcer doesn't even bother hiding his exasperation with this sackhead.",
+  ],
+  "Americana": [
+    "Here comes {X}, waving to every corner of the arena — this crowd absolutely adores her, and she knows it.",
+    "{X} makes her entrance with a big wave to the crowd, and the announcer can't help but gush — \"folks, this audience just loves this woman.\"",
+    "Here she comes — {X}, waving the whole way down, and the announcer sums it up perfectly: \"they simply cannot get enough of her out here.\"",
+    "{X} waves enthusiastically to every section of the arena on her way down, and it's clear this crowd would follow her anywhere.",
   ],
 };
 
@@ -7003,10 +7033,10 @@ function tapeAppendDqReaction(text) {
     }
   } else if (winner.name === "Mt. Fiji") {
     finish = fillWL(TAPE_MT_FIJI_FINISH_LINES[Math.floor(Math.random() * TAPE_MT_FIJI_FINISH_LINES.length)]);
-  } else if (winner.name === "Big Bad Mama") {
-    finish = Math.random() < 0.75
-      ? fillWL(TAPE_BIG_SPLASH_FINISH_LINES[Math.floor(Math.random() * TAPE_BIG_SPLASH_FINISH_LINES.length)])
-      : fillWL(TAPE_VOODOO_FINISH_LINES[Math.floor(Math.random() * TAPE_VOODOO_FINISH_LINES.length)]);
+  } else if (winner.name === "Big Bad Mama" || winner.name === "Matilda the Hun") {
+    finish = Math.random() < 0.5
+      ? fillWL(TAPE_GIANT_SIT_FINISH_LINES[Math.floor(Math.random() * TAPE_GIANT_SIT_FINISH_LINES.length)])
+      : fillWL(TAPE_BIG_SPLASH_FINISH_LINES[Math.floor(Math.random() * TAPE_BIG_SPLASH_FINISH_LINES.length)]);
   } else {
     // A "finisher" listed on the bio page is sometimes really a
     // signature mid-match action rather than an actual finishing move —
@@ -7034,10 +7064,11 @@ function tapeAppendDqReaction(text) {
     beats.push(line);
   }
 
-  // Big Bad Mama's whole strategy is sitting on people — except against
-  // Mt. Fiji, who's just as massive as she is.
-  if (winner.name === "Big Bad Mama" && loser.name !== "Mt. Fiji" && Math.random() < 0.6) {
-    const line = fillWL(TAPE_MAMA_CRUSH_LINES[Math.floor(Math.random() * TAPE_MAMA_CRUSH_LINES.length)]);
+  // Zelda gets by on wit, not strength — when she loses to one of the
+  // roster's genuine powerhouses, the commentary sometimes calls that
+  // out directly.
+  if (loser.name === "Zelda" && TAPE_ZELDA_BRUTE_STRENGTH_OPPONENTS.has(winner.name) && Math.random() < 0.4) {
+    const line = fillWL(TAPE_ZELDA_BRUTE_STRENGTH_LOSS_LINES[Math.floor(Math.random() * TAPE_ZELDA_BRUTE_STRENGTH_LOSS_LINES.length)]);
     beats.push(line);
   }
 
