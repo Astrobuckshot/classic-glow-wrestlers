@@ -4188,7 +4188,7 @@ const TAPE_ROAST_BEATS = [
   "{R} won't stop running her mouth at {R2}, who just keeps wrestling and lets the offense do the talking instead.",
   "{R} is playing to the cameras more than she's playing to win — and it shows!",
   "{R}'s whole strategy tonight seems to be volume — louder isn't the same as better, dear!",
-  "{R} just shoved her own tag partner out of the way trying to get at {R2} — there's no team in that gimmick, folks!",
+  "{R} shoves a ringside cameraman clean out of the way just to get at {R2} — subtlety was never her strong suit!",
   "That's twice now {R} has shoved the timekeeper — somebody's getting a stern letter after tonight!",
   "{R} keeps flexing after every single move — sweetheart, we get it, you're strong, now WRESTLE!",
   "I've seen more restraint from a toddler in a candy aisle than {R} is showing right now!",
@@ -4200,7 +4200,6 @@ const TAPE_ROAST_BEATS = [
 // for the heel (roastTarget === a) only; faces don't act like this even
 // on their worst night.
 const TAPE_HEEL_ONLY_ROAST_BEATS = [
-  "{R} is out here picking fights with the barricade now — sweetheart, it's inanimate, it can't hear you!",
   "{R} is out here trash-talking a folding chair — folks, I don't think it's listening!",
   "{R} is one step away from being escorted out of this building by security, and frankly, they're on standby!",
   "{R} just barked something at the timekeeper that I will NOT be repeating on this broadcast!",
@@ -4429,7 +4428,7 @@ const TAPE_TURNING_POINT_BEATS = [
   "You can smell it in the air, folks — {loser}'s in trouble, and {winner} is circling like she already knows how this ends.",
   "{loser} is gassed, {winner} is not — and in this business, that's usually all she wrote.",
   "This has officially become {winner}'s living room, and {loser} is just visiting.",
-  "{loser} throws a Hail Mary — a desperate, low-percentage move with nothing behind it except hope — but {winner} swats it away like it's nothing.",
+  "{loser} goes for {loserMove} out of pure desperation, nothing else left to try — but {winner} swats it away like it's nothing.",
   "The crowd's already counting along in their heads — everybody in this building knows what's coming next.",
   "You could set your watch by this — {winner} is about to close the show, and {loser} can't do a thing about it.",
   "{loser} digs deep for one more push — finds absolutely nothing down there — and {winner} capitalizes immediately.",
@@ -5569,12 +5568,20 @@ const TAPE_ENTRANCE_LINES = {
     "{X} glides out on Jeeves's arm like she's arriving at a gala, not a wrestling ring.",
   ],
   "The California Doll": [
-    "{X} comes strolling out carrying a surfboard, because of course she does.",
-    "And here comes {X}, who rides that surfboard-carrying entrance all the way to the ring — pure California cool.",
-    "Here comes {X}, surfboard in hand, looking like she just walked off the beach.",
+    "{X} comes strolling out carrying a surfboard, because of course she does — this crowd absolutely loves her for it.",
+    "And here comes {X}, who rides that surfboard-carrying entrance all the way to the ring — pure California cool, and the crowd is eating up every second of it.",
+    "Here comes {X}, surfboard in hand, looking like she just walked off the beach — this crowd adores her.",
     "{X} makes her entrance, and hangs ten off the edge of the ramp just for laughs, and the crowd absolutely eats it up.",
-    "Here she comes — {X} tosses her surfboard to a fan at ringside to hold for her — total California cool.",
+    "Here she comes — {X} tosses her surfboard to a fan at ringside to hold for her — total California cool, and this crowd can't get enough of her.",
     "Here comes {X}, sunny as ever, surfboard in tow — this crowd's fully caught the wave with her.",
+  ],
+  "The California Doll (beach ball)": [
+    "{X} comes bouncing out with a big inflatable beach ball, because of course she does — this crowd absolutely loves her for it.",
+    "And here comes {X}, batting that beach ball out into the crowd on her way to the ring — pure California cool, and the fans are eating up every second of it.",
+    "Here comes {X}, beach ball in hand, looking like she just walked off the sand — this crowd adores her.",
+    "{X} makes her entrance, tossing that beach ball up and volleying it back out to the crowd just for laughs, and they absolutely eat it up.",
+    "Here she comes — {X} bats her beach ball into the front row for a fan to keep — total California cool, and this crowd can't get enough of her.",
+    "Here comes {X}, sunny as ever, beach ball in tow — this crowd's fully caught her wave of energy.",
   ],
   "Dallas": [
     "And here comes {X}, swinging a lasso around like she just rode in off the range.",
@@ -5636,21 +5643,21 @@ const TAPE_ENTRANCE_LINES = {
     "Here comes {X}, Nature Boy cowering right on cue — she rules that leash with an iron fist.",
   ],
   "Sara": [
-    "Here comes {X}, sack still over her head — \"and there's a sackhead if I've ever seen one,\" the announcer sighs, not even trying to hide it.",
-    "{X} makes her entrance with that burlap sack over her head as always — \"folks, I really don't know what else to call her besides a sackhead.\"",
-    "Here she comes — {X}, sack and all, and the announcer just mutters, \"here comes another sackhead, ladies and gentlemen.\"",
+    "Here comes {X}, sack still over her head, and the announcer sighs, not even trying to hide his opinion of this whole sackhead routine.",
+    "{X} makes her entrance with that sack over her head as always, and the announcer admits he really doesn't know what else to call her besides a sackhead.",
+    "Here she comes — {X}, sack and all, and the announcer just mutters something about here comes another sackhead, ladies and gentlemen.",
     "{X} shuffles out with that sack over her head as usual, and the announcer doesn't even bother hiding his exasperation with this sackhead.",
   ],
   "Mabel": [
-    "Here comes {X}, sack still over her head — \"and there's a sackhead if I've ever seen one,\" the announcer sighs, not even trying to hide it.",
-    "{X} makes her entrance with that burlap sack over her head as always — \"folks, I really don't know what else to call her besides a sackhead.\"",
-    "Here she comes — {X}, sack and all, and the announcer just mutters, \"here comes another sackhead, ladies and gentlemen.\"",
+    "Here comes {X}, sack still over her head, and the announcer sighs, not even trying to hide his opinion of this whole sackhead routine.",
+    "{X} makes her entrance with that sack over her head as always, and the announcer admits he really doesn't know what else to call her besides a sackhead.",
+    "Here she comes — {X}, sack and all, and the announcer just mutters something about here comes another sackhead, ladies and gentlemen.",
     "{X} shuffles out with that sack over her head as usual, and the announcer doesn't even bother hiding his exasperation with this sackhead.",
   ],
   "Americana": [
     "Here comes {X}, waving to every corner of the arena — this crowd absolutely adores her, and she knows it.",
-    "{X} makes her entrance with a big wave to the crowd, and the announcer can't help but gush — \"folks, this audience just loves this woman.\"",
-    "Here she comes — {X}, waving the whole way down, and the announcer sums it up perfectly: \"they simply cannot get enough of her out here.\"",
+    "{X} makes her entrance with a big wave to the crowd, and the announcer can't help but gush about how much this audience just loves this woman.",
+    "Here she comes — {X}, waving the whole way down, and the announcer sums it up perfectly — this crowd simply cannot get enough of her.",
     "{X} waves enthusiastically to every section of the arena on her way down, and it's clear this crowd would follow her anywhere.",
   ],
 };
@@ -6143,6 +6150,7 @@ function generateTapeBlurb(a, b, result) {
       .replaceAll("{winnerGimmick}", tapeGimmick(winner))
       .replaceAll("{loserGimmick}", tapeGimmick(loser))
       .replaceAll("{winnerMove}", tapeMove(winner, loser))
+      .replaceAll("{loserMove}", tapeMove(loser, winner))
       .replaceAll("{winnerFinisher}", tapeFinisherDisplay(winner))));
   };
 
@@ -6211,9 +6219,19 @@ function generateTapeBlurb(a, b, result) {
     const straitjacketMember = [a, b].find(w => w.name === "Spike" || w.name === "Chainsaw");
     const useStraitjacket = !!straitjacketMember && Math.random() < 0.4;
 
-    // Which of the two enters first is just a coin flip — no reason the
-    // heel should always walk out ahead of the face.
-    const entranceOrder = Math.random() < 0.5 ? [a, b] : [b, a];
+    // Spike, Chainsaw, Sara, and Mabel sometimes mock their opponent's
+    // entrance right after seeing it — when that's going to happen, the
+    // mocker needs to enter FIRST so the mock lands right after watching
+    // her opponent come out, not before.
+    const mockerCandidate = [a, b].find(w => TAPE_IMAGE_MOCK_LINES[w.name]);
+    const mockingTriggered = !!mockerCandidate && !ambusherInMatch && Math.random() < 0.5;
+
+    // Which of the two enters first is normally just a coin flip — no
+    // reason the heel should always walk out ahead of the face — except
+    // when mocking is about to happen, which requires the mocker first.
+    const entranceOrder = mockingTriggered
+      ? (mockerCandidate === a ? [a, b] : [b, a])
+      : (Math.random() < 0.5 ? [a, b] : [b, a]);
 
     const usedOpeners = new Set();
     entranceLines = entranceOrder
@@ -6221,7 +6239,10 @@ function generateTapeBlurb(a, b, result) {
       .map(w => {
         const opponent = w === a ? b : a;
         const isStraitjacket = useStraitjacket && w === straitjacketMember;
-        const pool = isStraitjacket ? TAPE_STRAITJACKET_ENTRANCE_LINES : (w.name === "Hollywood" ? TAPE_HOLLYWOOD_SPRAYPAINT_ENTRANCE_LINES : TAPE_ENTRANCE_LINES[w.name]);
+        const pool = isStraitjacket ? TAPE_STRAITJACKET_ENTRANCE_LINES
+          : w.name === "Hollywood" ? TAPE_HOLLYWOOD_SPRAYPAINT_ENTRANCE_LINES
+          : w.name === "The California Doll" ? (Math.random() < 0.33 ? TAPE_ENTRANCE_LINES["The California Doll (beach ball)"] : TAPE_ENTRANCE_LINES["The California Doll"])
+          : TAPE_ENTRANCE_LINES[w.name];
         // Avoid two entrances in the same match opening with the same
         // phrase (e.g. both starting with "Here comes X").
         let candidates = pool.filter(tpl => !usedOpeners.has(tapeLineOpener(tpl)));
@@ -6247,16 +6268,15 @@ function generateTapeBlurb(a, b, result) {
 
     // If only one wrestler has a signature entrance, the other one
     // doesn't just stand there quietly — she gets a reaction of her own.
-    // Spike and Chainsaw are a special case: their "reaction" is always
-    // the mocking impression (handled right here, immediately after the
-    // entrances), never the generic disgust line, and never delayed
-    // until later in the pre-bell sequence.
-    const hmsMocker = [a, b].find(w => (w.name === "Spike" || w.name === "Chainsaw"));
-    if (hmsMocker && Math.random() < 0.5) {
-      const opponent = hmsMocker === a ? b : a;
-      const pool = TAPE_IMAGE_MOCK_LINES[hmsMocker.name];
+    // Spike, Chainsaw, Sara, and Mabel are a special case: their
+    // "reaction" is always the mocking impression (handled right here,
+    // immediately after the entrances), never the generic disgust line,
+    // and never delayed until later in the pre-bell sequence.
+    if (mockingTriggered) {
+      const opponent = mockerCandidate === a ? b : a;
+      const pool = TAPE_IMAGE_MOCK_LINES[mockerCandidate.name];
       const line = pool[Math.floor(Math.random() * pool.length)]
-        .replaceAll("{X}", hmsMocker.name)
+        .replaceAll("{X}", mockerCandidate.name)
         .replaceAll("{Y}", opponent.name);
       entranceLines.push(line);
     }
@@ -6266,7 +6286,7 @@ function generateTapeBlurb(a, b, result) {
     if (aHasEntrance !== bHasEntrance) {
       const performer = aHasEntrance ? a : b;
       const reactor = aHasEntrance ? b : a;
-      if (reactor !== hmsMocker) {
+      if (reactor !== mockerCandidate) {
         const reactorPool = TAPE_NO_TRASH_TALK.has(reactor.name) ? TAPE_SILENT_ENTRANCE_REACTION_LINES : TAPE_ENTRANCE_REACTION_LINES;
         const tpl = reactorPool[Math.floor(Math.random() * reactorPool.length)];
         entranceLines.push(tpl.replaceAll("{X}", reactor.name).replaceAll("{Y}", performer.name));
@@ -6346,23 +6366,6 @@ function generateTapeBlurb(a, b, result) {
         .replaceAll("{X}", tapeShortName(zeldaPreMatch))
         .replaceAll("{Y}", tapeShortName(zeldaOpponent))
         .replaceAll("{authority}", Math.random() < 0.5 ? "David McLane" : "Johnny C.");
-      entranceLines = [...entranceLines, line];
-    }
-  }
-
-  // The Hicks can't resist mocking their opponent's look before the bell
-  // rings — half the time, whichever one of the two is in the match gets
-  // a shot in about it. Spike and Chainsaw are handled separately,
-  // immediately after entrances, so they're excluded here to avoid
-  // mocking twice or out of order.
-  if (!ambusherInMatch) {
-    const imageMocker = [a, b].find(w => TAPE_IMAGE_MOCK_LINES[w.name] && w.name !== "Spike" && w.name !== "Chainsaw");
-    if (imageMocker && Math.random() < 0.5) {
-      const opponent = imageMocker === a ? b : a;
-      const pool = TAPE_IMAGE_MOCK_LINES[imageMocker.name];
-      const line = pool[Math.floor(Math.random() * pool.length)]
-        .replaceAll("{X}", imageMocker.name)
-        .replaceAll("{Y}", opponent.name);
       entranceLines = [...entranceLines, line];
     }
   }
