@@ -3432,6 +3432,13 @@ function tapeBeatAllowed(tpl, a, b) {
   // — a generic mid-match "running splash" would step on that and still
   // counts as a leaping move regardless.
   if (tpl === "{B} whips {A} into the turnbuckle, following up with a running splash." && bTrueGiant) return false;
+  // Nobody actually throws or sends Matilda or Big Bad Mama flying
+  // anywhere — not even another giant like Mt. Fiji. Separately, Zelda,
+  // Little Fiji, Little Feather, and Little Egypt aren't strong enough
+  // to throw anybody, regardless of who they're facing.
+  const TAPE_UNTHROWABLE = new Set(["Matilda the Hun", "Big Bad Mama"]);
+  const TAPE_CANNOT_THROW = new Set(["Zelda", "Little Fiji", "Little Feather", "Little Egypt"]);
+  if (tpl === "A fan's popcorn goes flying as {B} sends {A} careening into the front row." && (TAPE_UNTHROWABLE.has(a.name) || TAPE_CANNOT_THROW.has(b.name))) return false;
   // Little Fiji is far too weak to rough anyone up — she's always the
   // face (b), so any template where {B} dishes out real offense on {A}
   // gets filtered out whenever she's in the match. Templates that only
@@ -5144,9 +5151,9 @@ const TAPE_TRANCE_AFTEREFFECT_LINES = [
 // Whenever Matilda the Hun wrestles, the whole match tends to spiral —
 // guaranteed chaos line inserted into her matches.
 const TAPE_MATILDA_CHAOS_LINES = [
-  "Things are already spiraling out of control with {X} in the ring — this has stopped being a normal wrestling match entirely.",
-  "Whenever {X} is involved, chaos seems to follow, and tonight is no exception — this whole thing is falling apart in the best way.",
-  "This has devolved into an absolute circus the second {X} got involved — I genuinely don't know what to call this anymore.",
+  "{X} just hurled a chunk of raw meat into the crowd for no reason — this has stopped being a normal wrestling match entirely.",
+  "{X} just stormed over and got right in {authority}'s face over something — this has nothing to do with the actual match anymore!",
+  "{X} just climbed out of the ring to scream at people in the front row — somebody explain to me what is even happening right now.",
 ];
 
 // Hollywood, Vine, and Broadway Rose are all established kleptomaniacs —
@@ -6016,6 +6023,16 @@ const TAPE_MATILDA_PUNY_AMERICAN_MIC_LINES = [
   "{X} grabs the mic before the bell and sneers at {Y} — \"Puny American! I will BREAK you!\"",
 ];
 
+// Matilda's usual "no muscle, no meat" line makes no sense against
+// Mt. Fiji specifically — she's not a wimp by any stretch, so this
+// matchup gets its own dedicated rivalry-focused mic lines instead.
+const TAPE_MATILDA_VS_FIJI_MIC_LINES = [
+  "{X} rips the mic out of the ring announcer's hands — \"{Y}, this is MY ring! I will BREAK you once and for all!\"",
+  "{X} snatches the mic and gets right in {Y}'s face — \"You've had this coming for YEARS! Today's the day!\"",
+  "{X} grabs the mic, screaming — \"I'll eat you like raw meat, {Y}! There will be NOTHING left when I'm through!\"",
+  "{X} snatches the mic and points right at {Y} — \"Nobody remembers second place! And that's exactly what you'll be when I'm done with you!\"",
+];
+
 // The Heavy Metal Sisters and the Hicks can't resist doing a mocking
 // impression of their opponent before the bell rings — imitating her
 // entrance, her walk, her poses — physical performance, not talking.
@@ -6354,6 +6371,8 @@ function generateTapeBlurb(a, b, result) {
       const richGirls = TAPE_CATEGORIES.find(c => c.name === "Rich Girls").members;
       const pool = micGrabber.name === "Colonel Ninotchka" && richGirls.includes(opponent.name)
         ? TAPE_NINOTCHKA_RICH_GIRL_MIC_LINES
+        : micGrabber.name === "Matilda the Hun" && opponent.name === "Mt. Fiji"
+        ? TAPE_MATILDA_VS_FIJI_MIC_LINES
         : micGrabber.name === "Matilda the Hun" && TAPE_MATILDA_PUNY_AMERICAN_TARGETS.has(opponent.name)
         ? TAPE_MATILDA_PUNY_AMERICAN_MIC_LINES
         : TAPE_MIC_GRAB_LINES[micGrabber.name];
@@ -6503,10 +6522,16 @@ function generateTapeBlurb(a, b, result) {
   } else {
     // "No handshake, no formalities" implies there was ever an
     // expectation of one — doesn't fit Dementia or Mana, who never
-    // engage in that kind of thing to begin with.
-    const kickoffPool = [a, b].some(w => w.name === "Dementia" || w.name === "Mana")
-      ? TAPE_KICKOFF_BEATS.filter(tpl => tpl !== "No handshake, no formalities — {A} and {B} go straight at each other the second that bell rings!")
-      : TAPE_KICKOFF_BEATS;
+    // engage in that kind of thing to begin with. And an established
+    // bitter rivalry (like Matilda vs. Mt. Fiji) would never even
+    // attempt a handshake in the first place.
+    let kickoffPool = TAPE_KICKOFF_BEATS;
+    if ([a, b].some(w => w.name === "Dementia" || w.name === "Mana")) {
+      kickoffPool = kickoffPool.filter(tpl => tpl !== "No handshake, no formalities — {A} and {B} go straight at each other the second that bell rings!");
+    }
+    if (rivalryMatch) {
+      kickoffPool = kickoffPool.filter(tpl => tpl !== "Here we go, folks! {B} goes for a handshake — and {A} just clotheslines her instead! Not exactly sporting, but that's how we do it around here!");
+    }
     kickoff = fillABShort(kickoffPool[Math.floor(Math.random() * kickoffPool.length)]);
   }
 
@@ -6757,7 +6782,8 @@ function generateTapeBlurb(a, b, result) {
   const matildaInMatch = [a, b].find(w => w.name === "Matilda the Hun");
   if (matildaInMatch && Math.random() < 0.75) {
     const tpl = TAPE_MATILDA_CHAOS_LINES[Math.floor(Math.random() * TAPE_MATILDA_CHAOS_LINES.length)];
-    const line = tpl.replaceAll("{X}", tapeShortName(matildaInMatch));
+    const line = tpl.replaceAll("{X}", tapeShortName(matildaInMatch))
+      .replaceAll("{authority}", Math.random() < 0.5 ? "David McLane" : "Johnny C.");
     beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, line);
   }
 
