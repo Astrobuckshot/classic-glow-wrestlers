@@ -3930,6 +3930,20 @@ function tapeMove(w, opponent) {
   if (suplexBlocked && pool.includes("a suplex")) {
     pool = pool.filter(m => m !== "a suplex");
   }
+  // Powerbombing, body-slamming, piledriving, monkey-tossing, or
+  // clotheslining a true giant off her feet all take serious power —
+  // only another true giant can actually pull one of these off. No
+  // exception here, not even Daisy (unlike the suplex rule above, none
+  // of these are about reach/leverage, just raw strength).
+  const giantLockedMoves = new Set(["a powerbomb", "a body slam", "a piledriver", "a monkey toss", "a backbreaker", "a big clothesline"]);
+  const giantLockedBlocked = opponent && TAPE_TRUE_GIANTS.has(opponent.name) && !TAPE_TRUE_GIANTS.has(w.name);
+  if (giantLockedBlocked) {
+    pool = pool.filter(m => !giantLockedMoves.has(m));
+    // Can't lift her, but you can climb her — a smaller wrestler's
+    // classic answer to a giant she has no hope of overpowering
+    // straight-up.
+    pool = [...pool, "a jump onto her back, wailing punches from behind"];
+  }
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
@@ -4242,10 +4256,10 @@ const TAPE_HOUSEWIFE_CLEANING_LINES = [
 // or a broom, straight to the opponent's face, before any actual
 // wrestling even has a chance to start.
 const TAPE_HOUSEWIFE_OPENING_LINES = [
-  "{X} doesn't even bother with a lock-up — she blasts {Y} right in the face with a can of aerosol spray before the match has barely started!",
-  "{X} swings a broom directly into {Y}'s face before either of them has even circled the ring once — some opening move!",
-  "{X} unloads a full spray of aerosol right in {Y}'s eyes the second the bell rings — {Y} never saw it coming!",
-  "{X} cracks {Y} across the face with a broom handle right out of the gate — this housewife doesn't believe in a fair start!",
+  "{X} doesn't even bother with a lock-up — she blasts {Y} right in the face with a can of aerosol spray before {Y} can even react!",
+  "{X} swings a broom directly into {Y}'s face without a shred of warning — some opening move!",
+  "{X} unloads a full spray of aerosol right in {Y}'s eyes — {Y} never saw it coming!",
+  "{X} cracks {Y} across the face with a broom handle out of absolutely nowhere — this housewife doesn't believe in a fair start!",
 ];
 
 // Whatever actual wrestling the Housewives do is limited to exactly
@@ -4270,10 +4284,10 @@ const TAPE_HOUSEWIFE_DRAG_CANVAS_LINES = [
 // consecutive lines, and to acknowledge it explicitly if the same item
 // comes back later in the same match.
 const TAPE_HOUSEWIFE_ITEM_TAGS = new Map([
-  ["{X} doesn't even bother with a lock-up — she blasts {Y} right in the face with a can of aerosol spray before the match has barely started!", "aerosol"],
-  ["{X} swings a broom directly into {Y}'s face before either of them has even circled the ring once — some opening move!", "broom"],
-  ["{X} unloads a full spray of aerosol right in {Y}'s eyes the second the bell rings — {Y} never saw it coming!", "aerosol"],
-  ["{X} cracks {Y} across the face with a broom handle right out of the gate — this housewife doesn't believe in a fair start!", "broom"],
+  ["{X} doesn't even bother with a lock-up — she blasts {Y} right in the face with a can of aerosol spray before {Y} can even react!", "aerosol"],
+  ["{X} swings a broom directly into {Y}'s face without a shred of warning — some opening move!", "broom"],
+  ["{X} unloads a full spray of aerosol right in {Y}'s eyes — {Y} never saw it coming!", "aerosol"],
+  ["{X} cracks {Y} across the face with a broom handle out of absolutely nowhere — this housewife doesn't believe in a fair start!", "broom"],
   ["{X} takes a swing at {Y} with that rolling pin — more kitchen than combat, but it clearly still stings!", "rolling pin"],
   ["{X} chases {Y} around the ring with a mop, still nagging the entire time — this has stopped resembling wrestling entirely!", "mop"],
   ["{X} unloads a spray of aerosol in {Y}'s direction — housewife warfare in full effect out here!", "aerosol"],
@@ -5190,8 +5204,8 @@ const TAPE_CATEGORIES = [
     name: "Rich Girls",
     members: ["Tiffany Mellon", "Roxy Astor", "Ashley Cartier", "Tina Ferrari"],
     matchupLines: [
-      "Before the bell even rings, {A} and {B} are already sniping about whose jewelry costs more — this one's personal.",
-      "{A} and {B} trade jabs about money and looks before they've even locked up. The ultimate rich-girl grudge match.",
+      "{A} and {B} are already sniping about whose jewelry costs more — this one's personal.",
+      "{A} and {B} trade jabs about money and looks every chance they get. The ultimate rich-girl grudge match.",
       "This one's got real high-society energy — {A} and {B} clearly think they're too good to even be in the same ring.",
     ],
     soloLines: [
@@ -5895,11 +5909,12 @@ const TAPE_MIC_GRAB_LINES = {
     "{X} grabs the mic before the bell, practically shaking with passion — \"Everything I do, I do for my country! {Y} doesn't stand a chance against that!\"",
   ],
   "Matilda the Hun": [
-    "{X} rips the mic out of the ring announcer's hands before the bell even rings — \"I will BREAK her! She's nothing — a puny opponent, unworthy of this ring!\"",
+    "{X} rips the mic out of the ring announcer's hands before the bell even rings — \"I will BREAK her! Look at her — she is a wimp! No meat!\"",
     "{X} snatches the mic, screaming — \"I'll eat {Y} like raw meat! There will be NOTHING left when I'm through!\"",
     "{X} grabs the mic before the bell — \"{Y} doesn't stand a chance against me — nobody does! I will BREAK her!\"",
     "{X} grabs the mic before the bell, but she's not even looking at {Y} anymore — she's screaming right at the crowd — \"You are ALL weak! Every last one of you!\"",
     "{X} snatches the mic and turns on the crowd entirely, roaring — \"Sit down and shut up, all of you! This is not a circus!\"",
+    "{X} grabs the mic and looks {Y} up and down, unimpressed — \"Wimp! No muscle, no meat — this will be over before you even feel it!\"",
   ],
   "Tiffany Mellon": [
     "{X} grabs the mic before the bell, looking {Y} up and down — \"Sweetheart, that outfit is a tragedy, and your face isn't doing you any favors either!\"",
