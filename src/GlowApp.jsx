@@ -4124,7 +4124,7 @@ const TAPE_ACTION_BEATS = [
   "{B} gets tangled in her own tights mid-move, and {A} capitalizes immediately.",
   "The referee gets knocked down in the chaos and just lies there for a second, completely forgotten.",
   "{A} tries to climb the ropes and nearly falls off before she even gets going — the crowd gasps, then laughs.",
-  "{B} attempts a dramatic pose mid-match, and {A} just tackles her out of it.",
+  "{B} attempts an armlock, but {A} just powers her way out of it.",
   "Someone in the front row is holding up a sign that says something about {A}'s mother — she does NOT appreciate it.",
   "{A} unloads with {moveA} that looks absolutely {adjA} — {emotion}",
   "{B} answers right back with {moveB} of her own, and it's every bit as {adjB}!",
@@ -4463,7 +4463,6 @@ const TAPE_TURNING_POINT_BEATS = [
   "{loser} is gassed, {winner} is not — and in this business, that's usually all she wrote.",
   "This has officially become {winner}'s living room, and {loser} is just visiting.",
   "{loser} goes for {loserMove} out of pure desperation, nothing else left to try — but {winner} swats it away like it's nothing.",
-  "The crowd's already counting along in their heads — everybody in this building knows what's coming next.",
   "You could set your watch by this — {winner} is about to close the show, and {loser} can't do a thing about it.",
   "{loser} digs deep for one more push — finds absolutely nothing down there — and {winner} capitalizes immediately.",
   "{winner} has that look now, folks — the one that means this is about to be over.",
@@ -4475,7 +4474,7 @@ const TAPE_TURNING_POINT_BEATS = [
   "It's been a fight, but {winner} is finding another level, and {loser} just doesn't have an answer for it.",
   "{loser} takes one big, wild swing with everything she has left — {winner} ducks it clean, and now it's just a matter of time.",
   "You can see it drain out of {loser} in real time — {winner} has completely broken her will to keep fighting.",
-  "{winner} isn't just winning the match anymore, she's dismantling {loser} piece by piece.",
+  "But {winner} isn't just winning the match anymore, she's dismantling {loser} piece by piece.",
   "{loser} tries to catch her breath in the corner, but {winner} isn't giving her the chance.",
   "Every exchange from here on out is one-sided — {winner} has this thing on lockdown.",
   "{loser} is holding on more out of stubbornness than strategy at this point, and {winner} knows it.",
@@ -5811,7 +5810,6 @@ const TAPE_SLOW_KICKOFF_BEATS = [
 // has the room, heel or not.
 const TAPE_STAREDOWN_LINES = [
   "Before the bell even rings, {X} and {Y} share a long staredown in the middle of the ring — and it's clear {Y} isn't exactly thrilled to be this close to {X}.",
-  "{X} and {Y} stand nose to nose after the bell, neither one blinking — but it's {Y} who looks rattled first.",
   "There's a long staredown before the first move gets thrown — {X} clearly has the psychological edge here, and {Y} knows it.",
   "{X} gets right in {Y}'s face before the action even starts — {Y} holds her ground, but just barely.",
   "The two of them just stand there for a second, sizing each other up — {X} looks like she's already won this part of the fight.",
@@ -6038,11 +6036,11 @@ const TAPE_MATILDA_VS_FIJI_MIC_LINES = [
 // entrance, her walk, her poses — physical performance, not talking.
 const TAPE_IMAGE_MOCK_LINES = {
   "Spike": [
-    "{X} does an exaggerated, mocking impression of {Y}'s entrance, strutting around like a total goofball — the crowd's laughing at {Y}, not with her.",
+    "{X} mimics {Y} on the way to the ring — absolutely classless, this one — the crowd rightfully boos.",
     "{X} mimics {Y}'s signature pose, hamming it up for the crowd — {Y} does NOT find it funny.",
   ],
   "Chainsaw": [
-    "{X} does an exaggerated, mocking impression of {Y}'s entrance, strutting around like a total goofball — the crowd's laughing at {Y}, not with her.",
+    "{X} mimics {Y} on the way to the ring — absolutely classless, this one — the crowd rightfully boos.",
     "{X} mimics {Y}'s signature pose, hamming it up for the crowd — {Y} does NOT find it funny.",
   ],
   "Sara": [
