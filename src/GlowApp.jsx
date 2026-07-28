@@ -5113,12 +5113,12 @@ const TAPE_MAMA_SNAP_OUT_LINES = [
 // Wildly goofy trance aftereffects that show up later in the match as a
 // consequence of the early spell — the sillier the better.
 const TAPE_TRANCE_AFTEREFFECT_LINES = [
-  "{Y} is STILL clucking like a chicken from earlier — whatever {X} did, it is NOT wearing off!",
+  "{Y} suddenly lets out a cluck mid-hold, completely involuntary — whatever {X} did to her earlier clearly hasn't fully worn off!",
   "{Y} just tried to moonwalk across the ring for no reason — that trance has clearly not worn off yet!",
   "{Y} keeps randomly bursting into song mid-match — folks, that spell is still VERY much active!",
   "{Y} just attempted to propose marriage to the referee — I have so many questions and zero answers!",
   "{Y} is barking like a dog now?! This match has gone completely off the rails, and I am here for it!",
-  "{Y} keeps trying to hug {X} instead of fighting her — that hex is really doing a number on her!",
+  "{Y} suddenly breaks off mid-hold to try and hug {X} instead — before shaking it off and getting right back to business. That hex is really doing a number on her!",
   "{Y} just broke into a full interpretive dance mid-hold — utterly bewildering, truly spectacular!",
   "{Y} is now speaking in a British accent for some reason — nobody can explain it, least of all {Y}!",
   "{Y} just saluted the flag of a country that doesn't exist — I don't know what {X} did to her, but WOW!",
@@ -5587,7 +5587,7 @@ const TAPE_ENTRANCE_LINES = {
     "And here comes {X}, who arrives with Jeeves in tow, carrying her robe like she's walking into a ballroom, not a wrestling ring.",
     "Here comes {X}, every bit the Park Avenue socialite, Jeeves trailing dutifully behind.",
     "{X} makes her entrance, and waves a gloved hand to the crowd, every inch the Park Avenue socialite, Jeeves shuffling along behind her.",
-    "Here she comes — {X} pauses to let Jeeves adjust her robe mid-aisle — the crowd finds the whole spectacle charming.",
+    "Here she comes — {X} pauses to let Jeeves adjust her robe mid-aisle — the crowd can't help but laugh at the sheer absurdity of it.",
     "Here comes {X}, dripping in old money glamour, Jeeves trailing along right on cue.",
     "{X} glides out on Jeeves's arm like she's arriving at a gala, not a wrestling ring.",
   ],
