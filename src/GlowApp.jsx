@@ -3820,20 +3820,30 @@ function simulateTapeMatch(a, b) {
 
   const ra = TAPE_RATINGS[a.name] || 5;
   const rb = TAPE_RATINGS[b.name] || 5;
-  // Each point of rating gap roughly doubles the favorite's odds — a big
+  // Each point of rating gap roughly triples the favorite's odds — a big
   // gap (e.g. 10 vs 5) is a near-lock, a small gap (10 vs 9) is close but
   // still favors the higher rating almost every time.
   const oddsRatio = Math.pow(3, ra - rb);
   let pa = oddsRatio / (oddsRatio + 1);
+  // A handful of the roster's most dominant, decorated performers are
+  // just genuinely hard to upset — when one of them is already favored
+  // by rating, she gets an extra 10-point edge on top of the gap-scaled
+  // odds. Doesn't apply when she's the underdog in a given matchup.
+  const TAPE_HARD_TO_UPSET = new Set(["Matilda the Hun", "Big Bad Mama", "Daisy", "Colonel Ninotchka", "Tina Ferrari"]);
+  if (ra > rb && TAPE_HARD_TO_UPSET.has(a.name)) {
+    pa = Math.min(0.95, pa + 0.10);
+  } else if (rb > ra && TAPE_HARD_TO_UPSET.has(b.name)) {
+    pa = Math.max(0.05, pa - 0.10);
+  }
   // Interference that slipped past the ref gives its beneficiary a real
   // boost to her actual odds of winning, not just a flavor line.
   if (interference && !interference.caught) {
     pa = interference.beneficiary === a ? Math.min(0.95, pa + 0.25) : Math.max(0.05, pa - 0.25);
   }
-  // The injury picked up earlier really does cost her — a real 25%
+  // The injury picked up earlier really does cost her — a real 12.5%
   // knock off her odds of winning the match outright.
   if (injured) {
-    pa = injured === a ? Math.max(0.05, pa - 0.25) : Math.min(0.95, pa + 0.25);
+    pa = injured === a ? Math.max(0.05, pa - 0.125) : Math.min(0.95, pa + 0.125);
   }
   // Small, aerial-reliant wrestlers just can't get a true giant off her
   // feet — she catches every jump, every dive, every top-rope attempt.
