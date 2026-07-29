@@ -2321,7 +2321,7 @@ const MOMENTS_IN_HISTORY = [
     id: "history-sugar-torched",
     title: "Sugar Gets Torched by Spike",
     photo: "history-sugar-torched.jpg",
-    summary: "Sugar only had one televised match under her belt before taking on the Heavy Metal Sisters in a tag team match with California Doll. Spike decided to use her infamous blow torch on Sugar's face and burned her badly — she was then pounced on by the unhinged sisters, and chaos erupted with paramedics and security mixed in the whole mess. Sugar left the ring with her hands covering her face — upon her return, she wore a mask to hide her scars, with some opponents trying to rip it off her head (Palestina would somewhat succeed). Sugar left after Season 2 and never did take her mask off in the GLOW ring.",
+    summary: "Sugar only had one televised match under her belt before taking on the Heavy Metal Sisters in a tag team match with California Doll. Spike decided to use her infamous blow torch on Sugar's face and burned her badly (Spike got some practice in Season 1 when she burned Debbie Debutante's face). Sugar was then pounced on by the unhinged sisters, and chaos erupted with paramedics and security mixed in the whole mess -- she left the ring with her hands covering her face. Upon her return, Sugar wore a mask to hide her scars, with some opponents trying to rip it off her head (Palestina would somewhat succeed). Sugar left after Season 2 and never did take her mask off in the GLOW ring.",
   },
   {
     id: "history-tina-ferrari-crown",
@@ -3711,10 +3711,13 @@ function simulateTapeMatch(a, b) {
   if (TAPE_ALWAYS_DQ.has(a.name) || TAPE_ALWAYS_DQ.has(b.name)) {
     const dqSide = TAPE_ALWAYS_DQ.has(a.name) ? a : b;
     const opponent = dqSide === a ? b : a;
-    // Extremely rare: even the Heavy Metal Sisters' blatant weapon use
-    // sometimes slips past the referee entirely, and she wins clean.
-    if (Math.random() < 0.01) {
-      return { winner: dqSide, loser: opponent, method: "normal", refMissed: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
+    // Mt. Fiji is the one wrestler with enough sheer size and power to
+    // occasionally shut Spike or Chainsaw down before the weapon even
+    // comes into play — rare even for her, and essentially impossible
+    // for anyone else on the roster.
+    const cleanWinChance = opponent.name === "Mt. Fiji" ? 0.05 : 0;
+    if (Math.random() < cleanWinChance) {
+      return { winner: opponent, loser: dqSide, method: "normal", mtFijiOverpowersHMS: true, weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
     }
     return { winner: opponent, loser: dqSide, method: "dq", weaponGrabbed, refKnockedOut, injured, injuryMove, injuryBodyPart, palestinaMachete, hogtieAttempter, hogtieOutcome };
   }
@@ -4589,6 +4592,15 @@ const TAPE_REF_MISSED_LINES = [
   "The referee's back is turned at exactly the wrong moment — {X} gets away with it completely, and {Y} pays for it!",
   "Somehow the referee misses the whole thing — {X} catches an enormous break tonight, and {Y} is the one who suffers for it!",
   "I don't know how the ref didn't see that, but he didn't — {X} skates by clean, and {Y} is left picking up the pieces!",
+];
+
+// Mt. Fiji doesn't need any of that weapon nonsense to work against
+// her — she's simply too big and too strong for it, no cheating no-call
+// involved.
+const TAPE_MT_FIJI_OVERPOWERS_HMS_LINES = [
+  "{Y} never even gets the chance to reach for her weapon tonight — {X} is just too much to deal with, plain and simple.",
+  "{X} shuts this one down before {Y}'s usual tricks can even come into play — sheer size and power, nothing more.",
+  "{Y} tries everything in the playbook, but {X} is simply too strong tonight — no gimmicks needed on {X}'s end.",
 ];
 
 // Ordinary, unglamorous cheating — a handful of tights, a boot on the
@@ -6109,7 +6121,7 @@ const TAPE_INTERFERENCE_CAUGHT_FINISH_LINES = [
 ];
 
 function generateTapeBlurb(a, b, result) {
-  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, injuryBodyPart, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper, hogtieAttempter, hogtieOutcome } = result;
+  const { winner, loser, method, interference, auntKitty, dirtyWin, refMissed, mtFijiOverpowersHMS, mtFijiRescue, underRingWeapon, weaponGrabbed, refMissedCheating, zeldaHelp, refKnockedOut, refKnockedOutDecisive, injured, injuryMove, injuryBodyPart, littleFijiKnockoutWin, knockoutHelper, palestinaMachete, palestinaMacheteDQ, maskTurned, housewifeHumiliation, giantKnockdownHelp, outsideHelper, hogtieAttempter, hogtieOutcome } = result;
 
   // A handful of matchups are known, heated rivalries — these get extra
   // passionate mid-match commentary and a dedicated post-match line
@@ -6728,6 +6740,17 @@ function generateTapeBlurb(a, b, result) {
   // past the referee entirely, and she wins clean instead of getting DQ'd.
   if (refMissed) {
     const tpl = TAPE_REF_MISSED_LINES[Math.floor(Math.random() * TAPE_REF_MISSED_LINES.length)];
+    const line = tpl
+      .replaceAll("{X}", tapeShortName(winner))
+      .replaceAll("{Y}", tapeShortName(loser));
+    beats.splice(Math.floor(Math.random() * (beats.length + 1)), 0, line);
+  }
+
+  // Mt. Fiji is the one wrestler with enough sheer size and power to
+  // shut a Heavy Metal Sister down before the weapon ever comes into
+  // play — not a cheating no-call, just genuinely too strong tonight.
+  if (mtFijiOverpowersHMS) {
+    const tpl = TAPE_MT_FIJI_OVERPOWERS_HMS_LINES[Math.floor(Math.random() * TAPE_MT_FIJI_OVERPOWERS_HMS_LINES.length)];
     const line = tpl
       .replaceAll("{X}", tapeShortName(winner))
       .replaceAll("{Y}", tapeShortName(loser));
