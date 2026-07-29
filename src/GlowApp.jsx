@@ -3001,7 +3001,7 @@ const QUIZ_QUESTIONS = [
   { quote: "Nino (Ninotchka) is a really, really good friend of mine. And you know, Nino? I don't even know if I could wrestle you.", answer: "Hollywood" },
   { quote: "I hate Cheerleaders. Cheyenne Cher looks like she tried to have a powwow with a lawnmower.", answer: "Melody Trouble Vixen (MTV)" },
   { quote: "So you wanted to see Gorgeous Ladies — well feast your eyes! Here's the cream of the crop!", answer: "Big Bad Mama" },
-  { quote: "This is their (Housewives) chance, man — national television, in this wrestling match, and look how they dress?", answer: "Tina Ferrari" },
+  { quote: "This is their (Housewives) chance, man — national television, in this wrestling match, and look how they dress!", answer: "Tina Ferrari" },
   { quote: "Hollywood's wrestling techniques are definitely street material — just like her. Well I plan on cleaning up the streets and using her hair as a mop.", answer: "Roxy Astor" },
   { quote: "You know, lots of friends of mine have lost a lot of money to people like Evangelina. So during this match, I'm gonna make her pay.", answer: "Babe the Farmer's Daughter" },
   { quote: "Wait a minute -- why are you matching me up with her (Spanish Red)? I hire people like her to clean my toilets.", answer: "Ashley Cartier" },
@@ -3966,6 +3966,13 @@ function tapeMove(w, opponent) {
     // classic answer to a giant she has no hope of overpowering
     // straight-up.
     pool = [...pool, "a jump onto her back, wailing punches from behind"];
+  }
+  // A small wrestler doesn't have the mass behind her to clothesline a
+  // medium or big opponent off her feet — clotheslining only really
+  // works against another small wrestler.
+  const clotheslineBlocked = TAPE_SMALL_WRESTLERS.has(w.name) && opponent && !TAPE_SMALL_WRESTLERS.has(opponent.name);
+  if (clotheslineBlocked && pool.includes("a big clothesline")) {
+    pool = pool.filter(m => m !== "a big clothesline");
   }
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -5877,6 +5884,25 @@ const TAPE_GIANT_CHEAPSHOT_KICKOFF_LINES = [
   "{B} is still waving to the crowd when {A} blindsides her with a clothesline — so much for a fair start!",
 ];
 
+// Beastie doesn't dropkick — she's all raw, animal-brute strength, so
+// her cheap shots come as a double-fisted smash instead.
+const TAPE_BEASTIE_CHEAPSHOT_KICKOFF_LINES = [
+  "The bell barely rings before {A} blindsides {B} with both fists smashed into her back while she's still getting her bearings!",
+  "{B} isn't even looking, and {A} catches her with a double-fisted smash to the back right out of the gate!",
+  "{A} doesn't wait for a lock-up — she clubs {B} across the back with both fists the second her back is turned!",
+  "{B} is still waving to the crowd when {A} blindsides her with both fists to the back — so much for a fair start!",
+];
+
+// Spike and Chainsaw don't bother with a dropkick — a dirty kick to the
+// back that sends their opponent flying over the top rope suits them
+// much better.
+const TAPE_HMS_CHEAPSHOT_KICKOFF_LINES = [
+  "The bell barely rings before {A} kicks {B} square in the back, sending her flying over the top rope!",
+  "{B} isn't even looking, and {A} boots her right in the back, launching her clean over the ropes!",
+  "{A} doesn't wait for a lock-up — she kicks {B} in the back and sends her tumbling over the top rope the second her back is turned!",
+  "{B} is still waving to the crowd when {A} kicks her square in the back, sending her flying over the ropes — so much for a fair start!",
+];
+
 // Some of the nicer faces — Sally and Amy especially — offer a
 // good-sportsmanship handshake before the bell, only for the heel to
 // attack instead.
@@ -5889,6 +5915,16 @@ const TAPE_GIANT_HANDSHAKE_ATTACK_KICKOFF_LINES = [
   "{B} extends a hand for a good, clean handshake — and {A} answers with a clothesline instead! So much for sportsmanship!",
   "{B} offers her hand before the bell even finishes ringing, and {A} just flattens her with a forearm smash — that handshake was NOT reciprocated!",
   "{B} sticks her hand out, all smiles, looking for a fair shake — {A} slaps it away and levels her with a shoulder tackle instead!",
+];
+const TAPE_BEASTIE_HANDSHAKE_ATTACK_KICKOFF_LINES = [
+  "{B} extends a hand for a good, clean handshake — and {A} answers with both fists to the back instead! So much for sportsmanship!",
+  "{B} offers her hand before the bell even finishes ringing, and {A} just attacks her outright — that handshake was NOT reciprocated!",
+  "{B} sticks her hand out, all smiles, looking for a fair shake — {A} slaps it away and blindsides her instead!",
+];
+const TAPE_HMS_HANDSHAKE_ATTACK_KICKOFF_LINES = [
+  "{B} extends a hand for a good, clean handshake — and {A} answers with a kick to the back, sending her flying over the ropes! So much for sportsmanship!",
+  "{B} offers her hand before the bell even finishes ringing, and {A} just boots her in the back and over the top rope — that handshake was NOT reciprocated!",
+  "{B} sticks her hand out, all smiles, looking for a fair shake — {A} slaps it away and kicks her clean over the ropes instead!",
 ];
 
 const TAPE_KICKOFF_BEATS = [
@@ -6530,11 +6566,19 @@ function generateTapeBlurb(a, b, result) {
     }
   } else if (Math.random() < cheapshotChance) {
     const heelIsGiant = TAPE_TRUE_GIANTS.has(a.name);
+    const heelIsBeastie = a.name === "Beastie";
+    const heelIsHMS = a.name === "Spike" || a.name === "Chainsaw";
     if (niceFaceInMatch) {
-      const pool = heelIsGiant ? TAPE_GIANT_HANDSHAKE_ATTACK_KICKOFF_LINES : TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES;
+      const pool = heelIsGiant ? TAPE_GIANT_HANDSHAKE_ATTACK_KICKOFF_LINES
+        : heelIsBeastie ? TAPE_BEASTIE_HANDSHAKE_ATTACK_KICKOFF_LINES
+        : heelIsHMS ? TAPE_HMS_HANDSHAKE_ATTACK_KICKOFF_LINES
+        : TAPE_HANDSHAKE_ATTACK_KICKOFF_LINES;
       kickoff = fillABShort(pool[Math.floor(Math.random() * pool.length)]);
     } else {
-      const pool = heelIsGiant ? TAPE_GIANT_CHEAPSHOT_KICKOFF_LINES : TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES;
+      const pool = heelIsGiant ? TAPE_GIANT_CHEAPSHOT_KICKOFF_LINES
+        : heelIsBeastie ? TAPE_BEASTIE_CHEAPSHOT_KICKOFF_LINES
+        : heelIsHMS ? TAPE_HMS_CHEAPSHOT_KICKOFF_LINES
+        : TAPE_HEEL_CHEAPSHOT_KICKOFF_LINES;
       kickoff = fillABShort(pool[Math.floor(Math.random() * pool.length)]);
       if (kickoffHousewifeMember) housewifeUsedCheapshotKickoff = true;
     }
