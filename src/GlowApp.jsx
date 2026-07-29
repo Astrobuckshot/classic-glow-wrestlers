@@ -4958,7 +4958,12 @@ const TAPE_PIN_POSE_TEMPLATES = [
 // match, and The Widow's poisoned drink is offered before the bell even
 // rings. None of them are how these three actually win a match, so
 // they're excluded from the generic finisher pool below.
-const TAPE_NON_FINISH_SIGNATURES = new Set(["The Widow", "Attaché", "Beastie", "Cheyenne Cher", "Jungle Woman"]);
+const TAPE_NON_FINISH_SIGNATURES = new Set(["The Widow", "Attaché", "Beastie", "Cheyenne Cher", "Jungle Woman", "Hollywood", "Godiva"]);
+
+// The universal finisher-use rate is 80% (see finisherChance below) —
+// this lets specific wrestlers go above that baseline when their
+// signature move is meant to feel especially reliable.
+const TAPE_FINISHER_RATE_OVERRIDES = {};
 
 // A handful of especially eccentric characters get a bonus goofy aside
 // worked into the commentary when they're part of the matchup.
@@ -5568,7 +5573,7 @@ const TAPE_ENTRANCE_LINES = {
   "Chainsaw": [
     "Here she comes — {X} fires up her chainsaw the moment she steps through the entrance — it's already roaring before she's even in full view.",
     "And here comes {X}, who revs that chainsaw the second she comes through the curtain — the sound alone has fans in the front rows covering their ears.",
-    "Here comes {X}, chainsaw already roaring from the second she walked out — I would very much like her to turn that thing off.",
+    "Here comes The Heavy Metal Sister, chainsaw already roaring from the second she walked out — I would very much like her to turn that thing off.",
     "{X} makes her entrance, and waves that chainsaw at a few fans in the front row, who scatter like it's an actual threat.",
     "Here she comes — {X} cackles over the roar of the chainsaw, and honestly, security should be a lot more concerned than they look.",
     "Here comes {X}, chainsaw blazing, and I would very much like everyone within ten feet of her to reconsider their seating.",
@@ -5737,6 +5742,19 @@ const TAPE_ENTRANCE_REACTION_LINES = [
   "{X} and {Y} are already going back and forth, shouting across the whole arena — the referee hasn't even called for the bell yet!",
   "{X} is right there waiting, mouth already running at {Y} — and {Y} isn't holding back her response either!",
 ];
+
+// A handful of the above templates explicitly claim the performer (Y)
+// yells/shouts/trades insults back, not just the reactor (X) — unsafe
+// whenever Y happens to be a character who never speaks (Dementia,
+// Mana, Chainsaw, Spike, The Widow).
+const TAPE_MUTUAL_VERBAL_REACTION_LINES = new Set([
+  "{X} is staring down {Y} and it looks like they've already got a few choice words for each other as {Y} makes her way to the ring. This one's starting hot already, folks!",
+  "{X} is already in the ring yelling something at {Y} the whole way down the aisle — and {Y} is yelling right back!",
+  "{X} is pacing the ring, shouting at {Y} from a distance — and {Y}'s giving it right back to her on her way in!",
+  "{X} is already trading insults with {Y} before she's even reached the ring — this crowd is eating up every second of it!",
+  "{X} and {Y} are already going back and forth, shouting across the whole arena — the referee hasn't even called for the bell yet!",
+  "{X} is right there waiting, mouth already running at {Y} — and {Y} isn't holding back her response either!",
+]);
 
 // Dementia, Mana, Chainsaw, Spike, and The Widow never talk trash — so
 // when one of them draws entrance-reaction duty, she doesn't get a
@@ -6331,7 +6349,14 @@ function generateTapeBlurb(a, b, result) {
       const performer = aHasEntrance ? a : b;
       const reactor = aHasEntrance ? b : a;
       if (reactor !== mockerCandidate) {
-        const reactorPool = TAPE_NO_TRASH_TALK.has(reactor.name) ? TAPE_SILENT_ENTRANCE_REACTION_LINES : TAPE_ENTRANCE_REACTION_LINES;
+        let reactorPool = TAPE_NO_TRASH_TALK.has(reactor.name) ? TAPE_SILENT_ENTRANCE_REACTION_LINES : TAPE_ENTRANCE_REACTION_LINES;
+        // Even when the reactor herself talks freely, several of these
+        // templates also claim the performer (Y) yells/shouts/trades
+        // insults back — which breaks silence for someone like Dementia
+        // if she's the one making the entrance.
+        if (TAPE_NO_TRASH_TALK.has(performer.name)) {
+          reactorPool = reactorPool.filter(tpl => !TAPE_MUTUAL_VERBAL_REACTION_LINES.has(tpl));
+        }
         const tpl = reactorPool[Math.floor(Math.random() * reactorPool.length)];
         entranceLines.push(tpl.replaceAll("{X}", reactor.name).replaceAll("{Y}", performer.name));
         if (reactor === a) aAlreadyReacted = true;
@@ -6490,11 +6515,6 @@ function generateTapeBlurb(a, b, result) {
       } else {
         kickoff = fillABShort(TAPE_SLOW_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_SLOW_KICKOFF_BEATS.length)]);
       }
-      // A slower start leaves room for a quick color-commentator aside
-      // before things actually get going.
-      if (Math.random() < 0.3) {
-        kickoff += TAPE_MOVE_AFTERTHOUGHTS[Math.floor(Math.random() * TAPE_MOVE_AFTERTHOUGHTS.length)];
-      }
     }
   } else if (Math.random() < cheapshotChance) {
     const heelIsGiant = TAPE_TRUE_GIANTS.has(a.name);
@@ -6512,11 +6532,6 @@ function generateTapeBlurb(a, b, result) {
       .replaceAll("{Y}", tapeShortName(intimidated));
   } else if (kickoffRoll < 0.35) {
     kickoff = fillABShort(TAPE_SLOW_KICKOFF_BEATS[Math.floor(Math.random() * TAPE_SLOW_KICKOFF_BEATS.length)]);
-    // A slower start leaves room for a quick color-commentator aside
-    // before things actually get going.
-    if (Math.random() < 0.3) {
-      kickoff += TAPE_MOVE_AFTERTHOUGHTS[Math.floor(Math.random() * TAPE_MOVE_AFTERTHOUGHTS.length)];
-    }
   } else {
     // "No handshake, no formalities" implies there was ever an
     // expectation of one — doesn't fit Dementia or Mana, who never
@@ -6642,8 +6657,9 @@ function generateTapeBlurb(a, b, result) {
     beats = shuffleArray(pool).slice(0, 2).map(tpl => {
       let line = fillMatch(tpl);
       // A regular action beat (not a roast, which is already a joke on its
-      // own) occasionally gets a short color-commentator aside tacked on.
-      if (!TAPE_ROAST_BEATS.includes(tpl) && !TAPE_HEEL_ONLY_ROAST_BEATS.includes(tpl) && Math.random() < 0.3) {
+      // own) occasionally gets a short color-commentator aside tacked on
+      // — except this one specific low-key beat, which doesn't suit one.
+      if (!TAPE_ROAST_BEATS.includes(tpl) && !TAPE_HEEL_ONLY_ROAST_BEATS.includes(tpl) && tpl !== "The two exchange a series of pinning combinations, each one broken up at the last second." && Math.random() < 0.3) {
         line += TAPE_MOVE_AFTERTHOUGHTS[Math.floor(Math.random() * TAPE_MOVE_AFTERTHOUGHTS.length)];
       }
       return line;
@@ -7102,6 +7118,11 @@ function tapeAppendDqReaction(text) {
     finish = Math.random() < 0.5
       ? fillWL(TAPE_GIANT_SIT_FINISH_LINES[Math.floor(Math.random() * TAPE_GIANT_SIT_FINISH_LINES.length)])
       : fillWL(TAPE_BIG_SPLASH_FINISH_LINES[Math.floor(Math.random() * TAPE_BIG_SPLASH_FINISH_LINES.length)]);
+  } else if (winner.name === "Godiva" && Math.random() < 0.7) {
+    // The Buckingham Bounce is a mid-match signature, not how she
+    // actually wins — she generally closes matches with a Big Splash
+    // instead. The other 30% falls through to the generic pool below.
+    finish = fillWL(TAPE_BIG_SPLASH_FINISH_LINES[Math.floor(Math.random() * TAPE_BIG_SPLASH_FINISH_LINES.length)]);
   } else {
     // A "finisher" listed on the bio page is sometimes really a
     // signature mid-match action rather than an actual finishing move —
@@ -7112,7 +7133,8 @@ function tapeAppendDqReaction(text) {
     // still lists them as their signature.
     const hasFinisher = !TAPE_NON_FINISH_SIGNATURES.has(winner.name) && winner.finishers && winner.finishers.length > 0;
     const finisherIsPose = hasFinisher && TAPE_POSE_FINISHERS.has(winner.finishers[0]);
-    const useFinisher = hasFinisher && Math.random() < 0.8;
+    const finisherChance = TAPE_FINISHER_RATE_OVERRIDES[winner.name] || 0.8;
+    const useFinisher = hasFinisher && Math.random() < finisherChance;
     const pool = finisherIsPose && useFinisher
       ? TAPE_PIN_POSE_TEMPLATES
       : useFinisher
