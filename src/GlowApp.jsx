@@ -2402,23 +2402,37 @@ function HistoryRow({ item, photoLeft }) {
       >
         <div className="glow-skit-photo-wrap" style={{
           width: photoW,
-          height: photoH,
-          aspectRatio: `${photoW} / ${photoH}`,
           float: photoLeft ? "left" : "right",
           marginRight: photoLeft ? 24 : 0,
           marginLeft: photoLeft ? 0 : 24,
           marginBottom: 16,
-          borderRadius: 12,
-          overflow: "hidden",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.1)",
         }}>
-          <img
-            src={`/images/${item.photo}`}
-            alt={item.title}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            onError={e => { e.currentTarget.style.display = "none"; }}
-          />
+          <div style={{
+            width: "100%",
+            aspectRatio: `${photoW} / ${photoH}`,
+            borderRadius: 12,
+            overflow: "hidden",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}>
+            <img
+              src={`/images/${item.photo}`}
+              alt={item.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={e => { e.currentTarget.style.display = "none"; }}
+            />
+          </div>
+          {item.photoCredit && (
+            <p style={{
+              fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+              fontSize: 11,
+              fontStyle: "italic",
+              color: "#8a92c0",
+              margin: "6px 0 0",
+            }}>
+              {item.photoCredit}
+            </p>
+          )}
         </div>
         <h3 style={{
           fontFamily: "'Trebuchet MS', Verdana, sans-serif",
@@ -2441,17 +2455,6 @@ function HistoryRow({ item, photoLeft }) {
             {para}
           </p>
         ))}
-        {item.photoCredit && (
-          <p style={{
-            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
-            fontSize: 11,
-            fontStyle: "italic",
-            color: "#8a92c0",
-            margin: 0,
-          }}>
-            {item.photoCredit}
-          </p>
-        )}
         <div style={{ clear: "both" }} />
       </div>
     );
