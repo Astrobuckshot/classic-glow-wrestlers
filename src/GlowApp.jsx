@@ -86,7 +86,7 @@ const WRESTLERS = [
     colorRing: "repeating-conic-gradient(#ff4d9e 0deg 45deg, #1a1a1a 45deg 90deg)",
     photo: "hollywood.jpg",
     videos: ["KI73ustqhSc", "fLsU1FScMoc"],
-    bio: "Hollywood was a staple of GLOW Wrestling lasting its entire run — an L.A. klepto street punk who was among GLOW's most entertaining villains, alongside her partner Vine. Jeanne Basone went on to have a successful career after GLOW as an actress, model, author and stuntwoman.",
+    bio: "Hollywood was a staple of GLOW Wrestling lasting its entire run — an L.A. klepto street punk who was among GLOW's most entertaining villains, alongside her partner Vine. She'd become the GLOW U.S. Champion after defeating Tulsa in the 1992 PPV event. Jeanne Basone went on to have a successful career after GLOW as an actress, model, author and stuntwoman.",
     quote: "Terrorizing the little wimps of GLOW beats working.",
     finishers: ["Hooligan Hammerlock"],
   },
@@ -1038,7 +1038,7 @@ const WRESTLERS = [
     color: "#8d2c0a",
     photo: "party-animal.jpg",
     videos: [],
-    bio: "Party Animal — portrayed by Cheryl Rusa (previously known as Lightning) — was a one-off character, who was ushered to the ring underneath a sheet by Hollywood, used to unveil the surprise transformation of Lightning. Her appearance was made at GLOW's 1992 PPV reunion event, where she wrestled against Babe the Farmer's Daughter.",
+    bio: "Party Animal — portrayed by Cheryl Rusa (previously known as Lightning) — was a one-off character, who was ushered to the ring underneath a sheet by Hollywood, used to unveil the surprise transformation of Lightning. Her appearance was made at GLOW's 1992 PPV event, where she wrestled against Babe the Farmer's Daughter.",
     finishers: [],
     noSecondPhoto: true,
   },
@@ -2377,7 +2377,12 @@ const TAPE_BIO_HISTORY_LINKS = {
   "the-showgirls": [{ phrase: "only appearance", historyId: "history-the-showgirls" }],
   "sugar": [{ phrase: "burned in the face", historyId: "history-sugar-torched" }],
   "tina-ferrari": [{ phrase: "GLOW Champion", historyId: "history-tina-ferrari-crown" }],
-  "ninotchka": [{ phrase: "transformed", historyId: "history-ninotchka-turns" }],
+  "ninotchka": [
+    { phrase: "transformed", historyId: "history-ninotchka-turns" },
+    { phrase: "1992 PPV event", historyId: "history-season-five" },
+  ],
+  "party-animal": [{ phrase: "1992 PPV event", historyId: "history-season-five" }],
+  "hollywood": [{ phrase: "1992 PPV event", historyId: "history-season-five" }],
   "daisy": [{ phrase: "break free", historyId: "history-daisy-breaks-free" }],
   // The phrase in the bio is wrapped in single quotes ('Run for the
   // Rubies'), but matching the quotes themselves would break word-
@@ -4305,7 +4310,7 @@ const TAPE_ROAST_BEATS = [
   "{R} is out here throwing tantrums like a toddler who just had her toy taken away!",
   "I don't think {R} has landed a clean move all match, but she sure is landing plenty of attitude!",
   "{R} is stomping around like a toddler who missed her nap — somebody get this woman a juice box!",
-  "{R} just no-showed an entire exchange arguing with the timekeeper — priorities, folks, priorities!",
+  "{R} just no-showed an entire exchange arguing with the referee — priorities, folks, priorities!",
   "{R} gets right in {R2}'s face and mouths off — {R2} doesn't say a word back, she just answers with a forearm!",
   "\"Is that all you've got?\" {R} taunts {R2} — turns out it wasn't, and {R2} makes her regret asking!",
   "{R} leans in and says something to {R2} that has the front row gasping — {R2} looks like she's about to lose it!",
@@ -4315,7 +4320,7 @@ const TAPE_ROAST_BEATS = [
   "{R} is playing to the cameras more than she's playing to win — and it shows!",
   "{R}'s whole strategy tonight seems to be volume — louder isn't the same as better, dear!",
   "{R} shoves a ringside cameraman clean out of the way just to get at {R2} — subtlety was never her strong suit!",
-  "That's twice now {R} has shoved the timekeeper — somebody's getting a stern letter after tonight!",
+  "That's twice now {R} has shoved the referee — somebody's getting a stern letter after tonight!",
   "{R} keeps flexing after every single move — sweetheart, we get it, you're strong, now WRESTLE!",
   "I've seen more restraint from a toddler in a candy aisle than {R} is showing right now!",
   "{R} just flipped off the hard camera — folks, I don't think that's going to help her case with the judges!",
@@ -4328,7 +4333,7 @@ const TAPE_ROAST_BEATS = [
 const TAPE_HEEL_ONLY_ROAST_BEATS = [
   "{R} is out here trash-talking a folding chair — folks, I don't think it's listening!",
   "{R} is one step away from being escorted out of this building by security, and frankly, they're on standby!",
-  "{R} just barked something at the timekeeper that I will NOT be repeating on this broadcast!",
+  "{R} just barked something at the referee that I will NOT be repeating on this broadcast!",
   "{R} is picking fights with everybody at ringside tonight — the fans, the crew, the popcorn guy, everybody!",
   "Somebody explain to {R} that the ring ropes are not there for her to yell at!",
 ];
@@ -5014,7 +5019,7 @@ const TAPE_DQ_RANDOM_OBJECT_LINES = [
   "{loser} snatches the referee's own whistle and uses it as brass knuckles somehow — the ref calls it, obviously! DQ!",
   "{loser} rips a shoe clean off and starts hitting {winner} with it — an actual shoe! DISQUALIFIED!",
   "{loser} grabs a water bottle and just SQUEEZES it directly at {winner}'s face — that's disqualification-worthy behavior, folks!",
-  "{loser} yanks the timekeeper's little table over and starts swinging pieces of it — total chaos, immediate DQ!",
+  "{loser} yanks the announcer's table over and starts swinging pieces of it — total chaos, immediate DQ!",
 ];
 
 const TAPE_FINISHER_TEMPLATES = [
@@ -5267,7 +5272,7 @@ const TAPE_MATILDA_CHAOS_LINES = [
 // upgraded to something specific swiped right out of her corner.
 const TAPE_KLEPTO_WRESTLERS = new Set(["Hollywood", "Vine", "Broadway Rose"]);
 const TAPE_KLEPTO_GENERIC_LINES = [
-  "{X} ducks outside mid-match and swipes something off the timekeeper's table — old habits die hard.",
+  "{X} ducks outside mid-match and swipes something off the announcer's table — old habits die hard.",
   "{X} can't help herself — she snatches a fan's sunglasses right off his face at ringside mid-brawl.",
   "{X} pockets something from ringside without anyone noticing — except us, of course.",
 ];
