@@ -2353,6 +2353,16 @@ const MOMENTS_IN_HISTORY = [
     photo: "history-run-for-rubies.jpg",
     summary: "With the crown vacant in Season 3, a tournament was held to see who'd be the next GLOW Champion. Col. Ninotchka shocked everyone by relinquishing the crown — and this was the inception of Run for the Rubies. The championship tournament lasted most of Season 3, and was single elimination with a wildcard Battle Royal match. Cheyenne Cher would win the tourney, defeating Godiva in the final.",
   },
+  {
+    id: "history-season-five",
+    title: "Season 5 Plans & Recruits",
+    photo: "season-five.jpg",
+    photoWidth: 300,
+    photoHeight: 400,
+    wrapPhoto: true,
+    summary: "GLOW's attempt at creating a 5th season eventually failed, but with the 1992 PPV event and a 1992 calendar released, fans were given a sneak peek into what they had in store — some wrestlers had changed their look (Hollywood, Babe, Ninotchka) while others (Liberty) were being recast. New wrestlers were also planned on being added — but with Season 5's cancellation, they never got to perform on the show. New wrestlers introduced were: Chopstix, Flamenco, California Girl, and The Cheerleader.\n\nSome wrestlers would appear in Stallone's Knockouts (1990), which was a GLOW-style video of competitive events and comedy skits. It was written by Steve Blance and directed by Tony Cimber, with many GLOW wrestlers taking part in the show using different aliases.\n\nThe 1992 PPV reunion special and calendar provide a rare glimpse into what could have been in Season 5.",
+    photoCredit: "- photo courtesy of @ChrisBergstro14",
+  },
 ];
 
 // Manual per-wrestler-id map of a specific bio phrase to link straight
@@ -2379,10 +2389,77 @@ const TAPE_BIO_HISTORY_LINKS = {
 
 
 function HistoryRow({ item, photoLeft }) {
+  const photoW = item.photoWidth || 400;
+  const photoH = item.photoHeight || 300;
+
+  if (item.wrapPhoto) {
+    const paragraphs = item.summary.split("\n\n");
+    return (
+      <div
+        id={item.id}
+        className="glow-skit-row"
+        style={{ scrollMarginTop: 20, overflow: "hidden" }}
+      >
+        <div className="glow-skit-photo" style={{
+          width: photoW,
+          height: photoH,
+          float: photoLeft ? "left" : "right",
+          marginRight: photoLeft ? 24 : 0,
+          marginLeft: photoLeft ? 0 : 24,
+          marginBottom: 16,
+          borderRadius: 12,
+          overflow: "hidden",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}>
+          <img
+            src={`/images/${item.photo}`}
+            alt={item.title}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            onError={e => { e.currentTarget.style.display = "none"; }}
+          />
+        </div>
+        <h3 style={{
+          fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+          color: "#ff8fc3",
+          fontSize: 15,
+          letterSpacing: 0.5,
+          textTransform: "uppercase",
+          margin: "0 0 12px",
+        }}>
+          {item.title}
+        </h3>
+        {paragraphs.map((para, idx) => (
+          <p key={idx} style={{
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontSize: 13.5,
+            color: "#c8d0f0",
+            lineHeight: 1.75,
+            margin: "0 0 12px",
+          }}>
+            {para}
+          </p>
+        ))}
+        {item.photoCredit && (
+          <p style={{
+            fontFamily: "'Trebuchet MS', Verdana, sans-serif",
+            fontSize: 11,
+            fontStyle: "italic",
+            color: "#8a92c0",
+            margin: 0,
+          }}>
+            {item.photoCredit}
+          </p>
+        )}
+        <div style={{ clear: "both" }} />
+      </div>
+    );
+  }
+
   const photoBox = (
     <div className="glow-skit-photo" style={{
-      width: 400,
-      height: 300,
+      width: photoW,
+      height: photoH,
       flexShrink: 0,
       borderRadius: 12,
       overflow: "hidden",
