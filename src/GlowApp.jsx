@@ -2398,7 +2398,7 @@ function HistoryRow({ item, photoLeft }) {
       <div
         id={item.id}
         className="glow-skit-row"
-        style={{ scrollMarginTop: 20, overflow: "hidden" }}
+        style={{ scrollMarginTop: 20, overflow: "hidden", marginTop: 24 }}
       >
         <div className="glow-skit-photo-wrap" style={{
           width: photoW,
