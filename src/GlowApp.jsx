@@ -1038,7 +1038,7 @@ const WRESTLERS = [
     color: "#8d2c0a",
     photo: "party-animal.jpg",
     videos: [],
-    bio: "Party Animal was a one-off character brought to the ring by Hollywood — portrayed by Cheryl Rusa (previously known as Lightning) — during GLOW's 1992 PPV reunion event, wrestling against Babe the Farmer's Daughter.",
+    bio: "Party Animal — portrayed by Cheryl Rusa (previously known as Lightning) — was a one-off character, who was ushered to the ring underneath a sheet by Hollywood, used to unveil the surprise transformation of Lightning. Her appearance was made at GLOW's 1992 PPV reunion event, where she wrestled against Babe the Farmer's Daughter.",
     finishers: [],
     noSecondPhoto: true,
   },
@@ -2360,7 +2360,7 @@ const MOMENTS_IN_HISTORY = [
     photoWidth: 300,
     photoHeight: 400,
     wrapPhoto: true,
-    summary: "GLOW's attempt at creating a 5th season eventually failed, but with the 1992 PPV event and a 1992 calendar released, fans were given a sneak peek into what they had in store — some wrestlers had changed their look (Hollywood, Babe, Ninotchka) while others (Liberty) were being recast. New wrestlers were also planned on being added — but with Season 5's cancellation, they never got to perform on the show. New wrestlers introduced were: Chopstix, Flamenco, California Girl, and The Cheerleader.\n\nSome wrestlers would appear in Stallone's Knockouts (1990), which was a GLOW-style video of competitive events and comedy skits. It was written by Steve Blance and directed by Tony Cimber, with many GLOW wrestlers taking part in the show using different aliases.\n\nThe 1992 PPV reunion special and calendar provide a rare glimpse into what could have been in Season 5.",
+    summary: "David McLane's attempt at reviving GLOW for a 5th season eventually failed, but with the 1992 PPV event filmed in Las Vegas (shown March 1993) and a 1992 calendar released, fans were given a sneak peek into what they had in store — wrestlers changed their look (Hollywood, Ninotchka), aliases (Lightning-Party Animal), and were recast (Liberty).\n\nNew additions to the roster were also showcased in GLOW's calendar — but with Season 5's cancellation, they never got to perform on the TV show. New wrestlers introduced were: Chopstix, Flamenco, California Girl, and The Cheerleader.\n\nThe 1992 PPV special and calendar provide a rare glimpse into what could have been Season 5.",
     photoCredit: "- photo courtesy of @ChrisBergstro14",
   },
 ];
