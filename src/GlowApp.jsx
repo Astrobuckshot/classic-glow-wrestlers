@@ -2400,9 +2400,10 @@ function HistoryRow({ item, photoLeft }) {
         className="glow-skit-row"
         style={{ scrollMarginTop: 20, overflow: "hidden" }}
       >
-        <div className="glow-skit-photo" style={{
+        <div className="glow-skit-photo-wrap" style={{
           width: photoW,
           height: photoH,
+          aspectRatio: `${photoW} / ${photoH}`,
           float: photoLeft ? "left" : "right",
           marginRight: photoLeft ? 24 : 0,
           marginLeft: photoLeft ? 0 : 24,
@@ -2540,6 +2541,7 @@ function HistoryPage({ onBack, backLabel = "Main", scrollToHistoryId }) {
         @media (max-width: 600px) {
           .glow-skit-row { flex-direction: column !important; }
           .glow-skit-photo { width: 100% !important; height: auto !important; aspect-ratio: 4 / 3 !important; order: -1; }
+          .glow-skit-photo-wrap { float: none !important; width: 100% !important; height: auto !important; margin: 0 0 16px !important; }
         }
       `}</style>
       <button
