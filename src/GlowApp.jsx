@@ -2362,6 +2362,7 @@ const MOMENTS_IN_HISTORY = [
     wrapPhoto: true,
     summary: "David McLane's attempt at reviving GLOW for a 5th season eventually failed, but with the 1992 PPV event filmed in Las Vegas (shown March 1993) and a 1992 calendar released, fans were given a sneak peek into what they had in store — wrestlers changed their look (Hollywood, Ninotchka), aliases (Lightning-Party Animal), and were recast (Liberty).\n\nNew additions to the roster were also showcased in GLOW's calendar — but with Season 5's cancellation, they never got to perform on the TV show. New wrestlers introduced were: Chopstix, Flamenco, California Girl, and The Cheerleader.\n\nBefore the PPV event and calendar release, some of the new wrestlers had appeared alongside GLOW wrestlers in Stallone's Knockouts (1990) — a GLOW-style video of competitive events and comedy skits. It was written by Steve Blance and directed by Tony Cimber, with GLOW wrestlers taking part under different aliases — including newcomers Pamela Manning (California Girl) & Paula Manga (Flamenco).\n\nThe 1992 PPV special and calendar provide a rare glimpse into what could have been Season 5.",
     photoCredit: "- photo courtesy of @ChrisBergstro14",
+    secondPhoto: "season-five-2.jpg",
   },
 ];
 
@@ -2460,6 +2461,26 @@ function HistoryRow({ item, photoLeft }) {
             {para}
           </p>
         ))}
+        {item.secondPhoto && (
+          <div style={{
+            clear: "both",
+            width: "min(400px, 100%)",
+            aspectRatio: "1 / 1",
+            marginTop: 24,
+            marginInline: "auto",
+            borderRadius: 12,
+            overflow: "hidden",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}>
+            <img
+              src={`/images/${item.secondPhoto}`}
+              alt={item.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={e => { e.currentTarget.style.display = "none"; }}
+            />
+          </div>
+        )}
         <div style={{ clear: "both" }} />
       </div>
     );
