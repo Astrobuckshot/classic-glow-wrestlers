@@ -9446,6 +9446,25 @@ function viewToHash(view) {
   return `#${view.screen}`;
 }
 
+// NEW (path-routing migration, step 2): same job as viewToHash above, but
+// builds a real URL path instead of a hash fragment. Not wired in yet —
+// this exists side-by-side with viewToHash for now so nothing changes
+// in the live app until we're ready to switch over in a later step.
+function viewToPath(view) {
+  if (view.screen === "wrestler" && view.wrestlerId) {
+    const from = view.from || "home";
+    return `/wrestler/${view.wrestlerId}/from-${from}`;
+  }
+  if (view.screen === "splash") return "/";
+  if (view.screen === "home") return "/home";
+  if (NAV_FROM_SCREENS.has(view.screen)) {
+    const from = view.from || "home";
+    const scrollPart = view.scrollToId ? `/scroll-${view.scrollToId}` : "";
+    return `/${view.screen}/from-${from}${scrollPart}`;
+  }
+  return `/${view.screen}`;
+}
+
 // Decode the current URL hash back into a view object
 function hashToView() {
   const raw = window.location.hash.replace(/^#/, "");
