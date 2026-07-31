@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://classicglowwrestlers.com/sitemap.xml
