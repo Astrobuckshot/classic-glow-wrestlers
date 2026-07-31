@@ -9485,6 +9485,29 @@ function hashToView() {
   return { screen: "splash", wrestlerId: null };
 }
 
+// NEW (path-routing migration, step 3): same job as hashToView above, but
+// reads the real URL path instead of the hash fragment. Not wired in yet —
+// exists side-by-side with hashToView so nothing changes in the live app
+// until we switch over in a later step.
+function pathToView() {
+  const raw = window.location.pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+  if (raw.startsWith("wrestler/")) {
+    const rest = raw.slice("wrestler/".length);
+    const fromMatch = rest.match(/\/from-(\w+)$/);
+    const id = fromMatch ? rest.slice(0, fromMatch.index) : rest;
+    const from = fromMatch ? fromMatch[1] : "home";
+    return { screen: "wrestler", wrestlerId: id, from };
+  }
+  const simpleMatch = raw.match(/^(skits|history|misc|quiz|tape)\/from-(\w+)(?:\/scroll-([\w-]+))?$/);
+  if (simpleMatch) {
+    return { screen: simpleMatch[1], from: simpleMatch[2], scrollToId: simpleMatch[3] || undefined };
+  }
+  if (raw === "home" || raw === "skits" || raw === "history" || raw === "misc" || raw === "quiz" || raw === "tape") {
+    return { screen: raw, from: "home" };
+  }
+  return { screen: "splash", wrestlerId: null };
+}
+
 export default function GlowApp() {
   const [view, setView] = useState(() => hashToView());
   const scrollPositions = useRef({});
