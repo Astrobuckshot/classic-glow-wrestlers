@@ -695,7 +695,7 @@ const WRESTLERS = [
     colorRing: "repeating-conic-gradient(#5d3a1a 0deg 45deg, #9e9e9e 45deg 90deg)",
     photo: "headhunters.jpg",
     videos: ["wqwLLgYZIXE", "B_c8qgkE1SE"],
-    bio: "A trio of cannibal heels from the Pacific Islands during GLOW's early seasons, the Headhunters brought an uncivilized ferocity to Kitty's Killers. Mika and Mina fought as a tag team and would insult their opponents, but Mana mostly took part in solo matches and couldn't speak — she was a more primal version of the trio and carried a spear.",
+    bio: "A trio of cannibal heels from the Pacific Islands during GLOW's early seasons, the Headhunters brought an uncivilized ferocity to Kitty's Killers. Mika and Mina fought as a tag team for a short time, while Mana would take part in solo matches later on — Mana was a more primal version of the trio, carrying a spear and growling rather than speaking.",
     finishers: ["Biting"],
   },
   {
