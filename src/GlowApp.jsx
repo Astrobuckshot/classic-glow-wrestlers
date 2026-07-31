@@ -8932,7 +8932,7 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
   const isTrueWrestler = WRESTLERS.some((w) => w.id === wrestlerId);
 
   const handleShare = async () => {
-    const shareUrl = `https://${SITE_URL}/#wrestler/${wrestler.id}`;
+    const shareUrl = `https://${SITE_URL}/wrestler/${wrestler.id}`;
     const shareData = {
       title: `${wrestler.name} — Classic GLOW Wrestlers`,
       text: `Check out ${wrestler.name} on Classic GLOW Wrestlers!`,
@@ -9431,25 +9431,7 @@ function AppBackground({ children }) {
 // Encode a view object into a URL hash string, e.g. "#wrestler/hollywood"
 const NAV_FROM_SCREENS = new Set(["skits", "history", "misc", "quiz", "tape"]);
 
-function viewToHash(view) {
-  if (view.screen === "wrestler" && view.wrestlerId) {
-    const from = view.from || "home";
-    return `#wrestler/${view.wrestlerId}/from-${from}`;
-  }
-  if (view.screen === "splash") return "#splash";
-  if (view.screen === "home") return "#home";
-  if (NAV_FROM_SCREENS.has(view.screen)) {
-    const from = view.from || "home";
-    const scrollPart = view.scrollToId ? `/scroll-${view.scrollToId}` : "";
-    return `#${view.screen}/from-${from}${scrollPart}`;
-  }
-  return `#${view.screen}`;
-}
-
-// NEW (path-routing migration, step 2): same job as viewToHash above, but
-// builds a real URL path instead of a hash fragment. Not wired in yet —
-// this exists side-by-side with viewToHash for now so nothing changes
-// in the live app until we're ready to switch over in a later step.
+// Encode a view object into a real URL path, e.g. "/wrestler/hollywood/from-home"
 function viewToPath(view) {
   if (view.screen === "wrestler" && view.wrestlerId) {
     const from = view.from || "home";
@@ -9465,30 +9447,7 @@ function viewToPath(view) {
   return `/${view.screen}`;
 }
 
-// Decode the current URL hash back into a view object
-function hashToView() {
-  const raw = window.location.hash.replace(/^#/, "");
-  if (raw.startsWith("wrestler/")) {
-    const rest = raw.slice("wrestler/".length);
-    const fromMatch = rest.match(/\/from-(\w+)$/);
-    const id = fromMatch ? rest.slice(0, fromMatch.index) : rest;
-    const from = fromMatch ? fromMatch[1] : "home";
-    return { screen: "wrestler", wrestlerId: id, from };
-  }
-  const simpleMatch = raw.match(/^(skits|history|misc|quiz|tape)\/from-(\w+)(?:\/scroll-([\w-]+))?$/);
-  if (simpleMatch) {
-    return { screen: simpleMatch[1], from: simpleMatch[2], scrollToId: simpleMatch[3] || undefined };
-  }
-  if (raw === "home" || raw === "skits" || raw === "history" || raw === "misc" || raw === "quiz" || raw === "tape") {
-    return { screen: raw, from: "home" };
-  }
-  return { screen: "splash", wrestlerId: null };
-}
-
-// NEW (path-routing migration, step 3): same job as hashToView above, but
-// reads the real URL path instead of the hash fragment. Not wired in yet —
-// exists side-by-side with hashToView so nothing changes in the live app
-// until we switch over in a later step.
+// Decode the current URL path back into a view object
 function pathToView() {
   const raw = window.location.pathname.replace(/^\/+/, "").replace(/\/+$/, "");
   if (raw.startsWith("wrestler/")) {
@@ -9509,22 +9468,31 @@ function pathToView() {
 }
 
 export default function GlowApp() {
-  const [view, setView] = useState(() => hashToView());
+  const [view, setView] = useState(() => pathToView());
   const scrollPositions = useRef({});
 
   const navigate = (newView) => {
+    const newPath = viewToPath(newView);
+    // Guard against stacking duplicate identical history entries — if we're
+    // already sitting on this exact URL, just update the view without
+    // pushing a new entry (this is what fixed the "3 clicks to go back"
+    // issue with bio-link navigation).
+    if (newPath === window.location.pathname) {
+      setView(newView);
+      return;
+    }
     // remember where we were on the screen we're leaving
     scrollPositions.current[view.screen] = window.scrollY;
     setView(newView);
-    window.location.hash = viewToHash(newView);
+    window.history.pushState(null, "", newPath);
   };
 
   // Keep state in sync with the URL for refreshes, deep links, and the
   // browser's back/forward buttons.
   useEffect(() => {
-    const onHashChange = () => setView(hashToView());
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    const onPopState = () => setView(pathToView());
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
   useEffect(() => {

@@ -1,6 +1,19 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      // Companion to 404.html's redirect trick. If a visitor landed here
+      // via a bounce from 404.html (i.e. they originally requested a real
+      // path like /wrestler/hollywood), restore that real path in the
+      // address bar now, before the React app mounts and reads the URL.
+      (function () {
+        var redirectPath = sessionStorage.getItem("glow-redirect-path");
+        if (redirectPath) {
+          sessionStorage.removeItem("glow-redirect-path");
+          window.history.replaceState(null, "", redirectPath);
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

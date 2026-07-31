@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Classic GLOW Wrestlers</title>
+  <script>
+    // GitHub Pages has no real server-side routing, so any direct request
+    // to a path like /wrestler/hollywood lands here (the 404 page) since
+    // no matching file exists. This script stashes the path the visitor
+    // actually wanted, then redirects to the homepage. index.html has a
+    // matching script that reads this stash and restores the real path
+    // in the address bar before the app starts — so it looks and works
+    // like the correct page loaded directly.
+    sessionStorage.setItem("glow-redirect-path", window.location.pathname);
+    window.location.replace("/");
+  </script>
+</head>
+<body>
+</body>
+</html>
