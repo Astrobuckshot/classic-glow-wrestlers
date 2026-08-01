@@ -8922,6 +8922,27 @@ function VideoLinkCard({ href, title, subtitle }) {
 // YouTube's public oEmbed endpoint (no API key needed) and shown as a
 // caption over the thumbnail, matching what YouTube's own player used to
 // show automatically.
+// Some wrestlers have near-black theme colors (e.g. "#1a1a1a"), which look
+// great as accent borders but become unreadable as text against this app's
+// dark background. This swaps in a readable silver for text specifically
+// when a wrestler's color is too dark, while leaving brighter theme colors
+// untouched.
+function readableTextColor(hex) {
+  if (!hex) return null;
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return hex;
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  // Only swap genuinely black/gray theme colors (where r, g, and b are all
+  // close together) — a saturated dark color like maroon or navy still
+  // reads fine even when dark, so we leave those alone.
+  const channelSpread = Math.max(r, g, b) - Math.min(r, g, b);
+  const isGrayish = channelSpread < 25;
+  return isGrayish && luminance < 0.3 ? "#c9c9d9" : hex;
+}
+
 function VideoEmbed({ videoId, wrestlerName, index }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [title, setTitle] = useState(null);
@@ -9333,7 +9354,7 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
           <p
             style={{
               margin: "10px 0 0",
-              color: wrestler.color || "#ff8fc3",
+              color: readableTextColor(wrestler.color) || "#ff8fc3",
               fontFamily: "'Trebuchet MS', Verdana, sans-serif",
               fontSize: 12,
               fontWeight: 700,
