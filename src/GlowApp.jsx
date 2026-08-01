@@ -8910,6 +8910,135 @@ function VideoLinkCard({ href, title, subtitle }) {
   );
 }
 
+/* ----------------------------------------------------------------
+   Click-to-play YouTube embed used on wrestler pages
+   ---------------------------------------------------------------- */
+// Starts as a static thumbnail (fetched from YouTube's image CDN) with a
+// play button, and only loads the real YouTube iframe once clicked. This
+// fixes a real bug where an always-loaded YouTube iframe was silently
+// adding extra entries to the browser's back/forward history in Chromium
+// browsers, and also means visitors who never watch a clip never load
+// YouTube's player/tracking at all. The video's real title is fetched via
+// YouTube's public oEmbed endpoint (no API key needed) and shown as a
+// caption over the thumbnail, matching what YouTube's own player used to
+// show automatically.
+function VideoEmbed({ videoId, wrestlerName, index }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [title, setTitle] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data && data.title) setTitle(data.title);
+      })
+      .catch(() => {
+        // If the fetch fails (offline, blocked, etc.), we just fall back
+        // to the generic label below — no need to surface an error.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [videoId]);
+
+  const fallbackLabel = `${wrestlerName} match clip ${index + 1}`;
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        paddingBottom: "85%",
+        borderRadius: 12,
+        overflow: "hidden",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.5)",
+        border: "1px solid rgba(255,255,255,0.12)",
+      }}
+    >
+      {isPlaying ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&cc_load_policy=1`}
+          title={title || fallbackLabel}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            border: "none",
+          }}
+        />
+      ) : (
+        <button
+          onClick={() => setIsPlaying(true)}
+          aria-label={`Play video: ${title || fallbackLabel}`}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            border: "none",
+            padding: 0,
+            margin: 0,
+            cursor: "pointer",
+            backgroundImage: `url(https://img.youtube.com/vi/${videoId}/hqdefault.jpg)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: "50%",
+              background: "rgba(0,0,0,0.7)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                width: 0,
+                height: 0,
+                borderTop: "11px solid transparent",
+                borderBottom: "11px solid transparent",
+                borderLeft: "18px solid white",
+                marginLeft: 4,
+              }}
+            />
+          </div>
+          {title && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: "22px 10px 8px",
+                background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent)",
+                color: "#fff",
+                fontSize: 12.5,
+                fontWeight: 600,
+                textAlign: "left",
+                textShadow: "0 1px 3px rgba(0,0,0,0.8)",
+              }}
+            >
+              {title}
+            </div>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWrestler, onNavigateToSkit, onNavigateToHistory }) {
   const wrestler = useMemo(
     () =>
@@ -9231,33 +9360,7 @@ function WrestlerPage({ wrestlerId, onBack, backLabel = "Roster", onNavigateToWr
           className="glow-video-row"
         >
           {wrestler.videos.slice(0, 2).map((videoId, i) => (
-            <div
-              key={i}
-              style={{
-                position: "relative",
-                width: "100%",
-                paddingBottom: "85%",
-                borderRadius: 12,
-                overflow: "hidden",
-                boxShadow: "0 6px 18px rgba(0,0,0,0.5)",
-                border: "1px solid rgba(255,255,255,0.12)",
-              }}
-            >
-              <iframe
-                src={`https://www.youtube.com/embed/${videoId}`}
-                title={`${wrestler.name} match clip ${i + 1}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  border: "none",
-                }}
-              />
-            </div>
+            <VideoEmbed key={i} videoId={videoId} wrestlerName={wrestler.name} index={i} />
           ))}
         </div>
       )}
