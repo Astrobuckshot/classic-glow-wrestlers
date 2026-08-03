@@ -3684,6 +3684,7 @@ const TAPE_LABEL_OVERRIDES = {
   "Americana": "patriot",
   "Star": ["cosmic traveller", "zodiac girl"],
   "Daisy": "big flower",
+  "Little Fiji": ["tiny wrestler", "little sis"],
 };
 // A few gimmick nicknames already function as a complete, self-contained
 // title — often because of a possessive like "America's" — so putting
