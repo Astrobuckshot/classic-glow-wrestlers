@@ -4767,8 +4767,8 @@ const TAPE_FIJI_RESCUE_LINES = [
 // thrown out in Little Fiji's favor either way, whether {loser} gets
 // pulverized or just runs for it.
 const TAPE_MT_FIJI_MIDMATCH_RESCUE_LINES = [
-  "Wait a minute — that's Mt. Fiji storming down to the ring! She's seen enough of {loser} manhandling her little sister, and she throws {loser} clean out of the ring! The referee's got no choice — this one's thrown out, Little Fiji wins by disqualification!",
-  "Out of nowhere, Mt. Fiji charges the ring and just flattens {loser} with a clothesline — she isn't getting up anytime soon, and the referee calls the whole thing off! DQ, Little Fiji gets the win!",
+  "Wait a minute — that's Mt. Fiji storming down to the ring! {loser}'s beating on Little Fiji has crossed a line, and before the referee can even react, Mt. Fiji hurls {loser} clean out of the ring to put a stop to it! DQ, Little Fiji gets the win!",
+  "Out of nowhere — {loser}'s beating on Little Fiji has gone way past anything the referee's willing to allow, and before the bell can even sound, Mt. Fiji comes charging in and flattens {loser} with a clothesline for good measure! DQ, Little Fiji gets the win!",
   "Here comes Mt. Fiji, and she is NOT happy — one look at her and {loser} takes off running, bailing out through the crowd rather than deal with her! The referee has no choice but to call this one — Little Fiji wins by disqualification!",
   "Mt. Fiji comes barreling in to save her little sister, and {loser} wants absolutely no part of it — she scrambles out of the ring and doesn't look back! Match's thrown out, Little Fiji wins by DQ!",
 ];
